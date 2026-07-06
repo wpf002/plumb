@@ -35,8 +35,9 @@ apps/
   api/      Fastify 5 — thin routes over the engine
 packages/
   shared/   money primitives + domain types
-  engine/   the value: margin, cashflow, bid, health  (pure, deterministic, tested)
-  db/       Prisma 7 + adapter-pg, schema + seed
+  engine/   the value: margin, cashflow, wip, bid, health  (pure, deterministic, tested)
+  db/       Prisma 7, schema + seed (phases, cost codes, budgets, WIP, QBO)
+  qbo/      QuickBooks Online sync — OAuth2, API client, mappers, pull orchestrator
 ```
 
 The engine is pure functions with zero I/O. Everything is deterministic and
@@ -45,7 +46,10 @@ unit-tested — auditable over impressive.
 ### The engine
 
 - **margin** — original vs projected-final margin by burn rate, change-order
-  impact, category overruns, at-risk flag.
+  impact, per-category overruns vs budget (material/labor cost-increase impact),
+  at-risk flag.
+- **wip** — earned revenue vs billed-to-date; over/under-billing per job and
+  portfolio (the working-capital position from billing timing).
 - **cashflow** — daily running balance over 30/60/90/120 days, plus a
   payment-delay **stress scenario** (receivables shifted late) and breach
   detection against a cash safety floor.
@@ -72,8 +76,12 @@ pnpm --filter @plumb/engine test # engine unit tests
 | ------ | ------------------------------------ | ------------------------------- |
 | GET    | `/companies/:id/health`              | Owner health rollup + alerts    |
 | GET    | `/companies/:id/forecast?horizon=90` | Cash base + stress scenario     |
-| GET    | `/companies/:id/projects`            | Per-project margin analysis     |
+| GET    | `/companies/:id/projects`            | Per-project margin + variances  |
+| GET    | `/companies/:id/wip`                 | Over/under-billing report       |
 | POST   | `/companies/:id/bid`                 | Evaluate a prospective bid      |
+| GET    | `/companies/:id/qbo/connect`         | QBO OAuth authorize URL         |
+| GET    | `/qbo/callback`                      | QBO token exchange + first sync |
+| POST   | `/companies/:id/qbo/sync`            | Re-sync from QuickBooks         |
 
 ## Roadmap
 

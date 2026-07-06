@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { computeMargin } from "../src/margin.js";
 import { computeCashFlow } from "../src/cashflow.js";
+import { computeWip } from "../src/wip.js";
 import { evaluateBid } from "../src/bid.js";
-import type { Project, CostEntry, CashEvent } from "@plumb/shared";
+import type { Project, CostEntry, CashEvent, BudgetLine } from "@plumb/shared";
 
 const asOf = new Date("2026-07-06T00:00:00Z");
 const addDays = (n: number) => {
@@ -19,6 +20,9 @@ const project: Project = {
   status: "ACTIVE",
   contractValueCents: 820_000_00,
   originalBidCostCents: 700_000_00,
+  billedToDateCents: 480_000_00,
+  billingType: "FIXED_PRICE",
+  netDays: 30,
   targetMarginPct: 14,
   retainagePct: 10,
   startDate: addDays(-90),
@@ -71,6 +75,40 @@ describe("cashflow", () => {
     // stress pushes the +120k out 30 days -> low stays -50k longer, same trough
     expect(r.stress.minBalanceCents).toBeLessThanOrEqual(r.base.minBalanceCents);
     expect(r.base.firstBreachDate).not.toBeNull();
+  });
+});
+
+describe("margin variances", () => {
+  it("flags over-budget categories from budget lines", () => {
+    const costs: CostEntry[] = [
+      { id: "c1", projectId: "p1", category: "MATERIAL", amountCents: 205_000_00, incurredDate: addDays(-40) },
+      { id: "c2", projectId: "p1", category: "LABOR", amountCents: 210_000_00, incurredDate: addDays(-60) },
+    ];
+    const budgets: BudgetLine[] = [
+      { category: "MATERIAL", budgetedCostCents: 190_000_00 },
+      { category: "LABOR", budgetedCostCents: 380_000_00 },
+    ];
+    const m = computeMargin(project, costs, [], budgets);
+    expect(m.overBudgetCategories).toContain("MATERIAL");
+    expect(m.overBudgetCategories).not.toContain("LABOR");
+    const mat = m.variances.find((v) => v.category === "MATERIAL")!;
+    expect(mat.varianceCents).toBe(15_000_00);
+  });
+});
+
+describe("wip", () => {
+  it("classifies over vs under billing against earned revenue", () => {
+    const over = computeWip([{ project, costs: [], changeOrders: [] }]);
+    // contract 820k * 55% = 451k earned; billed 480k => overbilled 29k
+    expect(over.rows[0].earnedRevenueCents).toBe(451_000_00);
+    expect(over.rows[0].overUnderBillingCents).toBe(29_000_00);
+    expect(over.rows[0].state).toBe("OVERBILLED");
+
+    const under = computeWip([
+      { project: { ...project, billedToDateCents: 300_000_00 }, costs: [], changeOrders: [] },
+    ]);
+    expect(under.rows[0].state).toBe("UNDERBILLED");
+    expect(under.netOverUnderCents).toBeLessThan(0);
   });
 });
 

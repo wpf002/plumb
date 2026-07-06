@@ -2,6 +2,11 @@ import type { Cents } from "./money.js";
 
 export type ClientType = "OWNER_DIRECT" | "GC";
 export type ProjectStatus = "BIDDING" | "AWARDED" | "ACTIVE" | "CLOSED";
+export type BillingType =
+  | "FIXED_PRICE"
+  | "COST_PLUS"
+  | "TIME_AND_MATERIAL"
+  | "AIA";
 export type CostCategory =
   | "LABOR"
   | "MATERIAL"
@@ -31,12 +36,24 @@ export interface Project {
   contractValueCents: Cents;
   /** Total estimated cost at time of bid (labor + material + everything). */
   originalBidCostCents: Cents;
+  /** Cents billed to the client so far (drives WIP over/under billing). */
+  billedToDateCents: Cents;
+  billingType: BillingType;
+  netDays: number;
   targetMarginPct: number;
   retainagePct: number;
   startDate: Date;
   endDate: Date;
   /** 0..1 physical/earned completion. Optional; falls back to cost ratio. */
   percentComplete?: number;
+}
+
+/** Budgeted cost per category (optionally per phase). Drives overrun analysis. */
+export interface BudgetLine {
+  category: CostCategory;
+  budgetedCostCents: Cents;
+  budgetedHours?: number;
+  phaseId?: string;
 }
 
 export interface CostEntry {

@@ -3,11 +3,21 @@ import {
   type CostCategory,
   type CostEntry,
   type ChangeOrder,
+  type BudgetLine,
   type Project,
   marginPct,
   round2,
   sumCents,
 } from "@plumb/shared";
+
+export interface CategoryVariance {
+  category: CostCategory;
+  budgetedCents: Cents;
+  actualCents: Cents;
+  /** Positive = over budget in this category (e.g. material price increase). */
+  varianceCents: Cents;
+  variancePct: number;
+}
 
 export interface MarginResult {
   projectId: string;
@@ -23,6 +33,10 @@ export interface MarginResult {
   /** Positive = projected to spend more than budget. */
   costOverrunCents: Cents;
   byCategoryCents: Record<CostCategory, Cents>;
+  /** Per-category over/under vs budget (empty if no budget lines supplied). */
+  variances: CategoryVariance[];
+  /** Cost categories currently over budget — the "over-budget areas". */
+  overBudgetCategories: CostCategory[];
   atRisk: boolean;
 }
 
@@ -41,7 +55,8 @@ const AT_RISK_MARGIN_TOLERANCE = 2;
 export function computeMargin(
   project: Project,
   costs: CostEntry[],
-  changeOrders: ChangeOrder[]
+  changeOrders: ChangeOrder[],
+  budgets: BudgetLine[] = []
 ): MarginResult {
   const approved = changeOrders.filter((c) => c.status === "APPROVED");
   const contractDelta = sumCents(approved.map((c) => c.contractDeltaCents));
@@ -74,6 +89,35 @@ export function computeMargin(
     {} as Record<CostCategory, Cents>
   );
 
+  // Per-category variance vs budget (drives "over-budget areas" + material/
+  // labor cost-increase impact). Only produced when budget lines are supplied.
+  const budgetByCategory = CATEGORIES.reduce(
+    (acc, cat) => {
+      acc[cat] = sumCents(
+        budgets.filter((b) => b.category === cat).map((b) => b.budgetedCostCents)
+      );
+      return acc;
+    },
+    {} as Record<CostCategory, Cents>
+  );
+  const variances: CategoryVariance[] =
+    budgets.length === 0
+      ? []
+      : CATEGORIES.map((cat) => {
+          const budgeted = budgetByCategory[cat];
+          const actual = byCategoryCents[cat];
+          return {
+            category: cat,
+            budgetedCents: budgeted,
+            actualCents: actual,
+            varianceCents: actual - budgeted,
+            variancePct: budgeted > 0 ? round2(((actual - budgeted) / budgeted) * 100) : 0,
+          };
+        });
+  const overBudgetCategories = variances
+    .filter((v) => v.varianceCents > 0)
+    .map((v) => v.category);
+
   const originalMarginPct = marginPct(
     project.contractValueCents,
     project.originalBidCostCents
@@ -95,6 +139,8 @@ export function computeMargin(
     marginErosionPct: round2(originalMarginPct - projectedFinalMarginPct),
     costOverrunCents: projectedFinalCostCents - budgetCostCents,
     byCategoryCents,
+    variances,
+    overBudgetCategories,
     atRisk:
       projectedFinalMarginPct < project.targetMarginPct - AT_RISK_MARGIN_TOLERANCE,
   };

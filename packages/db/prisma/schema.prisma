@@ -1,6 +1,6 @@
-// Plumb — subcontractor financial planning. Money is ALWAYS integer cents.
+// Plumb — subcontractor financial planning. Money is ALWAYS integer cents (BigInt).
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,56 +9,103 @@ datasource db {
 }
 
 model Company {
-  id                     String    @id @default(cuid())
-  name                   String
-  trade                  String // ELECTRICAL, HVAC, PLUMBING, etc.
-  cashSafetyThreshold    BigInt    @default(0) // cents
-  defaultRetainagePct    Float     @default(10)
-  portfolioTargetMargin  Float     @default(12)
-  monthlyLaborHours      Int       @default(0) // crew capacity
-  projects               Project[]
-  cashEvents             CashEvent[]
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  name                  String
+  trade                 String // ELECTRICAL, HVAC, PLUMBING, etc.
+  cashSafetyThreshold   BigInt    @default(0) // cents
+  defaultRetainagePct   Float     @default(10)
+  portfolioTargetMargin Float     @default(12)
+  monthlyLaborHours     Int       @default(0) // crew capacity
+  projects              Project[]
+  cashEvents            CashEvent[]
+  cashSnapshots         CashSnapshot[]
+  qbo                   QboConnection?
+  syncLogs              SyncLog[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
 
 model Project {
-  id                  String            @id @default(cuid())
-  companyId           String
-  company             Company           @relation(fields: [companyId], references: [id])
-  name                String
-  client              String
-  clientType          ClientType
-  status              ProjectStatus     @default(BIDDING)
-  contractValue       BigInt // cents
-  originalBidCost     BigInt // cents
-  targetMarginPct     Float
-  retainagePct        Float             @default(10)
-  percentComplete     Float? // 0..1, PM-entered; null => inferred
-  startDate           DateTime
-  endDate             DateTime
-  costs               CostEntry[]
-  changeOrders        ChangeOrder[]
-  cashEvents          CashEvent[]
-  laborCommitments    LaborCommitment[]
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  id               String            @id @default(cuid())
+  companyId        String
+  company          Company           @relation(fields: [companyId], references: [id])
+  name             String
+  client           String
+  clientType       ClientType
+  status           ProjectStatus     @default(BIDDING)
+  billingType      BillingType       @default(FIXED_PRICE)
+  netDays          Int               @default(30) // payment terms
+  contractValue    BigInt // cents
+  originalBidCost  BigInt // cents (total estimated cost at bid)
+  billedToDate     BigInt            @default(0) // cents billed (for WIP over/under)
+  targetMarginPct  Float
+  retainagePct     Float             @default(10)
+  percentComplete  Float? // 0..1, PM-entered; null => inferred from cost burn
+  startDate        DateTime
+  endDate          DateTime
+  expectedEndDate  DateTime? // current projection if slipping (delay impact)
+  qboJobId         String? // QBO Customer:Job id
+  phases           Phase[]
+  budgetLines      BudgetLine[]
+  costs            CostEntry[]
+  changeOrders     ChangeOrder[]
+  cashEvents       CashEvent[]
+  laborCommitments LaborCommitment[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
   @@index([companyId, status])
+}
+
+// Optional job phases (e.g. Rough-In, Trim, Gear). Enables phase-level costing.
+model Phase {
+  id          String       @id @default(cuid())
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id])
+  name        String
+  code        String? // cost code
+  sortOrder   Int          @default(0)
+  budgetLines BudgetLine[]
+  costs       CostEntry[]
+
+  @@index([projectId])
+}
+
+// Budgeted cost per category (and optionally per phase). Drives over-budget
+// detection and material/labor cost-increase impact.
+model BudgetLine {
+  id            String       @id @default(cuid())
+  projectId     String
+  project       Project      @relation(fields: [projectId], references: [id])
+  phaseId       String?
+  phase         Phase?       @relation(fields: [phaseId], references: [id])
+  category      CostCategory
+  budgetedCost  BigInt // cents
+  budgetedHours Int          @default(0)
+
+  @@index([projectId, category])
 }
 
 model CostEntry {
   id           String       @id @default(cuid())
   projectId    String
   project      Project      @relation(fields: [projectId], references: [id])
+  phaseId      String?
+  phase        Phase?       @relation(fields: [phaseId], references: [id])
   category     CostCategory
+  costCode     String?
+  docType      DocType      @default(OTHER)
   amount       BigInt // cents
+  laborHours   Float? // for LABOR entries
+  vendorName   String?
   incurredDate DateTime
   source       CostSource   @default(MANUAL)
+  qboId        String? // source system id, for idempotent sync
   note         String?
   createdAt    DateTime     @default(now())
 
   @@index([projectId, category])
+  @@index([qboId])
 }
 
 model ChangeOrder {
@@ -69,26 +116,42 @@ model ChangeOrder {
   costDelta     BigInt // cents
   status        ChangeOrderStatus @default(PENDING)
   date          DateTime
+  approvedAt    DateTime?
   createdAt     DateTime          @default(now())
 
   @@index([projectId, status])
 }
 
 model CashEvent {
-  id           String       @id @default(cuid())
+  id           String        @id @default(cuid())
   companyId    String
-  company      Company      @relation(fields: [companyId], references: [id])
+  company      Company       @relation(fields: [companyId], references: [id])
   projectId    String?
-  project      Project?     @relation(fields: [projectId], references: [id])
+  project      Project?      @relation(fields: [projectId], references: [id])
   direction    CashDirection
   amount       BigInt // cents, always positive; direction carries sign
   category     CashCategory
   expectedDate DateTime
   actualDate   DateTime?
-  status       CashStatus   @default(EXPECTED)
-  createdAt    DateTime     @default(now())
+  status       CashStatus    @default(EXPECTED)
+  qboId        String?
+  createdAt    DateTime      @default(now())
 
   @@index([companyId, expectedDate])
+  @@index([qboId])
+}
+
+// Bank balance point-in-time (manual or bank-feed synced). Opening cash source.
+model CashSnapshot {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  asOf      DateTime
+  balance   BigInt // cents
+  source    String   @default("MANUAL")
+  createdAt DateTime @default(now())
+
+  @@index([companyId, asOf])
 }
 
 model LaborCommitment {
@@ -99,6 +162,36 @@ model LaborCommitment {
   hours     Int
 
   @@unique([projectId, month])
+}
+
+// --- Integrations ---------------------------------------------------------
+
+model QboConnection {
+  id           String   @id @default(cuid())
+  companyId    String   @unique
+  company      Company  @relation(fields: [companyId], references: [id])
+  realmId      String // QBO company id
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime // access-token expiry
+  environment  String   @default("production") // or "sandbox"
+  connectedAt  DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SyncLog {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id])
+  provider   String   @default("QBO")
+  kind       String // FULL, INCREMENTAL, INVOICES, BILLS, TIME, etc.
+  status     String // OK, ERROR
+  counts     Json? // { invoices: 12, bills: 30, ... }
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  error      String?
+
+  @@index([companyId, startedAt])
 }
 
 enum ClientType {
@@ -113,12 +206,28 @@ enum ProjectStatus {
   CLOSED
 }
 
+enum BillingType {
+  FIXED_PRICE
+  COST_PLUS
+  TIME_AND_MATERIAL
+  AIA
+}
+
 enum CostCategory {
   LABOR
   MATERIAL
   EQUIPMENT
   TRAVEL
   SUBCONTRACT
+  OTHER
+}
+
+enum DocType {
+  INVOICE
+  RECEIPT
+  BILL
+  PAYROLL
+  MATERIAL_PO
   OTHER
 }
 
@@ -149,4 +258,10 @@ enum CashStatus {
   RECEIVED
   PAID
   LATE
+}
+
+enum ChangeOrderStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

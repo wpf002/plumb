@@ -17,6 +17,7 @@ say "Ensuring folder structure"
 mkdir -p apps/web/src/app apps/api/src/routes \
          packages/db/prisma packages/db/src \
          packages/engine/src packages/engine/test \
+         packages/qbo/src \
          packages/shared/src
 
 # --- 2. Environment ----------------------------------------------------------

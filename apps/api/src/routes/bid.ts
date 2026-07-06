@@ -1,12 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
-import {
-  computeCashFlow,
-  computeMargin,
-  evaluateBid,
-  type ProspectiveBid,
-} from "@plumb/engine";
-import { n } from "../map.js";
+import { computeCashFlow, computeMargin, evaluateBid, type ProspectiveBid } from "@plumb/engine";
+import { n, toEngineProject, toEngineCosts, toEngineChangeOrders } from "../map.js";
 
 interface BidBody {
   contractValueCents: number;
@@ -21,24 +16,22 @@ export function registerBidRoutes(app: FastifyInstance) {
     "/companies/:companyId/bid",
     async (req) => {
       const { companyId } = req.params;
-      const company = await prisma.company.findUniqueOrThrow({
-        where: { id: companyId },
-      });
+      const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
 
-      // Committed remaining labor by month across active jobs.
       const commitments = await prisma.laborCommitment.findMany({
         where: { project: { companyId, status: { in: ["ACTIVE", "AWARDED"] } } },
       });
       const committedHoursByMonth: Record<string, number> = {};
-      for (const c of commitments) {
-        committedHoursByMonth[c.month] =
-          (committedHoursByMonth[c.month] ?? 0) + c.hours;
-      }
+      for (const c of commitments)
+        committedHoursByMonth[c.month] = (committedHoursByMonth[c.month] ?? 0) + c.hours;
 
-      // Worst-case cash over 90 days.
+      const snap = await prisma.cashSnapshot.findFirst({
+        where: { companyId },
+        orderBy: { asOf: "desc" },
+      });
       const events = await prisma.cashEvent.findMany({ where: { companyId } });
       const cash = computeCashFlow({
-        openingCashCents: req.body.openingCashCents ?? 250_000_00,
+        openingCashCents: snap ? n(snap.balance) : req.body.openingCashCents ?? 250_000_00,
         asOf: new Date(),
         horizonDays: 90,
         stressDelayDays: 30,
@@ -55,42 +48,15 @@ export function registerBidRoutes(app: FastifyInstance) {
         })),
       });
 
-      // Recent margin trend across active jobs.
       const projects = await prisma.project.findMany({
         where: { companyId, status: "ACTIVE" },
         include: { costs: true, changeOrders: true },
       });
       const recentMarginDeltas = projects.map((p) => {
         const m = computeMargin(
-          {
-            id: p.id,
-            name: p.name,
-            client: p.client,
-            clientType: p.clientType,
-            status: p.status,
-            contractValueCents: n(p.contractValue),
-            originalBidCostCents: n(p.originalBidCost),
-            targetMarginPct: p.targetMarginPct,
-            retainagePct: p.retainagePct,
-            startDate: p.startDate,
-            endDate: p.endDate,
-            percentComplete: p.percentComplete ?? undefined,
-          },
-          p.costs.map((c) => ({
-            id: c.id,
-            projectId: c.projectId,
-            category: c.category,
-            amountCents: n(c.amount),
-            incurredDate: c.incurredDate,
-          })),
-          p.changeOrders.map((c) => ({
-            id: c.id,
-            projectId: c.projectId,
-            contractDeltaCents: n(c.contractDelta),
-            costDeltaCents: n(c.costDelta),
-            status: c.status,
-            date: c.date,
-          }))
+          toEngineProject(p),
+          toEngineCosts(p.costs),
+          toEngineChangeOrders(p.changeOrders)
         );
         return m.projectedFinalMarginPct - p.targetMarginPct;
       });

@@ -4,6 +4,8 @@ import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
 import { registerBidRoutes } from "./routes/bid.js";
 import { registerHealthRoutes } from "./routes/health.js";
+import { registerWipRoutes } from "./routes/wip.js";
+import { registerQboRoutes } from "./routes/qbo.js";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -15,6 +17,8 @@ export function buildServer() {
   registerForecastRoutes(app);
   registerProjectRoutes(app);
   registerBidRoutes(app);
+  registerWipRoutes(app);
+  registerQboRoutes(app);
 
   return app;
 }

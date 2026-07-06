@@ -1,12 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
-import {
-  computeCashFlow,
-  computeHealth,
-  computeMargin,
-  monthKey,
-} from "@plumb/engine";
-import { n } from "../map.js";
+import { computeCashFlow, computeHealth, computeMargin, monthKey } from "@plumb/engine";
+import { n, toEngineProject, toEngineCosts, toEngineChangeOrders } from "../map.js";
 
 export function registerHealthRoutes(app: FastifyInstance) {
   app.get<{
@@ -14,13 +9,20 @@ export function registerHealthRoutes(app: FastifyInstance) {
     Querystring: { opening?: string };
   }>("/companies/:companyId/health", async (req) => {
     const { companyId } = req.params;
-    const company = await prisma.company.findUniqueOrThrow({
-      where: { id: companyId },
+    const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
+
+    // Opening cash: latest bank snapshot, else query param, else default.
+    const snap = await prisma.cashSnapshot.findFirst({
+      where: { companyId },
+      orderBy: { asOf: "desc" },
     });
+    const openingCashCents = snap
+      ? n(snap.balance)
+      : Number(req.query.opening ?? 250_000_00);
 
     const events = await prisma.cashEvent.findMany({ where: { companyId } });
     const cash = computeCashFlow({
-      openingCashCents: Number(req.query.opening ?? 250_000_00),
+      openingCashCents,
       asOf: new Date(),
       horizonDays: 90,
       stressDelayDays: 30,
@@ -42,60 +44,22 @@ export function registerHealthRoutes(app: FastifyInstance) {
       include: { costs: true, changeOrders: true },
     });
     const margins = projects.map((p) =>
-      computeMargin(
-        {
-          id: p.id,
-          name: p.name,
-          client: p.client,
-          clientType: p.clientType,
-          status: p.status,
-          contractValueCents: n(p.contractValue),
-          originalBidCostCents: n(p.originalBidCost),
-          targetMarginPct: p.targetMarginPct,
-          retainagePct: p.retainagePct,
-          startDate: p.startDate,
-          endDate: p.endDate,
-          percentComplete: p.percentComplete ?? undefined,
-        },
-        p.costs.map((c) => ({
-          id: c.id,
-          projectId: c.projectId,
-          category: c.category,
-          amountCents: n(c.amount),
-          incurredDate: c.incurredDate,
-        })),
-        p.changeOrders.map((c) => ({
-          id: c.id,
-          projectId: c.projectId,
-          contractDeltaCents: n(c.contractDelta),
-          costDeltaCents: n(c.costDelta),
-          status: c.status,
-          date: c.date,
-        }))
-      )
+      computeMargin(toEngineProject(p), toEngineCosts(p.costs), toEngineChangeOrders(p.changeOrders))
     );
 
-    // Peak utilization over next 90 days.
     const commitments = await prisma.laborCommitment.findMany({
       where: { project: { companyId, status: { in: ["ACTIVE", "AWARDED"] } } },
     });
     const byMonth: Record<string, number> = {};
-    for (const c of commitments)
-      byMonth[c.month] = (byMonth[c.month] ?? 0) + c.hours;
+    for (const c of commitments) byMonth[c.month] = (byMonth[c.month] ?? 0) + c.hours;
     const now = new Date();
     const next3 = [0, 1, 2].map((m) =>
       monthKey(new Date(now.getUTCFullYear(), now.getUTCMonth() + m, 1))
     );
     const cap = company.monthlyLaborHours || 1;
-    const peakUtilization90d = Math.max(
-      0,
-      ...next3.map((m) => (byMonth[m] ?? 0) / cap)
-    );
+    const peakUtilization90d = Math.max(0, ...next3.map((m) => (byMonth[m] ?? 0) / cap));
 
-    // A/R: outstanding inbound not yet received; past due = expected before today.
-    const inbound = events.filter(
-      (e) => e.direction === "IN" && e.status !== "RECEIVED"
-    );
+    const inbound = events.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");
     const arOutstandingCents = inbound.reduce((a, e) => a + n(e.amount), 0);
     const arPastDueCents = inbound
       .filter((e) => e.expectedDate < now)
