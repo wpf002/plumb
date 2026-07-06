@@ -98,13 +98,12 @@ Email/SMS on forecast breach, margin-at-risk, under-booked month, and
 "invoice this milestone this week to avoid a crunch." This is what delivers the
 15-min-a-week promise — the owner shouldn't have to log in to get the signal.
 
-**Phase 5 — Bid intake + BidWright seam.**
-Turn a bid into a `ProspectiveBid` automatically. **BidWright** (your ITB-parsing
-bid-response tool) is the natural upstream: it ingests the ITB package and emits
-scope, quantities, line items, and estimated cost — which is exactly the shape
-`evaluateBid` consumes. Wire BidWright's output → Plumb's bid endpoint so "should
-I bid this?" runs the moment the estimate exists. Keep the products separate;
-integrate at the seam.
+**Phase 5 — Bid intake.**
+Turn a bid into a `ProspectiveBid` without manual entry: parse an estimate
+(CSV/PDF export from the estimating tool the sub already uses) into contract
+value, estimated cost, target margin, and labor hours by month, then run
+`evaluateBid` automatically so "should I bid this?" fires the moment the
+estimate exists.
 
 **Phase 6 — More integrations.**
 FreshBooks (alt to QBO for smaller shops), payroll systems (Gusto/ADP) for true
