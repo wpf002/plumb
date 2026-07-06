@@ -1,0 +1,22 @@
+{
+  "name": "@plumb/api",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.0",
+    "@plumb/db": "workspace:*",
+    "@plumb/engine": "workspace:*",
+    "@plumb/shared": "workspace:*",
+    "fastify": "^5.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,152 @@
+// Plumb — subcontractor financial planning. Money is ALWAYS integer cents.
+generator client {
+  provider        = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id                     String    @id @default(cuid())
+  name                   String
+  trade                  String // ELECTRICAL, HVAC, PLUMBING, etc.
+  cashSafetyThreshold    BigInt    @default(0) // cents
+  defaultRetainagePct    Float     @default(10)
+  portfolioTargetMargin  Float     @default(12)
+  monthlyLaborHours      Int       @default(0) // crew capacity
+  projects               Project[]
+  cashEvents             CashEvent[]
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model Project {
+  id                  String            @id @default(cuid())
+  companyId           String
+  company             Company           @relation(fields: [companyId], references: [id])
+  name                String
+  client              String
+  clientType          ClientType
+  status              ProjectStatus     @default(BIDDING)
+  contractValue       BigInt // cents
+  originalBidCost     BigInt // cents
+  targetMarginPct     Float
+  retainagePct        Float             @default(10)
+  percentComplete     Float? // 0..1, PM-entered; null => inferred
+  startDate           DateTime
+  endDate             DateTime
+  costs               CostEntry[]
+  changeOrders        ChangeOrder[]
+  cashEvents          CashEvent[]
+  laborCommitments    LaborCommitment[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([companyId, status])
+}
+
+model CostEntry {
+  id           String       @id @default(cuid())
+  projectId    String
+  project      Project      @relation(fields: [projectId], references: [id])
+  category     CostCategory
+  amount       BigInt // cents
+  incurredDate DateTime
+  source       CostSource   @default(MANUAL)
+  note         String?
+  createdAt    DateTime     @default(now())
+
+  @@index([projectId, category])
+}
+
+model ChangeOrder {
+  id            String            @id @default(cuid())
+  projectId     String
+  project       Project           @relation(fields: [projectId], references: [id])
+  contractDelta BigInt // cents
+  costDelta     BigInt // cents
+  status        ChangeOrderStatus @default(PENDING)
+  date          DateTime
+  createdAt     DateTime          @default(now())
+
+  @@index([projectId, status])
+}
+
+model CashEvent {
+  id           String       @id @default(cuid())
+  companyId    String
+  company      Company      @relation(fields: [companyId], references: [id])
+  projectId    String?
+  project      Project?     @relation(fields: [projectId], references: [id])
+  direction    CashDirection
+  amount       BigInt // cents, always positive; direction carries sign
+  category     CashCategory
+  expectedDate DateTime
+  actualDate   DateTime?
+  status       CashStatus   @default(EXPECTED)
+  createdAt    DateTime     @default(now())
+
+  @@index([companyId, expectedDate])
+}
+
+model LaborCommitment {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+  month     String // YYYY-MM
+  hours     Int
+
+  @@unique([projectId, month])
+}
+
+enum ClientType {
+  OWNER_DIRECT
+  GC
+}
+
+enum ProjectStatus {
+  BIDDING
+  AWARDED
+  ACTIVE
+  CLOSED
+}
+
+enum CostCategory {
+  LABOR
+  MATERIAL
+  EQUIPMENT
+  TRAVEL
+  SUBCONTRACT
+  OTHER
+}
+
+enum CostSource {
+  MANUAL
+  QBO
+  IMPORT
+}
+
+enum CashDirection {
+  IN
+  OUT
+}
+
+enum CashCategory {
+  PROGRESS_BILLING
+  RETAINAGE_RELEASE
+  PAYROLL
+  VENDOR_BILL
+  OVERHEAD
+  TAX
+  LOAN
+  INSURANCE
+}
+
+enum CashStatus {
+  EXPECTED
+  RECEIVED
+  PAID
+  LATE
+}
