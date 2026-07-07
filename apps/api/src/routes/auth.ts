@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@plumb/db";
 import {
   hashPassword,
@@ -8,6 +9,10 @@ import {
   SESSION_COOKIE,
   COMPANY_COOKIE,
 } from "../auth.js";
+import { getNotifier } from "../notify.js";
+
+const WEB_URL = process.env.WEB_URL ?? "http://localhost:4200";
+const RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 const registerSchema = {
   type: "object",
@@ -168,6 +173,60 @@ export function registerAuthRoutes(app: FastifyInstance) {
       const session = await createSession(user.id);
       await setAuthCookies(reply, session.id, session.expiresAt, invite.companyId);
       return { user: { id: user.id, email: user.email, name: user.name }, companies, activeCompanyId: invite.companyId };
+    }
+  );
+
+  // Request a password reset (public). Never reveals whether the email exists;
+  // without an email provider it returns the link so the demo flow still works.
+  app.post<{ Body: { email: string } }>(
+    "/auth/request-reset",
+    { schema: { body: { type: "object", required: ["email"], additionalProperties: false, properties: { email: { type: "string", minLength: 3 } } } } },
+    async (req) => {
+      const email = req.body.email.toLowerCase();
+      const user = await prisma.user.findUnique({ where: { email } });
+      let resetUrl: string | undefined;
+      if (user) {
+        const token = randomBytes(24).toString("hex");
+        await prisma.passwordResetToken.create({
+          data: { userId: user.id, token, expiresAt: new Date(Date.now() + RESET_TTL_MS) },
+        });
+        const url = `${WEB_URL}/reset?token=${token}`;
+        const delivery = await getNotifier().send({
+          to: email,
+          subject: "Reset your Plumb password",
+          text: `Reset your password: ${url}`,
+          html: `<p><a href="${url}">Reset your Plumb password</a> (expires in 1 hour).</p>`,
+        });
+        if (!delivery.delivered) resetUrl = url; // dry-run: surface the link
+      }
+      return { ok: true, ...(resetUrl ? { resetUrl } : {}) };
+    }
+  );
+
+  // Validate a reset token (public).
+  app.get<{ Params: { token: string } }>("/auth/reset/:token", async (req, reply) => {
+    const t = await prisma.passwordResetToken.findUnique({ where: { token: req.params.token }, include: { user: true } });
+    if (!t || t.usedAt || t.expiresAt < new Date()) {
+      return reply.code(404).send({ error: "Not Found", message: "This reset link is invalid or expired." });
+    }
+    return { email: t.user.email };
+  });
+
+  // Set a new password (public). Invalidates the token and all sessions.
+  app.post<{ Body: { token: string; password: string } }>(
+    "/auth/reset",
+    { schema: { body: { type: "object", required: ["token", "password"], additionalProperties: false, properties: { token: { type: "string" }, password: { type: "string", minLength: 8, maxLength: 200 } } } } },
+    async (req, reply) => {
+      const t = await prisma.passwordResetToken.findUnique({ where: { token: req.body.token } });
+      if (!t || t.usedAt || t.expiresAt < new Date()) {
+        return reply.code(400).send({ error: "Bad Request", message: "This reset link is invalid or expired." });
+      }
+      await prisma.$transaction([
+        prisma.user.update({ where: { id: t.userId }, data: { passwordHash: await hashPassword(req.body.password) } }),
+        prisma.passwordResetToken.update({ where: { id: t.id }, data: { usedAt: new Date() } }),
+        prisma.session.deleteMany({ where: { userId: t.userId } }),
+      ]);
+      return { ok: true };
     }
   );
 

@@ -68,6 +68,13 @@ export default function Login() {
           {busy ? "…" : mode === "login" ? "Sign in" : "Create account"}
         </button>
         {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
+        {mode === "login" && (
+          <p style={{ textAlign: "center", marginTop: 12, marginBottom: 0 }}>
+            <a href="/reset" style={{ color: "var(--muted)", fontSize: 13, textDecoration: "none" }}>
+              Forgot password?
+            </a>
+          </p>
+        )}
 
         <p style={{ textAlign: "center", marginTop: 18, marginBottom: 0, fontSize: 13.5, color: "var(--muted)" }}>
           {mode === "login" ? "New to Plumb? " : "Already have an account? "}
