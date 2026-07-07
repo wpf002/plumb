@@ -21,6 +21,12 @@ export default function ProjectDetail() {
   const [billing, setBilling] = useState(false);
   const [invoice, setInvoice] = useState<any>(null);
 
+  // Change orders
+  const [coContract, setCoContract] = useState("");
+  const [coCost, setCoCost] = useState("");
+  const [coReason, setCoReason] = useState("");
+  const [coBusy, setCoBusy] = useState(false);
+
   async function load() {
     setError(null);
     try {
@@ -41,6 +47,49 @@ export default function ProjectDetail() {
     if (COMPANY && id) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  async function createCO() {
+    setCoBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/companies/${COMPANY}/projects/${id}/change-orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contractDeltaCents: Math.round((Number(coContract) || 0) * 100),
+          costDeltaCents: Math.round((Number(coCost) || 0) * 100),
+          reason: coReason || undefined,
+        }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message ?? `Failed (${res.status})`);
+      setCoContract("");
+      setCoCost("");
+      setCoReason("");
+      await load();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setCoBusy(false);
+    }
+  }
+
+  async function decideCO(coId: string, action: "approve" | "reject") {
+    setCoBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/companies/${COMPANY}/change-orders/${coId}/${action}`, { method: "POST" });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.message ?? `Failed (${res.status})`);
+      }
+      await load();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setCoBusy(false);
+    }
+  }
 
   async function bill() {
     setBilling(true);
@@ -228,6 +277,79 @@ export default function ProjectDetail() {
           </button>
           {msg && <span className="pos" style={{ fontSize: 13.5 }}>{msg}</span>}
           {error && <span className="neg" style={{ fontSize: 13.5 }}>{error}</span>}
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-title">Change orders</div>
+        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
+          Only <strong>approved</strong> change orders move the contract and budget. Pending ones don&apos;t count yet.
+        </p>
+
+        {data.changeOrders && data.changeOrders.length > 0 ? (
+          <table className="table" style={{ marginBottom: 18 }}>
+            <thead>
+              <tr>
+                <th>Reason</th>
+                <th className="num">Contract Δ</th>
+                <th className="num">Cost Δ</th>
+                <th className="num">Margin Δ</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.changeOrders.map((co: any) => {
+                const badge =
+                  co.status === "APPROVED" ? "good" : co.status === "REJECTED" ? "neutral" : "warn";
+                return (
+                  <tr key={co.id}>
+                    <td className="cell-name">{co.reason ?? "—"}</td>
+                    <td className="num">{usdExact(co.contractDeltaCents)}</td>
+                    <td className="num">{usdExact(co.costDeltaCents)}</td>
+                    <td className="num" style={{ color: co.marginImpactCents >= 0 ? C.green : C.red, fontWeight: 600 }}>
+                      {usdExact(co.marginImpactCents)}
+                    </td>
+                    <td>
+                      <span className={`badge ${badge}`}>{co.status}</span>
+                    </td>
+                    <td>
+                      {co.status === "PENDING" && (
+                        <span style={{ display: "flex", gap: 6 }}>
+                          <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 13 }} disabled={coBusy} onClick={() => decideCO(co.id, "approve")}>
+                            Approve
+                          </button>
+                          <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 13 }} disabled={coBusy} onClick={() => decideCO(co.id, "reject")}>
+                            Reject
+                          </button>
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{ color: "var(--faint)", fontSize: 13.5, marginTop: 0 }}>No change orders yet.</p>
+        )}
+
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+          <div>
+            <label className="label">Contract Δ ($)</label>
+            <input className="input num" style={{ maxWidth: 130 }} value={coContract} onChange={(e) => setCoContract(e.target.value)} inputMode="decimal" placeholder="60000" />
+          </div>
+          <div>
+            <label className="label">Cost Δ ($)</label>
+            <input className="input num" style={{ maxWidth: 130 }} value={coCost} onChange={(e) => setCoCost(e.target.value)} inputMode="decimal" placeholder="40000" />
+          </div>
+          <div style={{ flex: 1, minWidth: 180 }}>
+            <label className="label">Reason</label>
+            <input className="input" value={coReason} onChange={(e) => setCoReason(e.target.value)} placeholder="Added panel upgrade" />
+          </div>
+          <button className="btn btn-ghost" disabled={coBusy || (!coContract && !coCost)} onClick={createCO}>
+            {coBusy ? "…" : "Add change order"}
+          </button>
         </div>
       </section>
 

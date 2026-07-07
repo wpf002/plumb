@@ -118,6 +118,19 @@ export function registerProjectRoutes(app: FastifyInstance) {
           budgetedCostCents: n(b.budgetedCost),
           budgetedHours: b.budgetedHours,
         })),
+        changeOrders: p.changeOrders
+          .slice()
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .map((co) => ({
+            id: co.id,
+            reason: co.reason,
+            contractDeltaCents: n(co.contractDelta),
+            costDeltaCents: n(co.costDelta),
+            marginImpactCents: n(co.contractDelta) - n(co.costDelta),
+            status: co.status,
+            date: co.date,
+            approvedAt: co.approvedAt,
+          })),
       };
     }
   );

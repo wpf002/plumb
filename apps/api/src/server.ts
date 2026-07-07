@@ -9,6 +9,7 @@ import { registerQboRoutes } from "./routes/qbo.js";
 import { registerDigestRoutes } from "./routes/digest.js";
 import { registerSettingsRoutes } from "./routes/settings.js";
 import { registerIntegrationRoutes } from "./routes/integrations.js";
+import { registerChangeOrderRoutes } from "./routes/changeorders.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -50,6 +51,7 @@ export function buildServer() {
   registerDigestRoutes(app);
   registerSettingsRoutes(app);
   registerIntegrationRoutes(app);
+  registerChangeOrderRoutes(app);
 
   return app;
 }

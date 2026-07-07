@@ -76,6 +76,17 @@ async function main() {
       { projectId: a.id, category: "EQUIPMENT", amount: C(18_000), docType: "RECEIPT", incurredDate: day(-30) },
     ],
   });
+  // A pending change order awaiting the owner's decision (doesn't move margin yet).
+  await prisma.changeOrder.create({
+    data: {
+      projectId: a.id,
+      reason: "Added disconnect switches (owner request)",
+      contractDelta: C(18_000),
+      costDelta: C(12_000),
+      status: "PENDING",
+      date: day(-5),
+    },
+  });
 
   // --- Job B: through a GC, healthy, UNDERBILLED (financing the job)
   const b = await prisma.project.create({
