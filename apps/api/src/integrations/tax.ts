@@ -23,7 +23,7 @@ const DEADLINES = [
   { m: 0, d: 15 }, // Jan 15
 ];
 
-function nextFourDeadlines(asOf: Date): Date[] {
+export function nextFourDeadlines(asOf: Date): Date[] {
   const out: Date[] = [];
   let year = asOf.getUTCFullYear();
   while (out.length < 4) {
