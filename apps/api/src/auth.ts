@@ -39,8 +39,15 @@ export async function getSessionUser(
 }
 
 export async function isMember(userId: string, companyId: string): Promise<boolean> {
+  return (await getMemberRole(userId, companyId)) !== null;
+}
+
+export type Role = "OWNER" | "MEMBER";
+
+export async function getMemberRole(userId: string, companyId: string): Promise<Role | null> {
   const m = await prisma.membership.findUnique({
     where: { userId_companyId: { userId, companyId } },
+    select: { role: true },
   });
-  return Boolean(m);
+  return (m?.role as Role) ?? null;
 }

@@ -2,7 +2,17 @@ import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import { registerAuthRoutes } from "./routes/auth.js";
-import { getSessionUser, isMember, SESSION_COOKIE } from "./auth.js";
+import { getSessionUser, getMemberRole, SESSION_COOKIE } from "./auth.js";
+
+// Routes only an OWNER may call (company config + team). Everything else a MEMBER
+// can do. The regex is matched against the path (without query string).
+const OWNER_ONLY: { method: string; re: RegExp }[] = [
+  { method: "PUT", re: /^\/companies\/[^/]+\/settings$/ },
+  { method: "POST", re: /^\/companies\/[^/]+\/opening-cash/ },
+  { method: "PUT", re: /^\/companies\/[^/]+\/category-mappings$/ },
+  { method: "POST", re: /^\/companies\/[^/]+\/team\// },
+  { method: "DELETE", re: /^\/companies\/[^/]+\/team\// },
+];
 import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
 import { registerBidRoutes } from "./routes/bid.js";
@@ -31,8 +41,15 @@ export function buildServer() {
     if (!user) return reply.code(401).send({ error: "Unauthorized", message: "Sign in required." });
 
     const m = path.match(/^\/companies\/([^/]+)/);
-    if (m && !(await isMember(user.id, m[1]))) {
-      return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
+    if (m) {
+      const role = await getMemberRole(user.id, m[1]);
+      if (!role) {
+        return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
+      }
+      const ownerOnly = OWNER_ONLY.some((r) => r.method === req.method && r.re.test(path));
+      if (ownerOnly && role !== "OWNER") {
+        return reply.code(403).send({ error: "Forbidden", message: "Owner permission required." });
+      }
     }
   });
 

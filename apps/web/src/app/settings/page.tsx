@@ -16,8 +16,15 @@ export default function Settings() {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isOwner, setIsOwner] = useState(true);
 
   async function load() {
+    const meRes = await apiFetch("/auth/me");
+    if (meRes.ok) {
+      const me = await meRes.json();
+      const active = me.companies.find((c: any) => c.id === me.activeCompanyId);
+      setIsOwner(active?.role === "OWNER");
+    }
     const res = await apiFetch(`/companies/${getCompanyId()}/settings`, { cache: "no-store" });
     if (!res.ok) {
       setError(`Load failed (${res.status})`);
@@ -87,6 +94,12 @@ export default function Settings() {
         </div>
       </div>
 
+      {!isOwner && (
+        <div className="alert warning" style={{ marginBottom: 20 }}>
+          <span className="alert-dot" style={{ color: C.amber }}>●</span>
+          <div className="alert-title">View only — company settings can only be changed by an owner.</div>
+        </div>
+      )}
       {(msg || error) && (
         <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 20 }}>
           <span className="alert-dot" style={{ color: error ? C.red : C.green }}>
@@ -125,7 +138,7 @@ export default function Settings() {
           </div>
           <button
             className="btn btn-ghost"
-            disabled={busy !== null || !manual}
+            disabled={busy !== null || !manual || !isOwner}
             onClick={() =>
               post(
                 "/opening-cash",
@@ -138,7 +151,7 @@ export default function Settings() {
           </button>
           <button
             className="btn btn-primary"
-            disabled={busy !== null}
+            disabled={busy !== null || !isOwner}
             onClick={() =>
               post("/opening-cash/plaid", { payload: {}, success: "Bank connected — opening cash pulled from your account." }, "plaid")
             }
@@ -192,7 +205,7 @@ export default function Settings() {
         <div style={{ marginTop: 18 }}>
           <button
             className="btn btn-primary"
-            disabled={busy !== null}
+            disabled={busy !== null || !isOwner}
             onClick={() =>
               post(
                 "/settings",

@@ -49,6 +49,11 @@ async function main() {
     data: { email: "owner@foley.test", name: "Ray Foley", passwordHash: hashPw("plumb1234") },
   });
   await prisma.membership.create({ data: { userId: owner.id, companyId: co.id, role: "OWNER" } });
+  // A non-owner teammate: crew@foley.test / plumb1234 (can view, can't change settings/team)
+  const member = await prisma.user.create({
+    data: { email: "crew@foley.test", name: "Dana Crew", passwordHash: hashPw("plumb1234") },
+  });
+  await prisma.membership.create({ data: { userId: member.id, companyId: co.id, role: "MEMBER" } });
 
   // Opening cash from the bank (drives forecasts instead of a query param).
   await prisma.cashSnapshot.create({
