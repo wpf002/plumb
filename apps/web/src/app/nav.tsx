@@ -7,6 +7,7 @@ const links = [
   { href: "/", label: "Dashboard" },
   { href: "/bid", label: "Bid decision" },
   { href: "/digest", label: "Weekly digest" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export function Topbar() {

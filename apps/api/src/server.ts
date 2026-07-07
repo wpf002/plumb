@@ -7,6 +7,7 @@ import { registerHealthRoutes } from "./routes/health.js";
 import { registerWipRoutes } from "./routes/wip.js";
 import { registerQboRoutes } from "./routes/qbo.js";
 import { registerDigestRoutes } from "./routes/digest.js";
+import { registerSettingsRoutes } from "./routes/settings.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -46,6 +47,7 @@ export function buildServer() {
   registerWipRoutes(app);
   registerQboRoutes(app);
   registerDigestRoutes(app);
+  registerSettingsRoutes(app);
 
   return app;
 }
