@@ -59,9 +59,26 @@ const RULES: [RegExp, CostCategory][] = [
   [/sub|subcontract/i, "SUBCONTRACT"],
 ];
 
-/** Best-effort mapping from a QBO account/item name to a Plumb cost category. */
-export function classifyCategory(name?: string): CostCategory {
+/** A per-company override: if the QBO name contains `keyword`, use `category`. */
+export interface CategoryOverride {
+  keyword: string;
+  category: CostCategory;
+}
+
+/**
+ * Map a QBO account/item name to a Plumb cost category. Per-company overrides win
+ * over the built-in rules, so a shop can correct its own chart of accounts
+ * (e.g. "Rexel" -> MATERIAL) without touching code.
+ */
+export function classifyCategory(
+  name?: string,
+  overrides: CategoryOverride[] = []
+): CostCategory {
   if (!name) return "OTHER";
+  const lower = name.toLowerCase();
+  for (const o of overrides) {
+    if (o.keyword && lower.includes(o.keyword.toLowerCase())) return o.category;
+  }
   for (const [re, cat] of RULES) if (re.test(name)) return cat;
   return "OTHER";
 }
@@ -142,10 +159,11 @@ function firstAccountName(lines?: QboExpenseLine[]): string | undefined {
 /** Bill/Purchase -> a job cost + an outbound cash obligation. */
 export function mapBill(
   bill: QboBill,
-  kind: "BILL" | "PURCHASE"
+  kind: "BILL" | "PURCHASE",
+  overrides: CategoryOverride[] = []
 ): { cost: MappedCost; cash: MappedCashEvent } {
   const job = firstJobRef(bill.Line);
-  const category = classifyCategory(firstAccountName(bill.Line));
+  const category = classifyCategory(firstAccountName(bill.Line), overrides);
   const incurred = new Date(bill.TxnDate);
   return {
     cost: {

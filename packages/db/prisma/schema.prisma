@@ -20,8 +20,22 @@ model Company {
   cashSnapshots         CashSnapshot[]
   qbo                   QboConnection?
   syncLogs              SyncLog[]
+  categoryMappings      CategoryMapping[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+}
+
+// Per-company override: if a QBO account/item name contains `keyword`, classify
+// the cost as `category`. Corrects the built-in rules per chart of accounts.
+model CategoryMapping {
+  id        String       @id @default(cuid())
+  companyId String
+  company   Company      @relation(fields: [companyId], references: [id])
+  keyword   String
+  category  CostCategory
+  createdAt DateTime     @default(now())
+
+  @@index([companyId])
 }
 
 model Project {

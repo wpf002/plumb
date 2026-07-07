@@ -50,6 +50,11 @@ export async function syncCompany(
     ? `WHERE MetaData.LastUpdatedTime > '${opts.since.toISOString()}'`
     : "";
 
+  // Per-company category overrides correct the built-in account-name rules.
+  const overrides = (
+    await prisma.categoryMapping.findMany({ where: { companyId } })
+  ).map((m) => ({ keyword: m.keyword, category: m.category }));
+
   try {
     const [customers, invoices, bills, purchases, times] = await Promise.all([
       client.query<QboCustomer>("Customer", where),
@@ -113,9 +118,9 @@ export async function syncCompany(
     }
 
     // 3. Bills + Purchases -> job cost + outbound cash.
-    for (const b of bills) await upsertBill(companyId, resolveProject, b, "BILL");
+    for (const b of bills) await upsertBill(companyId, resolveProject, b, "BILL", overrides);
     for (const p of purchases)
-      await upsertBill(companyId, resolveProject, p, "PURCHASE");
+      await upsertBill(companyId, resolveProject, p, "PURCHASE", overrides);
 
     // 4. Time -> labor cost.
     for (const t of times) {
@@ -196,9 +201,10 @@ async function upsertBill(
   companyId: string,
   resolveProject: (jobId?: string) => string | null,
   bill: QboBill,
-  kind: "BILL" | "PURCHASE"
+  kind: "BILL" | "PURCHASE",
+  overrides: Parameters<typeof mapBill>[2] = []
 ) {
-  const { cost, cash } = mapBill(bill, kind);
+  const { cost, cash } = mapBill(bill, kind, overrides);
   const projectId = resolveProject(cost.qboJobId);
   if (projectId) await upsertCost(projectId, cost);
   await upsertCash(companyId, projectId, cash);

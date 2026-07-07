@@ -13,6 +13,29 @@ const invoiceBodySchema = {
   },
 } as const;
 
+const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"] as const;
+
+const mappingsBodySchema = {
+  type: "object",
+  required: ["mappings"],
+  additionalProperties: false,
+  properties: {
+    mappings: {
+      type: "array",
+      maxItems: 100,
+      items: {
+        type: "object",
+        required: ["keyword", "category"],
+        additionalProperties: false,
+        properties: {
+          keyword: { type: "string", minLength: 1, maxLength: 100 },
+          category: { type: "string", enum: CATEGORIES },
+        },
+      },
+    },
+  },
+} as const;
+
 export function registerQboRoutes(app: FastifyInstance) {
   // Step 1: owner clicks this to grant access. state carries the companyId.
   app.get<{ Params: { companyId: string } }>(
@@ -68,5 +91,40 @@ export function registerQboRoutes(app: FastifyInstance) {
     "/companies/:companyId/qbo/invoice",
     { schema: { body: invoiceBodySchema } },
     async (req) => createInvoice(req.params.companyId, req.body)
+  );
+
+  // Per-company account/item -> category overrides used by the QBO sync.
+  app.get<{ Params: { companyId: string } }>(
+    "/companies/:companyId/category-mappings",
+    async (req) => {
+      const mappings = await prisma.categoryMapping.findMany({
+        where: { companyId: req.params.companyId },
+        orderBy: { keyword: "asc" },
+        select: { keyword: true, category: true },
+      });
+      return { mappings };
+    }
+  );
+
+  app.put<{
+    Params: { companyId: string };
+    Body: { mappings: { keyword: string; category: string }[] };
+  }>(
+    "/companies/:companyId/category-mappings",
+    { schema: { body: mappingsBodySchema } },
+    async (req) => {
+      await prisma.company.findUniqueOrThrow({ where: { id: req.params.companyId } });
+      await prisma.$transaction([
+        prisma.categoryMapping.deleteMany({ where: { companyId: req.params.companyId } }),
+        prisma.categoryMapping.createMany({
+          data: req.body.mappings.map((m) => ({
+            companyId: req.params.companyId,
+            keyword: m.keyword,
+            category: m.category as (typeof CATEGORIES)[number],
+          })),
+        }),
+      ]);
+      return { ok: true, count: req.body.mappings.length };
+    }
   );
 }
