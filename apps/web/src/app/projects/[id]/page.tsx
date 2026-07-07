@@ -27,6 +27,32 @@ export default function ProjectDetail() {
   const [coReason, setCoReason] = useState("");
   const [coBusy, setCoBusy] = useState(false);
 
+  // Phases / cost codes
+  const [phaseName, setPhaseName] = useState("");
+  const [phaseCode, setPhaseCode] = useState("");
+  const [phaseBusy, setPhaseBusy] = useState(false);
+
+  async function addPhase() {
+    setPhaseBusy(true);
+    setError(null);
+    try {
+      const res = await apiFetch(`/companies/${getCompanyId()}/projects/${id}/phases`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: phaseName, code: phaseCode || undefined }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message ?? `Failed (${res.status})`);
+      setPhaseName("");
+      setPhaseCode("");
+      await load();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setPhaseBusy(false);
+    }
+  }
+
   async function load() {
     setError(null);
     try {
@@ -277,6 +303,61 @@ export default function ProjectDetail() {
           </button>
           {msg && <span className="pos" style={{ fontSize: 13.5 }}>{msg}</span>}
           {error && <span className="neg" style={{ fontSize: 13.5 }}>{error}</span>}
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="card-title">Phases &amp; cost codes</div>
+        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
+          Break the job into phases (cost codes) to see budget vs actual at the level you estimate.
+        </p>
+        {data.phases && data.phases.length > 0 ? (
+          <table className="table" style={{ marginBottom: 18 }}>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th className="num">Code</th>
+                <th className="num">Budget</th>
+                <th className="num">Actual</th>
+                <th className="num">Hours</th>
+                <th className="num">Variance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.phases.map((ph: any) => (
+                <tr key={ph.id}>
+                  <td className="cell-name">{ph.name}</td>
+                  <td className="num" style={{ color: "var(--muted)" }}>{ph.code ?? "—"}</td>
+                  <td className="num">{usdExact(ph.budgetedCostCents)}</td>
+                  <td className="num">{usdExact(ph.actualCostCents)}</td>
+                  <td className="num">{ph.laborHours || "—"}</td>
+                  <td className="num" style={{ color: ph.budgetedCostCents === 0 ? "var(--faint)" : ph.varianceCents > 0 ? C.red : C.green, fontWeight: 600 }}>
+                    {ph.budgetedCostCents === 0 ? "no budget" : usdExact(ph.varianceCents)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p style={{ color: "var(--faint)", fontSize: 13.5, marginTop: 0 }}>No phases yet.</p>
+        )}
+        {data.unphasedCostCents > 0 && (
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: -6, marginBottom: 16 }}>
+            {usdExact(data.unphasedCostCents)} of costs are not yet assigned to a phase.
+          </p>
+        )}
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+          <div style={{ flex: 1, minWidth: 160 }}>
+            <label className="label">Phase name</label>
+            <input className="input" value={phaseName} onChange={(e) => setPhaseName(e.target.value)} placeholder="Trim-out" />
+          </div>
+          <div>
+            <label className="label">Cost code</label>
+            <input className="input num" style={{ maxWidth: 130 }} value={phaseCode} onChange={(e) => setPhaseCode(e.target.value)} placeholder="16-200" />
+          </div>
+          <button className="btn btn-ghost" disabled={phaseBusy || !phaseName} onClick={addPhase}>
+            {phaseBusy ? "…" : "Add phase"}
+          </button>
         </div>
       </section>
 

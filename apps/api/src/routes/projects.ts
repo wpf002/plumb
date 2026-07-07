@@ -11,6 +11,16 @@ import {
 
 const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"] as const;
 
+const phaseBodySchema = {
+  type: "object",
+  required: ["name"],
+  additionalProperties: false,
+  properties: {
+    name: { type: "string", minLength: 1, maxLength: 120 },
+    code: { type: "string", maxLength: 40 },
+  },
+} as const;
+
 const budgetsBodySchema = {
   type: "object",
   required: ["budgets"],
@@ -86,7 +96,7 @@ export function registerProjectRoutes(app: FastifyInstance) {
     async (req) => {
       const p = await prisma.project.findFirstOrThrow({
         where: { id: req.params.projectId, companyId: req.params.companyId },
-        include: { costs: true, changeOrders: true, budgetLines: true },
+        include: { costs: true, changeOrders: true, budgetLines: true, phases: true },
       });
       const margin = computeMargin(
         toEngineProject(p),
@@ -131,7 +141,44 @@ export function registerProjectRoutes(app: FastifyInstance) {
             date: co.date,
             approvedAt: co.approvedAt,
           })),
+        phases: p.phases
+          .slice()
+          .sort((a, b) => a.sortOrder - b.sortOrder)
+          .map((ph) => {
+            const bl = p.budgetLines.filter((b) => b.phaseId === ph.id);
+            const cs = p.costs.filter((c) => c.phaseId === ph.id);
+            const budgetedCostCents = bl.reduce((a, b) => a + n(b.budgetedCost), 0);
+            const actualCostCents = cs.reduce((a, c) => a + n(c.amount), 0);
+            const laborHours = cs.reduce((a, c) => a + (c.laborHours ?? 0), 0);
+            return {
+              id: ph.id,
+              name: ph.name,
+              code: ph.code,
+              budgetedCostCents,
+              actualCostCents,
+              laborHours,
+              varianceCents: actualCostCents - budgetedCostCents,
+            };
+          }),
+        unphasedCostCents: p.costs.filter((c) => !c.phaseId).reduce((a, c) => a + n(c.amount), 0),
       };
+    }
+  );
+
+  // Add a phase (cost code) to a project.
+  app.post<{ Params: { companyId: string; projectId: string }; Body: { name: string; code?: string } }>(
+    "/companies/:companyId/projects/:projectId/phases",
+    { schema: { body: phaseBodySchema } },
+    async (req) => {
+      const project = await prisma.project.findFirstOrThrow({
+        where: { id: req.params.projectId, companyId: req.params.companyId },
+        select: { id: true },
+      });
+      const max = await prisma.phase.aggregate({ where: { projectId: project.id }, _max: { sortOrder: true } });
+      const phase = await prisma.phase.create({
+        data: { projectId: project.id, name: req.body.name, code: req.body.code ?? null, sortOrder: (max._max.sortOrder ?? 0) + 1 },
+      });
+      return { id: phase.id, name: phase.name, code: phase.code };
     }
   );
 
