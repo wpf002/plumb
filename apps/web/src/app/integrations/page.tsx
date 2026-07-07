@@ -1,7 +1,81 @@
 "use client";
 
-import { useState } from "react";
-import { apiFetch, getCompanyId, usd, C } from "../ui";
+import { useEffect, useState } from "react";
+import { apiFetch, getCompanyId, usd } from "../ui";
+
+const statusBadge: Record<string, { cls: string; label: string }> = {
+  connected: { cls: "good", label: "Connected" },
+  configured: { cls: "good", label: "Live" },
+  available: { cls: "info", label: "Ready" },
+  demo: { cls: "neutral", label: "Demo" },
+  not_configured: { cls: "neutral", label: "Not set up" },
+};
+
+function Connections() {
+  const [conns, setConns] = useState<any[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function load() {
+    const res = await apiFetch(`/companies/${getCompanyId()}/connections`, { cache: "no-store" });
+    if (res.ok) setConns((await res.json()).connections);
+  }
+  useEffect(() => {
+    if (getCompanyId()) load();
+  }, []);
+
+  async function connectQbo(url: string) {
+    window.location.href = url;
+  }
+  async function syncQbo() {
+    setBusy("qbo");
+    await apiFetch(`/companies/${getCompanyId()}/qbo/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    await load();
+    setBusy(null);
+  }
+
+  if (!conns) return null;
+  return (
+    <section className="card">
+      <div className="card-title">Connections</div>
+      <table className="table">
+        <tbody>
+          {conns.map((c) => {
+            const b = statusBadge[c.status] ?? statusBadge.demo;
+            return (
+              <tr key={c.key}>
+                <td className="cell-name">{c.name}</td>
+                <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
+                <td style={{ color: "var(--muted)", fontSize: 13.5 }}>
+                  {c.detail}
+                  {c.lastSync && ` · last sync ${c.lastSync.status}`}
+                </td>
+                <td className="num">
+                  {c.key === "qbo" && c.action === "connect" && c.connectUrl && (
+                    <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 13 }} onClick={() => connectQbo(c.connectUrl)}>
+                      Connect
+                    </button>
+                  )}
+                  {c.key === "qbo" && c.action === "sync" && (
+                    <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 13 }} disabled={busy === "qbo"} onClick={syncQbo}>
+                      {busy === "qbo" ? "Syncing…" : "Sync now"}
+                    </button>
+                  )}
+                  {c.action === "settings" && (
+                    <a className="navlink" href="/settings" style={{ color: "var(--orange)", padding: 0 }}>Settings →</a>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </section>
+  );
+}
 
 type Result = { live: boolean; note: string; rows: { left: string; mid?: string; right: string }[]; summary: string };
 
@@ -99,6 +173,8 @@ export default function Integrations() {
           <p>Pull the rest of the picture in. Each previews without credentials and imports for real once connected.</p>
         </div>
       </div>
+
+      <Connections />
 
       <Panel
         title="Payroll — Gusto / ADP"
