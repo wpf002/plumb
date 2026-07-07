@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Nav } from "./nav";
 
 export const metadata = {
   title: "Plumb",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           color: "#e7e9ec",
         }}
       >
+        <Nav />
         {children}
       </body>
     </html>
