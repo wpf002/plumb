@@ -1,4 +1,4 @@
-import { API, COMPANY, colors, card } from "../ui";
+import { API, COMPANY, scoreColor, C } from "../ui";
 
 async function get(path: string) {
   const res = await fetch(`${API}${path}`, { cache: "no-store" });
@@ -6,19 +6,21 @@ async function get(path: string) {
   return res.json();
 }
 
-const sev: Record<string, { color: string; mark: string }> = {
-  critical: { color: colors.bad, mark: "●" },
-  warning: { color: colors.warn, mark: "●" },
-  good: { color: colors.good, mark: "●" },
+const dotColor: Record<string, string> = {
+  critical: C.red,
+  warning: C.amber,
+  good: C.green,
 };
 
 export default async function DigestPreview() {
   if (!COMPANY) {
     return (
-      <main style={{ padding: 40 }}>
-        <p>
-          Set <code>NEXT_PUBLIC_COMPANY_ID</code> and reload.
-        </p>
+      <main className="container">
+        <div className="card">
+          <p>
+            Set <code>NEXT_PUBLIC_COMPANY_ID</code> and reload.
+          </p>
+        </div>
       </main>
     );
   }
@@ -26,37 +28,57 @@ export default async function DigestPreview() {
   const { digest } = await get(`/companies/${COMPANY}/digest`);
 
   return (
-    <main style={{ maxWidth: 680, margin: "0 auto", padding: 32 }}>
-      <h1 style={{ fontSize: 20, marginBottom: 4 }}>Weekly digest</h1>
-      <p style={{ color: colors.muted, marginTop: 0 }}>
-        What lands in the owner&apos;s inbox every Monday — no login required.
-      </p>
-
-      <section style={card}>
-        <div style={{ color: colors.muted, fontSize: 13 }}>
-          {digest.companyName} · week of {digest.asOf} · health {digest.score}/100
+    <main className="container" style={{ maxWidth: 760 }}>
+      <div className="page-head">
+        <div>
+          <h1>Weekly digest</h1>
+          <p>What lands in the owner&apos;s inbox every Monday — no login required.</p>
         </div>
-        <p style={{ fontSize: 17, fontWeight: 600, margin: "10px 0 20px" }}>
-          {digest.headline}
-        </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      </div>
+
+      <section className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <div
+          style={{
+            background: "linear-gradient(180deg, var(--navy-800), var(--navy))",
+            color: "#fff",
+            padding: "22px 24px",
+            borderBottom: "3px solid var(--orange)",
+          }}
+        >
+          <div style={{ color: "#8ea3b8", fontSize: 12.5, fontWeight: 600 }}>
+            {digest.companyName} · week of {digest.asOf}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+            <span
+              className="num"
+              style={{
+                fontSize: 30,
+                fontWeight: 800,
+                color: scoreColor(digest.score),
+              }}
+            >
+              {digest.score}
+            </span>
+            <span style={{ color: "#b9c6d4", fontSize: 14 }}>business health / 100</span>
+          </div>
+          <p style={{ fontSize: 16, fontWeight: 600, margin: "12px 0 0" }}>{digest.headline}</p>
+        </div>
+
+        <div style={{ padding: "18px 24px 24px" }}>
           {digest.items.map((item: any, i: number) => (
-            <div key={i} style={{ display: "flex", gap: 10 }}>
-              <span style={{ color: sev[item.severity].color, fontSize: 12, marginTop: 4 }}>
-                {sev[item.severity].mark}
+            <div key={i} className={`alert ${item.severity}`}>
+              <span className="alert-dot" style={{ color: dotColor[item.severity] }}>
+                ●
               </span>
               <div>
-                <div style={{ fontWeight: 600, color: sev[item.severity].color }}>
-                  {item.title}
-                </div>
-                {item.detail !== item.title && (
-                  <div style={{ color: colors.muted, fontSize: 14, marginTop: 2 }}>
-                    {item.detail}
-                  </div>
-                )}
+                <div className="alert-title">{item.title}</div>
+                {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}
               </div>
             </div>
           ))}
+          <p style={{ color: "var(--faint)", fontSize: 12.5, marginTop: 18, marginBottom: 0 }}>
+            Delivered by Plumb. Reply if a number looks off.
+          </p>
         </div>
       </section>
     </main>

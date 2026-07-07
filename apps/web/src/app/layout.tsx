@@ -1,23 +1,17 @@
 import type { ReactNode } from "react";
-import { Nav } from "./nav";
+import "./globals.css";
+import { Topbar } from "./nav";
 
 export const metadata = {
-  title: "Plumb",
-  description: "Financial command center for subcontractors",
+  title: "Plumb — Financial command center for subcontractors",
+  description: "Know your cash, margins, and workload before it becomes a problem.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body
-        style={{
-          fontFamily: "ui-sans-serif, system-ui, sans-serif",
-          margin: 0,
-          background: "#0b0d10",
-          color: "#e7e9ec",
-        }}
-      >
-        <Nav />
+      <body>
+        <Topbar />
         {children}
       </body>
     </html>

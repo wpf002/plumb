@@ -1,38 +1,29 @@
-import type { CSSProperties } from "react";
-
 export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4300";
 export const COMPANY = process.env.NEXT_PUBLIC_COMPANY_ID ?? "";
 
 export const usd = (cents: number) =>
+  (cents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+
+export const usdExact = (cents: number) =>
   (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
 
-export const colors = {
-  bg: "#0b0d10",
-  text: "#e7e9ec",
-  muted: "#8b93a1",
-  faint: "#6b7280",
-  line: "#1c2128",
-  panel: "#12151a",
-  good: "#30a46c",
-  warn: "#f0b429",
-  bad: "#e5484d",
-  accent: "#4c8dff",
+/** Palette values needed in JS (SVG ring, inline bar fills). Mirrors globals.css. */
+export const C = {
+  navy: "#0e2a47",
+  green: "#157a5a",
+  amber: "#b45309",
+  red: "#b42318",
+  orange: "#ea580c",
+  line: "#dde3e9",
 };
 
-export const card: CSSProperties = {
-  background: colors.panel,
-  border: `1px solid ${colors.line}`,
-  borderRadius: 12,
-  padding: 20,
-  marginTop: 16,
-};
-export const chip: CSSProperties = {
-  background: colors.bg,
-  border: `1px solid ${colors.line}`,
-  borderRadius: 8,
-  padding: "8px 12px",
-  minWidth: 120,
-};
-export const h2: CSSProperties = { fontSize: 15, marginTop: 0, marginBottom: 12 };
-export const th: CSSProperties = { padding: "6px 8px", fontWeight: 500 };
-export const td: CSSProperties = { padding: "8px" };
+/** Score → color bucket for the health ring and component bars. */
+export function scoreColor(score: number): string {
+  if (score >= 80) return C.green;
+  if (score >= 60) return C.amber;
+  return C.red;
+}
