@@ -11,9 +11,28 @@ interface BidBody {
   openingCashCents?: number;
 }
 
+const bidBodySchema = {
+  type: "object",
+  required: ["contractValueCents", "estCostCents", "targetMarginPct", "laborHoursByMonth"],
+  additionalProperties: false,
+  properties: {
+    contractValueCents: { type: "integer", minimum: 1 },
+    estCostCents: { type: "integer", minimum: 0 },
+    targetMarginPct: { type: "number", minimum: -100, maximum: 100 },
+    laborHoursByMonth: {
+      type: "object",
+      // keys are YYYY-MM month buckets; values are committed hours
+      patternProperties: { "^\\d{4}-\\d{2}$": { type: "number", minimum: 0 } },
+      additionalProperties: false,
+    },
+    openingCashCents: { type: "integer", minimum: 0 },
+  },
+} as const;
+
 export function registerBidRoutes(app: FastifyInstance) {
   app.post<{ Params: { companyId: string }; Body: BidBody }>(
     "/companies/:companyId/bid",
+    { schema: { body: bidBodySchema } },
     async (req) => {
       const { companyId } = req.params;
       const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });

@@ -21,6 +21,7 @@ export interface CategoryVariance {
 
 export interface MarginResult {
   projectId: string;
+  projectName: string;
   adjustedContractCents: Cents;
   budgetCostCents: Cents;
   costToDateCents: Cents;
@@ -129,6 +130,7 @@ export function computeMargin(
 
   return {
     projectId: project.id,
+    projectName: project.name,
     adjustedContractCents,
     budgetCostCents,
     costToDateCents,

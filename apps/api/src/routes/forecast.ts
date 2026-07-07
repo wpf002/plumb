@@ -3,11 +3,24 @@ import { prisma } from "@plumb/db";
 import { computeCashFlow } from "@plumb/engine";
 import { n } from "../map.js";
 
+const forecastQuerySchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    horizon: { type: "integer", enum: [30, 60, 90, 120] },
+    stress: { type: "integer", minimum: 0, maximum: 365 },
+    opening: { type: "integer", minimum: 0 },
+  },
+} as const;
+
 export function registerForecastRoutes(app: FastifyInstance) {
   app.get<{
     Params: { companyId: string };
     Querystring: { horizon?: string; stress?: string; opening?: string };
-  }>("/companies/:companyId/forecast", async (req) => {
+  }>(
+    "/companies/:companyId/forecast",
+    { schema: { querystring: forecastQuerySchema } },
+    async (req) => {
     const { companyId } = req.params;
     const horizonDays = Number(req.query.horizon ?? 90);
     const stressDelayDays = Number(req.query.stress ?? 30);

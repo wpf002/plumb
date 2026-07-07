@@ -59,7 +59,7 @@ export function computeHealth(input: HealthInput): HealthResult {
   const marginScore = clamp(100 + marginGap * 6); // ~17 pts per margin point
   for (const m of input.margins.filter((x) => x.atRisk)) {
     alerts.push(
-      `Project ${m.projectId} projected at ${m.projectedFinalMarginPct}% margin (${m.marginErosionPct} pts eroded since bid).`
+      `${m.projectName} projected at ${m.projectedFinalMarginPct}% margin (${m.marginErosionPct} pts eroded since bid).`
     );
   }
 
