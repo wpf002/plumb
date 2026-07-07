@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { API, COMPANY, usd, usdExact, scoreColor, C } from "./ui";
 
 async function get(path: string) {
@@ -184,7 +185,14 @@ export default async function Dashboard() {
           <tbody>
             {projects.map((row: any) => (
               <tr key={row.project.id}>
-                <td className="cell-name">{row.project.name}</td>
+                <td className="cell-name">
+                  <Link
+                    href={`/projects/${row.project.id}`}
+                    style={{ color: "var(--navy)", textDecoration: "none" }}
+                  >
+                    {row.project.name}
+                  </Link>
+                </td>
                 <td className="num">{row.margin.originalMarginPct}%</td>
                 <td className="num" style={{ color: row.margin.atRisk ? C.red : C.green, fontWeight: 600 }}>
                   {row.margin.projectedFinalMarginPct}%
