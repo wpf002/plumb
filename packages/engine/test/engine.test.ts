@@ -253,3 +253,94 @@ describe("retainage", () => {
     expect(r.releasingSoonCents).toBe(0);
   });
 });
+
+const isoDay = (n: number) => addDays(n).toISOString().slice(0, 10);
+
+describe("cashflow (detailed)", () => {
+  const events: CashEvent[] = [
+    { id: "o1", projectId: null, direction: "OUT", amountCents: 40_000_00, category: "PAYROLL", expectedDate: addDays(5), actualDate: null, status: "EXPECTED" },
+    { id: "o2", projectId: null, direction: "OUT", amountCents: 60_000_00, category: "VENDOR_BILL", expectedDate: addDays(10), actualDate: null, status: "EXPECTED" },
+    { id: "i1", projectId: null, direction: "IN", amountCents: 120_000_00, category: "PROGRESS_BILLING", expectedDate: addDays(20), actualDate: null, status: "EXPECTED" },
+  ];
+
+  it("covers the horizon and ends on the running balance", () => {
+    const r = computeCashFlow({ openingCashCents: 500_000_00, events, asOf, horizonDays: 60, safetyThresholdCents: 20_000_00, stressDelayDays: 30 });
+    expect(r.base.series.length).toBe(61); // day 0..60 inclusive
+    expect(r.base.series[r.base.series.length - 1].balanceCents).toBe(r.base.endingBalanceCents);
+    // 500 - 40 - 60 + 120 = 520k
+    expect(r.base.endingBalanceCents).toBe(520_000_00);
+  });
+
+  it("flags the first day the balance drops below the floor", () => {
+    const r = computeCashFlow({ openingCashCents: 50_000_00, events, asOf, horizonDays: 60, safetyThresholdCents: 20_000_00, stressDelayDays: 30 });
+    // 50 - 40 = 10k on day 5, first below the 20k floor
+    expect(r.base.firstBreachDate).toBe(isoDay(5));
+    expect(r.base.minBalanceCents).toBe(-50_000_00);
+    expect(r.base.minBalanceDate).toBe(isoDay(10));
+  });
+
+  it("does not breach when opening cash is comfortably above the floor", () => {
+    const r = computeCashFlow({ openingCashCents: 500_000_00, events, asOf, horizonDays: 60, safetyThresholdCents: 20_000_00, stressDelayDays: 30 });
+    expect(r.base.firstBreachDate).toBeNull();
+    expect(r.stress.firstBreachDate).toBeNull();
+  });
+
+  it("stress delays receivables but not payables", () => {
+    const r = computeCashFlow({ openingCashCents: 50_000_00, events, asOf, horizonDays: 40, safetyThresholdCents: 20_000_00, stressDelayDays: 30 });
+    // base gets +120k on day 20; stress pushes it to day 50 (outside a 40d horizon)
+    expect(r.base.endingBalanceCents).toBe(70_000_00); // 50-40-60+120
+    expect(r.stress.endingBalanceCents).toBe(-50_000_00); // inflow never lands in-horizon
+    expect(r.stress.minBalanceCents).toBeLessThanOrEqual(r.base.minBalanceCents);
+  });
+});
+
+describe("health (detailed)", () => {
+  const cleanCash = () => computeCashFlow({ openingCashCents: 500_000_00, events: [], asOf, horizonDays: 90, safetyThresholdCents: 20_000_00, stressDelayDays: 30 });
+
+  const marginAt = (pct: number, atRisk: boolean): any => ({
+    projectId: "p", projectName: "Job A", adjustedContractCents: 0, budgetCostCents: 0,
+    costToDateCents: 0, projectedFinalCostCents: 0, percentComplete: 0.5,
+    originalMarginPct: pct, projectedFinalMarginPct: pct, marginErosionPct: 0,
+    costOverrunCents: 0, byCategoryCents: {}, variances: [], overBudgetCategories: [], atRisk,
+  });
+
+  it("scores a clean business high with no alerts", () => {
+    const h = computeHealth({ cash: cleanCash(), margins: [marginAt(14, false)], portfolioTargetMarginPct: 14, peakUtilization90d: 0.75, arPastDueCents: 0, arOutstandingCents: 100_000_00 });
+    expect(h.score).toBeGreaterThanOrEqual(90);
+    expect(h.alerts).toHaveLength(0);
+    expect(h.components.find((c) => c.key === "capacity")!.score).toBe(90); // 60 + .75*40
+  });
+
+  it("zeroes cash and alerts when the worst case breaches the floor", () => {
+    const cash = computeCashFlow({
+      openingCashCents: 30_000_00,
+      events: [{ id: "i", projectId: null, direction: "IN", amountCents: 100_000_00, category: "PROGRESS_BILLING", expectedDate: addDays(10), actualDate: null, status: "EXPECTED" },
+               { id: "o", projectId: null, direction: "OUT", amountCents: 20_000_00, category: "PAYROLL", expectedDate: addDays(2), actualDate: null, status: "EXPECTED" }],
+      asOf, horizonDays: 90, safetyThresholdCents: 20_000_00, stressDelayDays: 30,
+    });
+    const h = computeHealth({ cash, margins: [marginAt(14, false)], portfolioTargetMarginPct: 14, peakUtilization90d: 0.75, arPastDueCents: 0, arOutstandingCents: 0 });
+    expect(cash.stress.firstBreachDate).not.toBeNull();
+    expect(h.alerts.some((a) => /cash/i.test(a))).toBe(true);
+  });
+
+  it("names an at-risk project and drops the margin score", () => {
+    const h = computeHealth({ cash: cleanCash(), margins: [marginAt(4, true)], portfolioTargetMarginPct: 14, peakUtilization90d: 0.75, arPastDueCents: 0, arOutstandingCents: 0 });
+    expect(h.alerts.some((a) => a.includes("Job A"))).toBe(true);
+    expect(h.components.find((c) => c.key === "margin")!.score).toBeLessThan(60); // 100 + (4-14)*6 = 40
+  });
+
+  it("alerts on an overbooked month and on idle crew", () => {
+    const over = computeHealth({ cash: cleanCash(), margins: [marginAt(14, false)], portfolioTargetMarginPct: 14, peakUtilization90d: 1.2, arPastDueCents: 0, arOutstandingCents: 0 });
+    expect(over.alerts.some((a) => /overbooked|100%/i.test(a))).toBe(true);
+    expect(over.components.find((c) => c.key === "capacity")!.score).toBe(76); // 100 - .2*120
+
+    const idle = computeHealth({ cash: cleanCash(), margins: [marginAt(14, false)], portfolioTargetMarginPct: 14, peakUtilization90d: 0.4, arPastDueCents: 0, arOutstandingCents: 0 });
+    expect(idle.alerts.some((a) => /under-booked|bid more/i.test(a))).toBe(true);
+  });
+
+  it("alerts when too much A/R is past due", () => {
+    const h = computeHealth({ cash: cleanCash(), margins: [marginAt(14, false)], portfolioTargetMarginPct: 14, peakUtilization90d: 0.75, arPastDueCents: 40_000_00, arOutstandingCents: 100_000_00 });
+    expect(h.alerts.some((a) => /past due/i.test(a))).toBe(true);
+    expect(h.components.find((c) => c.key === "receivables")!.score).toBe(52); // 100 - .4*120
+  });
+});
