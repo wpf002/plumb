@@ -150,9 +150,22 @@ h3 {
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
   padding: 8px 12px;
   border-radius: 8px;
   transition: color 0.15s, background 0.15s;
+}
+@media (max-width: 1000px) {
+  .topbar-tag {
+    display: none;
+  }
+  .topbar-inner {
+    overflow-x: auto;
+    gap: 2px;
+  }
+  .navlink {
+    padding: 8px 10px;
+  }
 }
 .navlink:hover {
   color: #fff;
