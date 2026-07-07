@@ -2,6 +2,7 @@ import cron from "node-cron";
 import type { FastifyBaseLogger } from "fastify";
 import { prisma } from "@plumb/db";
 import { buildDigest } from "@plumb/engine";
+import { syncCompany } from "@plumb/qbo";
 import { loadSnapshot } from "./snapshot.js";
 import { getNotifier, renderDigestText, renderDigestHtml } from "./notify.js";
 
@@ -47,5 +48,21 @@ export function startScheduler(log: FastifyBaseLogger): void {
     }
   });
 
-  log.info({ schedule }, "scheduler on: weekly digest");
+  // Nightly QBO sync for every connected company. Incremental since 25h ago so a
+  // missed night still overlaps. Companies without a connection are skipped.
+  const syncSchedule = process.env.QBO_SYNC_CRON ?? "0 3 * * *"; // 03:00 daily
+  cron.schedule(syncSchedule, async () => {
+    const conns = await prisma.qboConnection.findMany({ select: { companyId: true } });
+    const since = new Date(Date.now() - 25 * 60 * 60 * 1000);
+    for (const { companyId } of conns) {
+      try {
+        const counts = await syncCompany(companyId, { since });
+        log.info({ companyId, ...counts }, "qbo sync complete");
+      } catch (err) {
+        log.error({ err, companyId }, "qbo sync failed");
+      }
+    }
+  });
+
+  log.info({ schedule, syncSchedule }, "scheduler on: weekly digest + nightly QBO sync");
 }

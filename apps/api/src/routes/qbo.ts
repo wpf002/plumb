@@ -1,6 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
-import { authorizeUrl, exchangeCode, syncCompany } from "@plumb/qbo";
+import { authorizeUrl, exchangeCode, syncCompany, createInvoice } from "@plumb/qbo";
+
+const invoiceBodySchema = {
+  type: "object",
+  required: ["projectId", "amountCents"],
+  additionalProperties: false,
+  properties: {
+    projectId: { type: "string", minLength: 1 },
+    amountCents: { type: "integer", minimum: 1 },
+    memo: { type: "string", maxLength: 500 },
+  },
+} as const;
 
 export function registerQboRoutes(app: FastifyInstance) {
   // Step 1: owner clicks this to grant access. state carries the companyId.
@@ -47,4 +58,15 @@ export function registerQboRoutes(app: FastifyInstance) {
     const since = req.body?.since ? new Date(req.body.since) : undefined;
     return syncCompany(req.params.companyId, { since, full: req.body?.full });
   });
+
+  // Write-back: create an invoice in QuickBooks (closes the two-way loop).
+  // Dry-run and non-mutating when no QBO connection exists.
+  app.post<{
+    Params: { companyId: string };
+    Body: { projectId: string; amountCents: number; memo?: string };
+  }>(
+    "/companies/:companyId/qbo/invoice",
+    { schema: { body: invoiceBodySchema } },
+    async (req) => createInvoice(req.params.companyId, req.body)
+  );
 }

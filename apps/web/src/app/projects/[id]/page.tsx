@@ -15,6 +15,12 @@ export default function ProjectDetail() {
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Invoice write-back
+  const [billAmount, setBillAmount] = useState("");
+  const [billMemo, setBillMemo] = useState("");
+  const [billing, setBilling] = useState(false);
+  const [invoice, setInvoice] = useState<any>(null);
+
   async function load() {
     setError(null);
     try {
@@ -35,6 +41,31 @@ export default function ProjectDetail() {
     if (COMPANY && id) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  async function bill() {
+    setBilling(true);
+    setInvoice(null);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/companies/${COMPANY}/qbo/invoice`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: id,
+          amountCents: Math.round((Number(billAmount) || 0) * 100),
+          memo: billMemo || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.message ?? `Failed (${res.status})`);
+      setInvoice(json);
+      if (json.live) await load();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setBilling(false);
+    }
+  }
 
   async function save() {
     setSaving(true);
@@ -198,6 +229,66 @@ export default function ProjectDetail() {
           {msg && <span className="pos" style={{ fontSize: 13.5 }}>{msg}</span>}
           {error && <span className="neg" style={{ fontSize: 13.5 }}>{error}</span>}
         </div>
+      </section>
+
+      <section className="card">
+        <div className="card-title">Bill a milestone → QuickBooks</div>
+        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
+          Create a progress-billing invoice in QuickBooks and roll billed-to-date forward.
+        </p>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div>
+            <label className="label">Amount ($)</label>
+            <input
+              className="input num"
+              style={{ maxWidth: 160 }}
+              value={billAmount}
+              onChange={(e) => setBillAmount(e.target.value)}
+              inputMode="decimal"
+              placeholder="75000"
+            />
+          </div>
+          <div style={{ flex: 1, minWidth: 200 }}>
+            <label className="label">Memo</label>
+            <input
+              className="input"
+              value={billMemo}
+              onChange={(e) => setBillMemo(e.target.value)}
+              placeholder="Rough-in milestone 3"
+            />
+          </div>
+          <button className="btn btn-primary" onClick={bill} disabled={billing || !billAmount}>
+            {billing ? "Creating…" : "Create invoice"}
+          </button>
+        </div>
+
+        {invoice && (
+          <div className={`alert ${invoice.live ? "good" : "warning"}`} style={{ marginTop: 16 }}>
+            <span className="alert-dot" style={{ color: invoice.live ? C.green : C.amber }}>
+              ●
+            </span>
+            <div style={{ width: "100%" }}>
+              <div className="alert-title">
+                {invoice.live ? `Invoice ${invoice.qboInvoiceId} created in QuickBooks` : "Dry run — no QuickBooks connection"}
+              </div>
+              <div className="alert-detail">{invoice.note}</div>
+              <pre
+                style={{
+                  marginTop: 10,
+                  marginBottom: 0,
+                  fontSize: 12,
+                  background: "var(--surface)",
+                  border: "1px solid var(--line)",
+                  borderRadius: 8,
+                  padding: 12,
+                  overflowX: "auto",
+                }}
+              >
+                {JSON.stringify(invoice.payload, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
       </section>
     </main>
   );
