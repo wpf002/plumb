@@ -6,6 +6,8 @@ import { registerBidRoutes } from "./routes/bid.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerWipRoutes } from "./routes/wip.js";
 import { registerQboRoutes } from "./routes/qbo.js";
+import { registerDigestRoutes } from "./routes/digest.js";
+import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
@@ -43,14 +45,19 @@ export function buildServer() {
   registerBidRoutes(app);
   registerWipRoutes(app);
   registerQboRoutes(app);
+  registerDigestRoutes(app);
 
   return app;
 }
 
 const port = Number(process.env.PORT ?? 4300);
-buildServer()
+const app = buildServer();
+app
   .listen({ port, host: "0.0.0.0" })
-  .then(() => console.log(`plumb-api on :${port}`))
+  .then(() => {
+    console.log(`plumb-api on :${port}`);
+    startScheduler(app.log);
+  })
   .catch((err) => {
     console.error(err);
     process.exit(1);

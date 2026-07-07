@@ -3,6 +3,8 @@ import { computeMargin } from "../src/margin.js";
 import { computeCashFlow } from "../src/cashflow.js";
 import { computeWip } from "../src/wip.js";
 import { evaluateBid } from "../src/bid.js";
+import { computeHealth } from "../src/health.js";
+import { buildDigest } from "../src/digest.js";
 import type { Project, CostEntry, CashEvent, BudgetLine } from "@plumb/shared";
 
 const asOf = new Date("2026-07-06T00:00:00Z");
@@ -150,5 +152,59 @@ describe("bid", () => {
     );
     expect(r.recommendation).toBe("BID_AGGRESSIVE");
     expect(r.fillsUnderbookedMonths).toBe(true);
+  });
+});
+
+describe("digest", () => {
+  const breachEvents: CashEvent[] = [
+    { id: "e1", projectId: null, direction: "OUT", amountCents: 40_000_00, category: "PAYROLL", expectedDate: addDays(5), actualDate: null, status: "EXPECTED" },
+    { id: "e2", projectId: null, direction: "IN", amountCents: 120_000_00, category: "PROGRESS_BILLING", expectedDate: addDays(40), actualDate: null, status: "EXPECTED" },
+  ];
+  const cashInput = {
+    events: breachEvents,
+    asOf,
+    horizonDays: 60,
+    safetyThresholdCents: 20_000_00,
+    stressDelayDays: 30,
+  };
+
+  it("leads with the cash breach as a critical item", () => {
+    const cash = computeCashFlow({ ...cashInput, openingCashCents: 45_000_00 });
+    const health = computeHealth({
+      cash, margins: [], portfolioTargetMarginPct: 14,
+      peakUtilization90d: 0.7, arPastDueCents: 0, arOutstandingCents: 0,
+    });
+    const wip = computeWip([]);
+    const d = buildDigest({ asOf, companyName: "Foley", health, cash, wip });
+    expect(cash.base.firstBreachDate).not.toBeNull();
+    expect(d.items[0].severity).toBe("critical");
+    expect(d.headline).toContain("Cash dips below");
+  });
+
+  it("nudges to invoice an under-billed job", () => {
+    const cash = computeCashFlow({ ...cashInput, openingCashCents: 500_000_00 });
+    const health = computeHealth({
+      cash, margins: [], portfolioTargetMarginPct: 14,
+      peakUtilization90d: 0.7, arPastDueCents: 0, arOutstandingCents: 0,
+    });
+    const wip = computeWip([
+      { project: { ...project, billedToDateCents: 300_000_00 }, costs: [], changeOrders: [] },
+    ]);
+    const d = buildDigest({
+      asOf, companyName: "Foley", health, cash, wip, projectNames: { p1: "Field House" },
+    });
+    expect(d.items.some((i) => i.title.startsWith("Bill Field House"))).toBe(true);
+  });
+
+  it("reports a healthy week when nothing needs attention", () => {
+    const cash = computeCashFlow({ ...cashInput, openingCashCents: 500_000_00 });
+    const health = computeHealth({
+      cash, margins: [], portfolioTargetMarginPct: 14,
+      peakUtilization90d: 0.7, arPastDueCents: 0, arOutstandingCents: 0,
+    });
+    const wip = computeWip([]);
+    const d = buildDigest({ asOf, companyName: "Foley", health, cash, wip });
+    expect(d.items[0].severity).toBe("good");
+    expect(d.headline).toContain("Healthy week");
   });
 });

@@ -19,6 +19,9 @@ export function Nav() {
       <Link href="/bid" style={{ color: colors.muted, textDecoration: "none" }}>
         Bid decision
       </Link>
+      <Link href="/digest" style={{ color: colors.muted, textDecoration: "none" }}>
+        Weekly digest
+      </Link>
     </nav>
   );
 }

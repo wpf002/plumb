@@ -14,10 +14,12 @@
     "@plumb/engine": "workspace:*",
     "@plumb/shared": "workspace:*",
     "fastify": "^5.1.0",
-    "@plumb/qbo": "workspace:*"
+    "@plumb/qbo": "workspace:*",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "typescript": "^5.6.0",
+    "@types/node-cron": "^3.0.11"
   }
 }
