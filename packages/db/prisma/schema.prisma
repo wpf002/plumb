@@ -16,6 +16,7 @@ model User {
   passwordHash String
   memberships  Membership[]
   sessions     Session[]
+  resetTokens  PasswordResetToken[]
   createdAt    DateTime     @default(now())
 }
 
@@ -47,6 +48,32 @@ model Session {
   @@index([userId])
 }
 
+model Invitation {
+  id          String     @id @default(cuid())
+  companyId   String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  email       String
+  role        MemberRole @default(MEMBER)
+  token       String     @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@index([companyId])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 model Company {
   id                    String    @id @default(cuid())
   name                  String
@@ -62,6 +89,7 @@ model Company {
   syncLogs              SyncLog[]
   categoryMappings      CategoryMapping[]
   memberships           Membership[]
+  invitations           Invitation[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }

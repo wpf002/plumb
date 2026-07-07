@@ -117,6 +117,60 @@ export function registerAuthRoutes(app: FastifyInstance) {
     return { user, companies, activeCompanyId };
   });
 
+  // Preview an invitation (public) so the accept page can render.
+  app.get<{ Params: { token: string } }>("/auth/invite/:token", async (req, reply) => {
+    const invite = await prisma.invitation.findUnique({
+      where: { token: req.params.token },
+      include: { company: { select: { name: true } } },
+    });
+    if (!invite || invite.acceptedAt || invite.expiresAt < new Date()) {
+      return reply.code(404).send({ error: "Not Found", message: "This invitation is invalid or expired." });
+    }
+    const existing = await prisma.user.findUnique({ where: { email: invite.email } });
+    return { email: invite.email, companyName: invite.company.name, role: invite.role, needsPassword: !existing };
+  });
+
+  // Accept an invitation (public): join the company, creating an account if new.
+  app.post<{ Body: { token: string; name?: string; password?: string } }>(
+    "/auth/accept-invite",
+    {
+      schema: {
+        body: {
+          type: "object",
+          required: ["token"],
+          additionalProperties: false,
+          properties: { token: { type: "string" }, name: { type: "string", maxLength: 120 }, password: { type: "string", maxLength: 200 } },
+        },
+      },
+    },
+    async (req, reply) => {
+      const invite = await prisma.invitation.findUnique({ where: { token: req.body.token } });
+      if (!invite || invite.acceptedAt || invite.expiresAt < new Date()) {
+        return reply.code(400).send({ error: "Bad Request", message: "This invitation is invalid or expired." });
+      }
+      let user = await prisma.user.findUnique({ where: { email: invite.email } });
+      if (!user) {
+        if (!req.body.password || req.body.password.length < 8) {
+          return reply.code(400).send({ error: "Bad Request", message: "Choose a password (8+ characters) to accept." });
+        }
+        user = await prisma.user.create({
+          data: { email: invite.email, name: req.body.name ?? null, passwordHash: await hashPassword(req.body.password) },
+        });
+      }
+      await prisma.membership.upsert({
+        where: { userId_companyId: { userId: user.id, companyId: invite.companyId } },
+        update: {},
+        create: { userId: user.id, companyId: invite.companyId, role: invite.role },
+      });
+      await prisma.invitation.update({ where: { id: invite.id }, data: { acceptedAt: new Date() } });
+
+      const companies = await companiesFor(user.id);
+      const session = await createSession(user.id);
+      await setAuthCookies(reply, session.id, session.expiresAt, invite.companyId);
+      return { user: { id: user.id, email: user.email, name: user.name }, companies, activeCompanyId: invite.companyId };
+    }
+  );
+
   // Switch the active company (must be a member).
   app.post<{ Body: { companyId: string } }>(
     "/auth/active-company",

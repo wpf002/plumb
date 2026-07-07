@@ -17,6 +17,55 @@ export default function Settings() {
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(true);
+  const [myUserId, setMyUserId] = useState("");
+  const [team, setTeam] = useState<any>(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("MEMBER");
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+
+  async function loadTeam() {
+    const res = await apiFetch(`/companies/${getCompanyId()}/team`, { cache: "no-store" });
+    if (res.ok) setTeam(await res.json());
+  }
+
+  async function invite() {
+    setBusy("invite");
+    setError(null);
+    setInviteLink(null);
+    try {
+      const res = await apiFetch(`/companies/${getCompanyId()}/team/invite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.message ?? `Failed (${res.status})`);
+      setInviteEmail("");
+      setInviteLink(j.acceptUrl);
+      await loadTeam();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function removeMember(membershipId: string) {
+    setBusy("remove");
+    setError(null);
+    try {
+      const res = await apiFetch(`/companies/${getCompanyId()}/team/${membershipId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.message ?? `Failed (${res.status})`);
+      }
+      await loadTeam();
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function load() {
     const meRes = await apiFetch("/auth/me");
@@ -24,7 +73,9 @@ export default function Settings() {
       const me = await meRes.json();
       const active = me.companies.find((c: any) => c.id === me.activeCompanyId);
       setIsOwner(active?.role === "OWNER");
+      setMyUserId(me.user.id);
     }
+    await loadTeam();
     const res = await apiFetch(`/companies/${getCompanyId()}/settings`, { cache: "no-store" });
     if (!res.ok) {
       setError(`Load failed (${res.status})`);
@@ -226,6 +277,75 @@ export default function Settings() {
             {busy === "settings" ? "Saving…" : "Save settings"}
           </button>
         </div>
+      </section>
+
+      {/* Team */}
+      <section className="card">
+        <div className="card-title">Team</div>
+        {team && (
+          <table className="table" style={{ marginBottom: team.invites.length || isOwner ? 18 : 0 }}>
+            <tbody>
+              {team.members.map((m: any) => (
+                <tr key={m.membershipId}>
+                  <td className="cell-name">
+                    {m.name ?? m.email}
+                    {m.userId === myUserId && <span style={{ color: "var(--faint)", fontWeight: 400 }}> (you)</span>}
+                  </td>
+                  <td style={{ color: "var(--muted)" }}>{m.email}</td>
+                  <td><span className={`badge ${m.role === "OWNER" ? "info" : "neutral"}`}>{m.role}</span></td>
+                  <td className="num">
+                    {isOwner && m.userId !== myUserId && (
+                      <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 13 }} disabled={busy !== null} onClick={() => removeMember(m.membershipId)}>
+                        Remove
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {team.invites.map((i: any, idx: number) => (
+                <tr key={`inv-${idx}`}>
+                  <td className="cell-name" style={{ color: "var(--muted)" }}>{i.email}</td>
+                  <td style={{ color: "var(--faint)" }}>invited</td>
+                  <td><span className="badge warn">Pending {i.role}</span></td>
+                  <td></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {isOwner ? (
+          <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <label className="label">Invite by email</label>
+                <input className="input" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="teammate@company.com" type="email" />
+              </div>
+              <div>
+                <label className="label">Role</label>
+                <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ minWidth: 120 }}>
+                  <option value="MEMBER">Member</option>
+                  <option value="OWNER">Owner</option>
+                </select>
+              </div>
+              <button className="btn btn-primary" disabled={busy !== null || !inviteEmail} onClick={invite}>
+                {busy === "invite" ? "Inviting…" : "Send invite"}
+              </button>
+            </div>
+            {inviteLink && (
+              <div className="alert good" style={{ marginTop: 14 }}>
+                <span className="alert-dot" style={{ color: C.green }}>●</span>
+                <div style={{ width: "100%" }}>
+                  <div className="alert-title">Invitation created</div>
+                  <div className="alert-detail">No email provider configured — share this link so they can join:</div>
+                  <code style={{ fontSize: 12, wordBreak: "break-all" }}>{inviteLink}</code>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p style={{ color: "var(--faint)", fontSize: 13.5, margin: 0 }}>Only owners can invite or remove teammates.</p>
+        )}
       </section>
     </main>
   );
