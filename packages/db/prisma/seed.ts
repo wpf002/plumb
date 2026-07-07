@@ -1,8 +1,15 @@
+import { randomBytes, scryptSync } from "node:crypto";
 import { prisma } from "../src/index.js";
 
 // Reference profile: small commercial electrical sub. ~5 crew, ~$6M/yr.
 // Money in cents. Dates relative to a fixed "as of" for reproducible demos.
 const C = (dollars: number) => BigInt(Math.round(dollars * 100));
+
+// scrypt "salt:key" hex — same format the API's verifyPassword expects.
+const hashPw = (pw: string) => {
+  const salt = randomBytes(16).toString("hex");
+  return `${salt}:${scryptSync(pw, salt, 64).toString("hex")}`;
+};
 const day = (offset: number) => {
   const d = new Date("2026-07-06T00:00:00Z");
   d.setUTCDate(d.getUTCDate() + offset);
@@ -10,6 +17,10 @@ const day = (offset: number) => {
 };
 
 async function main() {
+  await prisma.session.deleteMany();
+  await prisma.membership.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.categoryMapping.deleteMany();
   await prisma.syncLog.deleteMany();
   await prisma.qboConnection.deleteMany();
   await prisma.cashSnapshot.deleteMany();
@@ -32,6 +43,12 @@ async function main() {
       monthlyLaborHours: 5 * 160,
     },
   });
+
+  // Demo owner login: owner@foley.test / plumb1234
+  const owner = await prisma.user.create({
+    data: { email: "owner@foley.test", name: "Ray Foley", passwordHash: hashPw("plumb1234") },
+  });
+  await prisma.membership.create({ data: { userId: owner.id, companyId: co.id, role: "OWNER" } });
 
   // Opening cash from the bank (drives forecasts instead of a query param).
   await prisma.cashSnapshot.create({
@@ -148,7 +165,7 @@ async function main() {
   });
 
   console.log(`Seeded company ${co.id} (Foley Electric) — 2 active projects.`);
-  console.log(`Set NEXT_PUBLIC_COMPANY_ID=${co.id}`);
+  console.log(`Demo login: owner@foley.test / plumb1234`);
 }
 
 main()

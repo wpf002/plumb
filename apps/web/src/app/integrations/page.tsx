@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { API, COMPANY, usd, C } from "../ui";
+import { apiFetch, getCompanyId, usd, C } from "../ui";
 
 type Result = { live: boolean; note: string; rows: { left: string; mid?: string; right: string }[]; summary: string };
 
@@ -78,13 +78,13 @@ function Panel({
 }
 
 async function post(path: string) {
-  const res = await fetch(`${API}/companies/${COMPANY}${path}`, { method: "POST" });
+  const res = await apiFetch(`/companies/${getCompanyId()}${path}`, { method: "POST" });
   const j = await res.json();
   if (!res.ok) throw new Error(j.message ?? `Failed (${res.status})`);
   return j;
 }
 async function get(path: string) {
-  const res = await fetch(`${API}/companies/${COMPANY}${path}`, { cache: "no-store" });
+  const res = await apiFetch(`/companies/${getCompanyId()}${path}`, { cache: "no-store" });
   const j = await res.json();
   if (!res.ok) throw new Error(j.message ?? `Failed (${res.status})`);
   return j;

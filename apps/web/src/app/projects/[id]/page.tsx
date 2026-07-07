@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { API, COMPANY, usd, usdExact, C } from "../../ui";
+import { apiFetch, getCompanyId, usd, usdExact, C } from "../../ui";
 
 const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"];
 
@@ -30,7 +30,7 @@ export default function ProjectDetail() {
   async function load() {
     setError(null);
     try {
-      const res = await fetch(`${API}/companies/${COMPANY}/projects/${id}`, { cache: "no-store" });
+      const res = await apiFetch(`/companies/${getCompanyId()}/projects/${id}`, { cache: "no-store" });
       if (!res.ok) throw new Error(`Load failed (${res.status})`);
       const json = await res.json();
       setData(json);
@@ -44,7 +44,7 @@ export default function ProjectDetail() {
   }
 
   useEffect(() => {
-    if (COMPANY && id) load();
+    if (getCompanyId() && id) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -52,7 +52,7 @@ export default function ProjectDetail() {
     setCoBusy(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/companies/${COMPANY}/projects/${id}/change-orders`, {
+      const res = await apiFetch(`/companies/${getCompanyId()}/projects/${id}/change-orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,7 +78,7 @@ export default function ProjectDetail() {
     setCoBusy(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/companies/${COMPANY}/change-orders/${coId}/${action}`, { method: "POST" });
+      const res = await apiFetch(`/companies/${getCompanyId()}/change-orders/${coId}/${action}`, { method: "POST" });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.message ?? `Failed (${res.status})`);
@@ -96,7 +96,7 @@ export default function ProjectDetail() {
     setInvoice(null);
     setError(null);
     try {
-      const res = await fetch(`${API}/companies/${COMPANY}/qbo/invoice`, {
+      const res = await apiFetch(`/companies/${getCompanyId()}/qbo/invoice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -127,7 +127,7 @@ export default function ProjectDetail() {
           budgetedCostCents: Math.round((Number(budgets[category]) || 0) * 100),
         })).filter((b) => b.budgetedCostCents > 0),
       };
-      const res = await fetch(`${API}/companies/${COMPANY}/projects/${id}/budgets`, {
+      const res = await apiFetch(`/companies/${getCompanyId()}/projects/${id}/budgets`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

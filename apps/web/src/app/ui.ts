@@ -1,5 +1,4 @@
 export const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4300";
-export const COMPANY = process.env.NEXT_PUBLIC_COMPANY_ID ?? "";
 
 export const usd = (cents: number) =>
   (cents / 100).toLocaleString("en-US", {
@@ -10,6 +9,18 @@ export const usd = (cents: number) =>
 
 export const usdExact = (cents: number) =>
   (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
+
+/** Active company id from the (non-httpOnly) session cookie. Client-side only. */
+export function getCompanyId(): string {
+  if (typeof document === "undefined") return "";
+  const m = document.cookie.match(/(?:^|;\s*)plumb_company=([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : "";
+}
+
+/** fetch to the API that always sends the session cookie. */
+export function apiFetch(path: string, init?: RequestInit) {
+  return fetch(`${API}${path}`, { ...init, credentials: "include" });
+}
 
 /** Palette values needed in JS (SVG ring, inline bar fills). Mirrors globals.css. */
 export const C = {

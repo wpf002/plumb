@@ -7,6 +7,46 @@ datasource db {
   provider = "postgresql"
 }
 
+// --- Auth & multi-company ---------------------------------------------------
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  passwordHash String
+  memberships  Membership[]
+  sessions     Session[]
+  createdAt    DateTime     @default(now())
+}
+
+enum MemberRole {
+  OWNER
+  MEMBER
+}
+
+model Membership {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId String
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      MemberRole @default(OWNER)
+  createdAt DateTime   @default(now())
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 model Company {
   id                    String    @id @default(cuid())
   name                  String
@@ -21,6 +61,7 @@ model Company {
   qbo                   QboConnection?
   syncLogs              SyncLog[]
   categoryMappings      CategoryMapping[]
+  memberships           Membership[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }

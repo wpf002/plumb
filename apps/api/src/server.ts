@@ -1,5 +1,8 @@
 import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
+import cookie from "@fastify/cookie";
+import { registerAuthRoutes } from "./routes/auth.js";
+import { getSessionUser, isMember, SESSION_COOKIE } from "./auth.js";
 import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
 import { registerBidRoutes } from "./routes/bid.js";
@@ -14,7 +17,24 @@ import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
-  app.register(cors, { origin: true });
+  // Credentials so the browser sends the session cookie cross-port (same-site).
+  app.register(cors, { origin: true, credentials: true });
+  app.register(cookie);
+
+  // Auth gate: everything except /healthz, /auth/*, and the QBO OAuth callback
+  // requires a session; company-scoped routes additionally require membership.
+  app.addHook("preHandler", async (req, reply) => {
+    const path = req.url.split("?")[0];
+    if (path === "/healthz" || path.startsWith("/auth/") || path.startsWith("/qbo/callback")) return;
+
+    const user = await getSessionUser(req.cookies[SESSION_COOKIE]);
+    if (!user) return reply.code(401).send({ error: "Unauthorized", message: "Sign in required." });
+
+    const m = path.match(/^\/companies\/([^/]+)/);
+    if (m && !(await isMember(user.id, m[1]))) {
+      return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
+    }
+  });
 
   // Uniform error shape. Prisma's findUniqueOrThrow raises P2025 when a company
   // or record is missing — surface that as a clean 404 rather than a 500.
@@ -42,6 +62,7 @@ export function buildServer() {
 
   app.get("/healthz", async () => ({ ok: true }));
 
+  registerAuthRoutes(app);
   registerHealthRoutes(app);
   registerForecastRoutes(app);
   registerProjectRoutes(app);

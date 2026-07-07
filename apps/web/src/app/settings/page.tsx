@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API, COMPANY, usd, C } from "../ui";
+import { apiFetch, getCompanyId, usd, C } from "../ui";
 
 const sourceLabel: Record<string, string> = {
   MANUAL: "Entered manually",
@@ -18,7 +18,7 @@ export default function Settings() {
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
-    const res = await fetch(`${API}/companies/${COMPANY}/settings`, { cache: "no-store" });
+    const res = await apiFetch(`/companies/${getCompanyId()}/settings`, { cache: "no-store" });
     if (!res.ok) {
       setError(`Load failed (${res.status})`);
       return;
@@ -34,7 +34,7 @@ export default function Settings() {
   }
 
   useEffect(() => {
-    if (COMPANY) load();
+    if (getCompanyId()) load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -43,7 +43,7 @@ export default function Settings() {
     setMsg(null);
     setError(null);
     try {
-      const res = await fetch(`${API}/companies/${COMPANY}${path}`, {
+      const res = await apiFetch(`/companies/${getCompanyId()}${path}`, {
         method: body._method ?? "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body.payload),

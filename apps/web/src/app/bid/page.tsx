@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { API, COMPANY, usd, C } from "../ui";
+import { apiFetch, getCompanyId, usd, C } from "../ui";
 
 type MonthRow = { month: string; hours: string };
 
@@ -58,7 +58,7 @@ export default function BidPage() {
         targetMarginPct: Number(margin),
         laborHoursByMonth,
       };
-      const res = await fetch(`${API}/companies/${COMPANY}/bid`, {
+      const res = await apiFetch(`/companies/${getCompanyId()}/bid`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -83,14 +83,6 @@ export default function BidPage() {
           <p>Scored against your committed crew, worst-case cash, and recent margin trend.</p>
         </div>
       </div>
-
-      {!COMPANY && (
-        <div className="card">
-          <p>
-            Set <code>NEXT_PUBLIC_COMPANY_ID</code> and reload.
-          </p>
-        </div>
-      )}
 
       <section className="card">
         <div className="card-title">The job</div>

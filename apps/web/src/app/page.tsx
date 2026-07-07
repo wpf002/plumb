@@ -1,11 +1,7 @@
 import Link from "next/link";
-import { API, COMPANY, usd, usdExact, scoreColor, C } from "./ui";
-
-async function get(path: string) {
-  const res = await fetch(`${API}${path}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
-  return res.json();
-}
+import { redirect } from "next/navigation";
+import { usd, usdExact, scoreColor, C } from "./ui";
+import { apiGet, activeCompanyId } from "./server";
 
 function ScoreRing({ score }: { score: number }) {
   const r = 54;
@@ -44,26 +40,16 @@ const wipBadge: Record<string, string> = {
 };
 
 export default async function Dashboard() {
-  if (!COMPANY) {
-    return (
-      <main className="container">
-        <div className="card">
-          <h1>Setup</h1>
-          <p>
-            Set <code>NEXT_PUBLIC_COMPANY_ID</code> (printed by the seed script) and reload.
-          </p>
-        </div>
-      </main>
-    );
-  }
+  const companyId = activeCompanyId();
+  if (!companyId) redirect("/login");
 
   const [health, forecast, projects, wip, digest, retainage] = await Promise.all([
-    get(`/companies/${COMPANY}/health`),
-    get(`/companies/${COMPANY}/forecast?horizon=90`),
-    get(`/companies/${COMPANY}/projects`),
-    get(`/companies/${COMPANY}/wip`),
-    get(`/companies/${COMPANY}/digest`),
-    get(`/companies/${COMPANY}/retainage`),
+    apiGet(`/companies/${companyId}/health`),
+    apiGet(`/companies/${companyId}/forecast?horizon=90`),
+    apiGet(`/companies/${companyId}/projects`),
+    apiGet(`/companies/${companyId}/wip`),
+    apiGet(`/companies/${companyId}/digest`),
+    apiGet(`/companies/${companyId}/retainage`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");

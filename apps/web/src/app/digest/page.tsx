@@ -1,10 +1,6 @@
-import { API, COMPANY, scoreColor, C } from "../ui";
-
-async function get(path: string) {
-  const res = await fetch(`${API}${path}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
-  return res.json();
-}
+import { redirect } from "next/navigation";
+import { scoreColor, C } from "../ui";
+import { apiGet, activeCompanyId } from "../server";
 
 const dotColor: Record<string, string> = {
   critical: C.red,
@@ -13,19 +9,10 @@ const dotColor: Record<string, string> = {
 };
 
 export default async function DigestPreview() {
-  if (!COMPANY) {
-    return (
-      <main className="container">
-        <div className="card">
-          <p>
-            Set <code>NEXT_PUBLIC_COMPANY_ID</code> and reload.
-          </p>
-        </div>
-      </main>
-    );
-  }
+  const companyId = activeCompanyId();
+  if (!companyId) redirect("/login");
 
-  const { digest } = await get(`/companies/${COMPANY}/digest`);
+  const { digest } = await apiGet(`/companies/${companyId}/digest`);
 
   return (
     <main className="container" style={{ maxWidth: 760 }}>

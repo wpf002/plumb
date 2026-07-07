@@ -16,7 +16,8 @@
     "@plumb/shared": "workspace:*",
     "fastify": "^5.1.0",
     "@plumb/qbo": "workspace:*",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "@fastify/cookie": "^10.0.0"
   },
   "devDependencies": {
     "tsx": "^4.19.0",
