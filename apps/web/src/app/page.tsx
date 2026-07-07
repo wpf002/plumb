@@ -57,12 +57,13 @@ export default async function Dashboard() {
     );
   }
 
-  const [health, forecast, projects, wip, digest] = await Promise.all([
+  const [health, forecast, projects, wip, digest, retainage] = await Promise.all([
     get(`/companies/${COMPANY}/health`),
     get(`/companies/${COMPANY}/forecast?horizon=90`),
     get(`/companies/${COMPANY}/projects`),
     get(`/companies/${COMPANY}/wip`),
     get(`/companies/${COMPANY}/digest`),
+    get(`/companies/${COMPANY}/retainage`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
@@ -246,6 +247,50 @@ export default async function Dashboard() {
                 </td>
                 <td>
                   <span className={`badge ${wipBadge[r.state]}`}>{r.state.replace("_", " ")}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Retainage */}
+      <section className="card">
+        <div className="card-title">Retainage — cash held back</div>
+        <div className="stats" style={{ marginBottom: 18 }}>
+          <div className="stat">
+            <div className="stat-label">Total held</div>
+            <div className="stat-value num">{usd(retainage.totalHeldCents)}</div>
+            <div className="stat-sub">earned, not yet collectible</div>
+          </div>
+          <div className="stat">
+            <div className="stat-label">Releasing within 90 days</div>
+            <div className="stat-value num" style={{ color: C.green }}>
+              {usd(retainage.releasingSoonCents)}
+            </div>
+            <div className="stat-sub">coming back into cash</div>
+          </div>
+        </div>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th className="num">Rate</th>
+              <th className="num">Held</th>
+              <th>Projected release</th>
+            </tr>
+          </thead>
+          <tbody>
+            {retainage.rows.map((r: any) => (
+              <tr key={r.projectId}>
+                <td className="cell-name">{r.projectName}</td>
+                <td className="num">{r.retainagePct}%</td>
+                <td className="num">{usdExact(r.retainageHeldCents)}</td>
+                <td>
+                  {r.projectedReleaseDate}{" "}
+                  <span className={`badge ${r.releasesWithinHorizon ? "good" : "neutral"}`}>
+                    {r.releasesWithinHorizon ? "within 90d" : "later"}
+                  </span>
                 </td>
               </tr>
             ))}

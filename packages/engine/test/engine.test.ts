@@ -5,6 +5,7 @@ import { computeWip } from "../src/wip.js";
 import { evaluateBid } from "../src/bid.js";
 import { computeHealth } from "../src/health.js";
 import { buildDigest } from "../src/digest.js";
+import { computeRetainage } from "../src/retainage.js";
 import type { Project, CostEntry, CashEvent, BudgetLine } from "@plumb/shared";
 
 const asOf = new Date("2026-07-06T00:00:00Z");
@@ -206,5 +207,49 @@ describe("digest", () => {
     const d = buildDigest({ asOf, companyName: "Foley", health, cash, wip });
     expect(d.items[0].severity).toBe("good");
     expect(d.headline).toContain("Healthy week");
+  });
+});
+
+describe("retainage", () => {
+  it("computes cash held and projects the release date", () => {
+    const r = computeRetainage(
+      [
+        {
+          projectId: "p1",
+          projectName: "Field House",
+          retainagePct: 10,
+          billedToDateCents: 480_000_00,
+          endDate: addDays(20),
+          netDays: 30,
+        },
+      ],
+      asOf,
+      90
+    );
+    // 10% of 480k billed = 48k held
+    expect(r.rows[0].retainageHeldCents).toBe(48_000_00);
+    expect(r.totalHeldCents).toBe(48_000_00);
+    // ends in 20 days + 30 net = 50 days out, within a 90-day horizon
+    expect(r.rows[0].releasesWithinHorizon).toBe(true);
+    expect(r.releasingSoonCents).toBe(48_000_00);
+  });
+
+  it("excludes retainage releasing beyond the horizon from releasing-soon", () => {
+    const r = computeRetainage(
+      [
+        {
+          projectId: "p2",
+          projectName: "Tower",
+          retainagePct: 5,
+          billedToDateCents: 200_000_00,
+          endDate: addDays(120),
+          netDays: 30,
+        },
+      ],
+      asOf,
+      90
+    );
+    expect(r.totalHeldCents).toBe(10_000_00);
+    expect(r.releasingSoonCents).toBe(0);
   });
 });

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
-import { computeMargin } from "@plumb/engine";
+import { computeMargin, computeRetainage } from "@plumb/engine";
 import {
   n,
   toEngineProject,
@@ -55,6 +55,28 @@ export function registerProjectRoutes(app: FastifyInstance) {
         );
         return { project: { id: p.id, name: p.name, client: p.client }, margin };
       });
+    }
+  );
+
+  // Retainage held across active jobs and when it's projected to release —
+  // how much earned cash is tied up by hold-backs.
+  app.get<{ Params: { companyId: string } }>(
+    "/companies/:companyId/retainage",
+    async (req) => {
+      const projects = await prisma.project.findMany({
+        where: { companyId: req.params.companyId, status: { in: ["ACTIVE", "AWARDED"] } },
+      });
+      return computeRetainage(
+        projects.map((p) => ({
+          projectId: p.id,
+          projectName: p.name,
+          retainagePct: p.retainagePct,
+          billedToDateCents: n(p.billedToDate),
+          endDate: p.endDate,
+          netDays: p.netDays,
+        })),
+        new Date()
+      );
     }
   );
 

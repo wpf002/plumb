@@ -4,3 +4,4 @@ export * from "./wip.js";
 export * from "./bid.js";
 export * from "./health.js";
 export * from "./digest.js";
+export * from "./retainage.js";
