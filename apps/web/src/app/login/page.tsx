@@ -42,9 +42,11 @@ export default function Login() {
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <div style={{ textAlign: "center", margin: "20px 0 24px" }}>
-        <h1 style={{ marginBottom: 4 }}>{mode === "login" ? "Sign in to Plumb" : "Create your account"}</h1>
+        <h1 style={{ marginBottom: 4 }}>{mode === "login" ? "Sign In to Plumb" : "Create Your Account"}</h1>
         <p style={{ color: "var(--muted)", marginTop: 0, fontSize: 14 }}>
-          {mode === "login" ? "Financial command center for subcontractors." : "Start with your company and one login."}
+          {mode === "login"
+            ? "The financial command center for subcontractors."
+            : "Your company and one login to get started."}
         </p>
       </div>
 
@@ -65,7 +67,7 @@ export default function Login() {
         <input className="input" value={password} onChange={(e) => setPassword(e.target.value)} type="password" onKeyDown={(e) => e.key === "Enter" && submit()} />
 
         <button className="btn btn-primary" onClick={submit} disabled={busy} style={{ width: "100%", marginTop: 20 }}>
-          {busy ? "…" : mode === "login" ? "Sign in" : "Create account"}
+          {busy ? "…" : mode === "login" ? "Sign In" : "Create Account"}
         </button>
         {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
         {mode === "login" && (

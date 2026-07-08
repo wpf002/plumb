@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd, C } from "../ui";
+import { apiFetch, getCompanyId, usd } from "../ui";
 
 const sourceLabel: Record<string, string> = {
   MANUAL: "Entered manually",
@@ -141,28 +141,24 @@ export default function Settings() {
       <div className="page-head">
         <div>
           <h1>Settings</h1>
-          <p>Set up the numbers Plumb plans against — takes a couple of minutes.</p>
+          <p>The numbers Plumb plans against. A couple of minutes to set up.</p>
         </div>
       </div>
 
       {!isOwner && (
         <div className="alert warning" style={{ marginBottom: 20 }}>
-          <span className="alert-dot" style={{ color: C.amber }}>●</span>
-          <div className="alert-title">View only — company settings can only be changed by an owner.</div>
+          <div className="alert-title">View only. Only an owner can change company settings.</div>
         </div>
       )}
       {(msg || error) && (
         <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 20 }}>
-          <span className="alert-dot" style={{ color: error ? C.red : C.green }}>
-            ●
-          </span>
           <div className="alert-title">{error ?? msg}</div>
         </div>
       )}
 
       {/* Opening cash */}
       <section className="card">
-        <div className="card-title">Opening cash</div>
+        <div className="card-title">Opening Cash</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
           The starting bank balance every cash forecast builds from.
         </p>
@@ -198,23 +194,28 @@ export default function Settings() {
               )
             }
           >
-            {busy === "manual" ? "Saving…" : "Save balance"}
+            {busy === "manual" ? "Saving…" : "Save Balance"}
           </button>
           <button
             className="btn btn-primary"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8 }}
             disabled={busy !== null || !isOwner}
             onClick={() =>
-              post("/opening-cash/plaid", { payload: {}, success: "Bank connected — opening cash pulled from your account." }, "plaid")
+              post("/opening-cash/plaid", { payload: {}, success: "Bank connected. Opening cash pulled from your account." }, "plaid")
             }
           >
-            {busy === "plaid" ? "Connecting…" : "🏦 Connect bank (demo)"}
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <path d="M8 2 1.5 5.5h13L8 2Z" fill="currentColor" />
+              <path d="M3 6.5v5M6 6.5v5M10 6.5v5M13 6.5v5M1.5 12.5h13" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+            {busy === "plaid" ? "Connecting…" : "Connect Bank (Demo)"}
           </button>
         </div>
       </section>
 
       {/* Business settings */}
       <section className="card">
-        <div className="card-title">Business settings</div>
+        <div className="card-title">Business Settings</div>
         <div className="field-grid">
           <div>
             <label className="label">Crew capacity (labor hrs / month)</label>
@@ -274,7 +275,7 @@ export default function Settings() {
               )
             }
           >
-            {busy === "settings" ? "Saving…" : "Save settings"}
+            {busy === "settings" ? "Saving…" : "Save Settings"}
           </button>
         </div>
       </section>
@@ -316,28 +317,27 @@ export default function Settings() {
 
         {isOwner ? (
           <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <label className="label">Invite by email</label>
+            <div style={{ display: "flex", gap: 12, flexWrap: "nowrap", alignItems: "flex-end" }}>
+              <div style={{ flex: 1, minWidth: 140 }}>
+                <label className="label">Invite By Email</label>
                 <input className="input" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="teammate@company.com" type="email" />
               </div>
-              <div>
+              <div style={{ flex: "none" }}>
                 <label className="label">Role</label>
-                <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ minWidth: 120 }}>
+                <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ width: 120 }}>
                   <option value="MEMBER">Member</option>
                   <option value="OWNER">Owner</option>
                 </select>
               </div>
-              <button className="btn btn-primary" disabled={busy !== null || !inviteEmail} onClick={invite}>
-                {busy === "invite" ? "Inviting…" : "Send invite"}
+              <button className="btn btn-primary" style={{ flex: "none" }} disabled={busy !== null || !inviteEmail} onClick={invite}>
+                {busy === "invite" ? "Inviting…" : "Send Invite"}
               </button>
             </div>
             {inviteLink && (
               <div className="alert good" style={{ marginTop: 14 }}>
-                <span className="alert-dot" style={{ color: C.green }}>●</span>
                 <div style={{ width: "100%" }}>
                   <div className="alert-title">Invitation created</div>
-                  <div className="alert-detail">No email provider configured — share this link so they can join:</div>
+                  <div className="alert-detail">No email provider set up yet. Share this link so they can join:</div>
                   <code style={{ fontSize: 12, wordBreak: "break-all" }}>{inviteLink}</code>
                 </div>
               </div>

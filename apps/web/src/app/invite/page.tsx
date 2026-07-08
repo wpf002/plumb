@@ -47,7 +47,7 @@ function AcceptInvite() {
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <div style={{ textAlign: "center", margin: "20px 0 24px" }}>
-        <h1 style={{ marginBottom: 4 }}>Join on Plumb</h1>
+        <h1 style={{ marginBottom: 4 }}>Join Plumb</h1>
       </div>
       <section className="card">
         {error && !invite && <p className="neg">{error}</p>}
@@ -66,7 +66,7 @@ function AcceptInvite() {
               </>
             )}
             <button className="btn btn-primary" onClick={accept} disabled={busy} style={{ width: "100%", marginTop: 18 }}>
-              {busy ? "…" : "Accept invitation"}
+              {busy ? "…" : "Accept Invitation"}
             </button>
             {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
           </>

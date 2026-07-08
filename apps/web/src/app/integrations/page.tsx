@@ -61,7 +61,7 @@ function Connections() {
                   )}
                   {c.key === "qbo" && c.action === "sync" && (
                     <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 13 }} disabled={busy === "qbo"} onClick={syncQbo}>
-                      {busy === "qbo" ? "Syncing…" : "Sync now"}
+                      {busy === "qbo" ? "Syncing…" : "Sync Now"}
                     </button>
                   )}
                   {c.action === "settings" && (
@@ -170,16 +170,16 @@ export default function Integrations() {
       <div className="page-head">
         <div>
           <h1>Integrations</h1>
-          <p>Pull the rest of the picture in. Each previews without credentials and imports for real once connected.</p>
+          <p>Bring in the rest of your numbers. Each one previews here, and imports for real once you connect it.</p>
         </div>
       </div>
 
       <Connections />
 
       <Panel
-        title="Payroll — Gusto / ADP"
+        title="Payroll (Gusto / ADP)"
         blurb="True labor cost and hours per job — the biggest, messiest cost line for a sub."
-        action="Preview import"
+        action="Preview Import"
         run={async () => {
           const d = await post("/integrations/payroll/import");
           return {
@@ -193,8 +193,8 @@ export default function Integrations() {
 
       <Panel
         title="FreshBooks"
-        blurb="An alternative accounting source to QuickBooks for shops that don't run QBO."
-        action="Preview sync"
+        blurb="Another place your invoices and expenses can come from, if you don't run QuickBooks."
+        action="Preview Sync"
         run={async () => {
           const d = await post("/integrations/freshbooks/sync");
           return {
@@ -202,18 +202,18 @@ export default function Integrations() {
             note: d.note,
             summary: `${usd(d.inflowCents)} in · ${usd(d.outflowCents)} out`,
             rows: d.preview.map((e: any) => ({
-              left: `${e.direction === "IN" ? "▲" : "▼"} ${e.counterparty}`,
+              left: e.counterparty,
               mid: e.date,
-              right: usd(e.amountCents),
+              right: `${e.direction === "IN" ? "+" : "–"}${usd(e.amountCents)}`,
             })),
           };
         }}
       />
 
       <Panel
-        title="Tax obligations"
+        title="Tax Obligations"
         blurb="Estimated quarterly tax from projected profit, timed into the cash forecast."
-        action="Preview obligations"
+        action="Preview Obligations"
         run={async () => {
           const d = await get("/integrations/tax");
           return {

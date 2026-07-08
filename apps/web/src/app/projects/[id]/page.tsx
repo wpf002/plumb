@@ -162,7 +162,7 @@ export default function ProjectDetail() {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.message ?? `Save failed (${res.status})`);
       }
-      setMsg("Budgets saved — variances updated.");
+      setMsg("Budgets saved. Variances updated.");
       await load();
     } catch (e: any) {
       setError(e.message ?? String(e));
@@ -248,9 +248,9 @@ export default function ProjectDetail() {
       </section>
 
       <section className="card">
-        <div className="card-title">Budget vs actual by cost code</div>
+        <div className="card-title">Budget vs Actual</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Set a budget per category. Anything over shows up here and drives the margin-at-risk flag.
+          Set a budget per cost code. Anything over budget shows here and flags the job as at risk.
         </p>
         <table className="table">
           <thead>
@@ -299,7 +299,7 @@ export default function ProjectDetail() {
         </table>
         <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 14 }}>
           <button className="btn btn-primary" onClick={save} disabled={saving}>
-            {saving ? "Saving…" : "Save budgets"}
+            {saving ? "Saving…" : "Save Budgets"}
           </button>
           {msg && <span className="pos" style={{ fontSize: 13.5 }}>{msg}</span>}
           {error && <span className="neg" style={{ fontSize: 13.5 }}>{error}</span>}
@@ -307,7 +307,7 @@ export default function ProjectDetail() {
       </section>
 
       <section className="card">
-        <div className="card-title">Phases &amp; cost codes</div>
+        <div className="card-title">Phases &amp; Cost Codes</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
           Break the job into phases (cost codes) to see budget vs actual at the level you estimate.
         </p>
@@ -356,13 +356,13 @@ export default function ProjectDetail() {
             <input className="input num" style={{ maxWidth: 130 }} value={phaseCode} onChange={(e) => setPhaseCode(e.target.value)} placeholder="16-200" />
           </div>
           <button className="btn btn-ghost" disabled={phaseBusy || !phaseName} onClick={addPhase}>
-            {phaseBusy ? "…" : "Add phase"}
+            {phaseBusy ? "…" : "Add Phase"}
           </button>
         </div>
       </section>
 
       <section className="card">
-        <div className="card-title">Change orders</div>
+        <div className="card-title">Change Orders</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
           Only <strong>approved</strong> change orders move the contract and budget. Pending ones don&apos;t count yet.
         </p>
@@ -429,15 +429,15 @@ export default function ProjectDetail() {
             <input className="input" value={coReason} onChange={(e) => setCoReason(e.target.value)} placeholder="Added panel upgrade" />
           </div>
           <button className="btn btn-ghost" disabled={coBusy || (!coContract && !coCost)} onClick={createCO}>
-            {coBusy ? "…" : "Add change order"}
+            {coBusy ? "…" : "Add Change Order"}
           </button>
         </div>
       </section>
 
       <section className="card">
-        <div className="card-title">Bill a milestone → QuickBooks</div>
+        <div className="card-title">Bill A Milestone</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Create a progress-billing invoice in QuickBooks and roll billed-to-date forward.
+          Create a progress invoice in QuickBooks and move your billed-to-date up.
         </p>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
           <div>
@@ -461,18 +461,15 @@ export default function ProjectDetail() {
             />
           </div>
           <button className="btn btn-primary" onClick={bill} disabled={billing || !billAmount}>
-            {billing ? "Creating…" : "Create invoice"}
+            {billing ? "Creating…" : "Create Invoice"}
           </button>
         </div>
 
         {invoice && (
           <div className={`alert ${invoice.live ? "good" : "warning"}`} style={{ marginTop: 16 }}>
-            <span className="alert-dot" style={{ color: invoice.live ? C.green : C.amber }}>
-              ●
-            </span>
             <div style={{ width: "100%" }}>
               <div className="alert-title">
-                {invoice.live ? `Invoice ${invoice.qboInvoiceId} created in QuickBooks` : "Dry run — no QuickBooks connection"}
+                {invoice.live ? `Invoice ${invoice.qboInvoiceId} created in QuickBooks` : "Dry run, no QuickBooks connection"}
               </div>
               <div className="alert-detail">{invoice.note}</div>
               <pre

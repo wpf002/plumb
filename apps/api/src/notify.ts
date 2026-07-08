@@ -1,48 +1,52 @@
 import type { DigestResult, DigestSeverity } from "@plumb/engine";
 
+// Plain-text markers (email has no color); the HTML version uses colored dots.
 const MARK: Record<DigestSeverity, string> = {
-  critical: "🔴",
-  warning: "🟡",
-  good: "🟢",
+  critical: "[!]",
+  warning: "[.]",
+  good: "[ok]",
+};
+
+const SEV_COLOR: Record<DigestSeverity, string> = {
+  critical: "#b42318",
+  warning: "#b45309",
+  good: "#157a5a",
 };
 
 export function renderDigestText(d: DigestResult): string {
   const lines = [
-    `Plumb weekly — ${d.companyName}`,
-    `Week of ${d.asOf} · Business health ${d.score}/100`,
+    `Plumb Weekly — ${d.companyName}`,
+    `Week of ${d.asOf} · Business Health ${d.score}/100`,
     "",
-    `▶ ${d.headline}`,
+    d.headline,
     "",
   ];
   for (const item of d.items) {
     lines.push(`${MARK[item.severity]} ${item.title}`);
-    if (item.detail && item.detail !== item.title) lines.push(`   ${item.detail}`);
+    if (item.detail && item.detail !== item.title) lines.push(`    ${item.detail}`);
   }
-  lines.push("", "— Plumb. Reply if a number looks off.");
+  lines.push("", "Plumb. Reply if a number looks off.");
   return lines.join("\n");
 }
 
 export function renderDigestHtml(d: DigestResult): string {
-  const color: Record<DigestSeverity, string> = {
-    critical: "#e5484d",
-    warning: "#f0b429",
-    good: "#30a46c",
-  };
+  const dot = (sev: DigestSeverity) =>
+    `<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${SEV_COLOR[sev]}"></span>`;
   const rows = d.items
     .map(
       (i) => `
       <tr>
-        <td style="vertical-align:top;padding:8px 10px 8px 0;font-size:18px;line-height:1.2">${MARK[i.severity]}</td>
-        <td style="padding:8px 0;border-bottom:1px solid #eee">
-          <div style="font-weight:600;color:${color[i.severity]}">${escape(i.title)}</div>
+        <td style="vertical-align:top;padding:11px 10px 11px 0">${dot(i.severity)}</td>
+        <td style="padding:9px 0;border-bottom:1px solid #eee">
+          <div style="font-weight:600;color:${SEV_COLOR[i.severity]}">${escape(i.title)}</div>
           ${i.detail && i.detail !== i.title ? `<div style="color:#555;font-size:14px;margin-top:2px">${escape(i.detail)}</div>` : ""}
         </td>
       </tr>`
     )
     .join("");
   return `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#111">
-    <p style="color:#888;margin:0">Plumb weekly — ${escape(d.companyName)}</p>
-    <h1 style="font-size:20px;margin:4px 0">Business health ${d.score}/100</h1>
+    <p style="color:#888;margin:0">Plumb Weekly — ${escape(d.companyName)}</p>
+    <h1 style="font-size:20px;margin:4px 0">Business Health ${d.score}/100</h1>
     <p style="font-size:16px;font-weight:600;margin:12px 0 16px">${escape(d.headline)}</p>
     <table style="width:100%;border-collapse:collapse">${rows}</table>
     <p style="color:#999;font-size:12px;margin-top:20px">Week of ${d.asOf}. Reply if a number looks off.</p>

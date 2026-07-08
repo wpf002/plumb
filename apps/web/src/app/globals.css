@@ -217,10 +217,9 @@ h3 {
   margin-top: 20px;
 }
 .card-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--faint);
+  font-size: 14px;
+  letter-spacing: 0;
+  color: var(--navy);
   font-weight: 700;
   margin: 0 0 16px;
 }
@@ -344,11 +343,10 @@ h3 {
 }
 .table thead th {
   text-align: left;
-  font-size: 11.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  letter-spacing: 0;
   color: var(--faint);
-  font-weight: 700;
+  font-weight: 600;
   padding: 0 12px 10px;
   border-bottom: 1px solid var(--line);
 }
@@ -378,8 +376,10 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   padding: 3px 10px;
   border-radius: 999px;
   line-height: 1.4;

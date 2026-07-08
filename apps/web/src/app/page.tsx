@@ -69,7 +69,7 @@ export default async function Dashboard() {
           <ScoreRing score={health.score} />
           <div style={{ width: "100%" }}>
             <div className="card-title" style={{ marginBottom: 12 }}>
-              Business health
+              Business Health
             </div>
             <div className="kpis">
               {health.components.map((c: any) => (
@@ -89,26 +89,17 @@ export default async function Dashboard() {
 
       {/* Needs attention */}
       <section className="card">
-        <div className="card-title">Needs attention</div>
+        <div className="card-title">Needs Attention</div>
         {attention.length === 0 ? (
           <div className="alert good">
-            <span className="alert-dot" style={{ color: C.green }}>
-              ●
-            </span>
             <div>
-              <div className="alert-title">Healthy week — nothing needs your attention</div>
+              <div className="alert-title">Nothing needs your attention this week</div>
               <div className="alert-detail">Cash, margins, crew load, and receivables are all in range.</div>
             </div>
           </div>
         ) : (
           attention.map((item: any, i: number) => (
             <div key={i} className={`alert ${item.severity}`}>
-              <span
-                className="alert-dot"
-                style={{ color: item.severity === "critical" ? C.red : C.amber }}
-              >
-                ●
-              </span>
               <div>
                 <div className="alert-title">{item.title}</div>
                 {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}
@@ -120,7 +111,7 @@ export default async function Dashboard() {
 
       {/* Cash */}
       <section className="card">
-        <div className="card-title">Cash — worst case vs expected (90 days)</div>
+        <div className="card-title">Cash: Expected vs Worst Case</div>
         <div className="stats">
           <div className="stat">
             <div className="stat-label">Expected low</div>
@@ -128,7 +119,7 @@ export default async function Dashboard() {
             <div className="stat-sub">{forecast.base.minBalanceDate}</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Worst case — payers 30d late</div>
+            <div className="stat-label">Worst case, if payers run 30 days late</div>
             <div
               className="stat-value num"
               style={{ color: forecast.stress.firstBreachDate ? C.red : undefined }}
@@ -145,11 +136,8 @@ export default async function Dashboard() {
         </div>
         {forecast.stress.firstBreachDate && (
           <div className="alert critical" style={{ marginTop: 16 }}>
-            <span className="alert-dot" style={{ color: C.red }}>
-              ●
-            </span>
             <div className="alert-title">
-              Worst-case cash breaches your floor on {forecast.stress.firstBreachDate}.
+              Worst case, cash drops below your floor on {forecast.stress.firstBreachDate}.
             </div>
           </div>
         )}
@@ -157,7 +145,7 @@ export default async function Dashboard() {
 
       {/* Projects */}
       <section className="card">
-        <div className="card-title">Projects — margin vs bid</div>
+        <div className="card-title">Project Margins</div>
         <table className="table">
           <thead>
             <tr>
@@ -199,13 +187,15 @@ export default async function Dashboard() {
 
       {/* WIP */}
       <section className="card">
-        <div className="card-title">WIP — over / under-billing</div>
+        <div className="card-title">Work In Progress</div>
         <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Net working-capital position:{" "}
+          You&apos;ve billed{" "}
           <strong className={wip.netOverUnderCents >= 0 ? "pos" : "neg"}>
-            {usdExact(wip.netOverUnderCents)}
+            {usdExact(Math.abs(wip.netOverUnderCents))}
           </strong>{" "}
-          — {wip.netOverUnderCents >= 0 ? "clients are financing you" : "you're financing the work"}.
+          {wip.netOverUnderCents >= 0
+            ? "ahead of the work done — clients are funding the job."
+            : "behind the work done — you're funding the job out of pocket."}
         </p>
         <table className="table">
           <thead>
@@ -242,7 +232,7 @@ export default async function Dashboard() {
 
       {/* Retainage */}
       <section className="card">
-        <div className="card-title">Retainage — cash held back</div>
+        <div className="card-title">Retainage Held</div>
         <div className="stats" style={{ marginBottom: 18 }}>
           <div className="stat">
             <div className="stat-label">Total held</div>

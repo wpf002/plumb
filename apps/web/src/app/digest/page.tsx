@@ -1,12 +1,6 @@
 import { redirect } from "next/navigation";
-import { scoreColor, C } from "../ui";
+import { scoreColor } from "../ui";
 import { apiGet, activeCompanyId } from "../server";
-
-const dotColor: Record<string, string> = {
-  critical: C.red,
-  warning: C.amber,
-  good: C.green,
-};
 
 export default async function DigestPreview() {
   const companyId = activeCompanyId();
@@ -18,8 +12,8 @@ export default async function DigestPreview() {
     <main className="container" style={{ maxWidth: 760 }}>
       <div className="page-head">
         <div>
-          <h1>Weekly digest</h1>
-          <p>What lands in the owner&apos;s inbox every Monday — no login required.</p>
+          <h1>Weekly Digest</h1>
+          <p>What lands in your inbox every Monday. No login required.</p>
         </div>
       </div>
 
@@ -46,7 +40,7 @@ export default async function DigestPreview() {
             >
               {digest.score}
             </span>
-            <span style={{ color: "#b9c6d4", fontSize: 14 }}>business health / 100</span>
+            <span style={{ color: "#b9c6d4", fontSize: 14 }}>Business Health / 100</span>
           </div>
           <p style={{ fontSize: 16, fontWeight: 600, margin: "12px 0 0" }}>{digest.headline}</p>
         </div>
@@ -54,9 +48,6 @@ export default async function DigestPreview() {
         <div style={{ padding: "18px 24px 24px" }}>
           {digest.items.map((item: any, i: number) => (
             <div key={i} className={`alert ${item.severity}`}>
-              <span className="alert-dot" style={{ color: dotColor[item.severity] }}>
-                ●
-              </span>
               <div>
                 <div className="alert-title">{item.title}</div>
                 {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}

@@ -7,8 +7,8 @@ import { apiFetch } from "./ui";
 
 const links = [
   { href: "/", label: "Dashboard" },
-  { href: "/bid", label: "Bid decision" },
-  { href: "/digest", label: "Weekly digest" },
+  { href: "/bid", label: "Bid Decision" },
+  { href: "/digest", label: "Weekly Digest" },
   { href: "/integrations", label: "Integrations" },
   { href: "/settings", label: "Settings" },
 ];
@@ -51,9 +51,11 @@ export function Topbar() {
       <div className="topbar-inner">
         <Link href="/" className="brand">
           <span className="brand-mark" aria-hidden>
+            {/* Plumb bob: a weight on a string that finds true vertical — the trade
+                tool behind the name, and the promise (a true read on the business). */}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1v3M3 4h10l-5 7-5-7Z" stroke="#fff" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-              <circle cx="8" cy="13.5" r="1.5" fill="#fff" />
+              <path d="M8 1.5V4.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
+              <path d="M4.5 5h7l-3.5 9.5L4.5 5Z" fill="#fff" />
             </svg>
           </span>
           Plumb
@@ -89,7 +91,7 @@ export function Topbar() {
               <span className="topbar-tag">{active?.name ?? ""}</span>
             )}
             <button onClick={logout} className="navlink" style={{ background: "none", border: "none", cursor: "pointer" }}>
-              Sign out
+              Sign Out
             </button>
           </div>
         )}

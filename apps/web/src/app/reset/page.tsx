@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { apiFetch, C } from "../ui";
+import { apiFetch } from "../ui";
 
 function Reset() {
   const router = useRouter();
@@ -65,7 +65,7 @@ function Reset() {
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <div style={{ textAlign: "center", margin: "20px 0 24px" }}>
-        <h1 style={{ marginBottom: 4 }}>Reset your password</h1>
+        <h1 style={{ marginBottom: 4 }}>Reset Your Password</h1>
       </div>
       <section className="card">
         {token ? (
@@ -79,7 +79,7 @@ function Reset() {
               <label className="label">New password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && reset()} />
               <button className="btn btn-primary" onClick={reset} disabled={busy || !password} style={{ width: "100%", marginTop: 18 }}>
-                {busy ? "…" : "Set new password"}
+                {busy ? "…" : "Set New Password"}
               </button>
               {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
             </>
@@ -89,10 +89,9 @@ function Reset() {
             <p style={{ marginTop: 0 }}>If that email is registered, a reset link is on its way.</p>
             {sent.link && (
               <div className="alert good">
-                <span className="alert-dot" style={{ color: C.green }}>●</span>
                 <div style={{ width: "100%" }}>
-                  <div className="alert-title">No email provider configured</div>
-                  <div className="alert-detail">Use this link to reset:</div>
+                  <div className="alert-title">No email provider set up yet</div>
+                  <div className="alert-detail">Use this link to reset your password:</div>
                   <code style={{ fontSize: 12, wordBreak: "break-all" }}>{sent.link}</code>
                 </div>
               </div>
@@ -103,7 +102,7 @@ function Reset() {
             <label className="label">Email</label>
             <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && request()} />
             <button className="btn btn-primary" onClick={request} disabled={busy || !email} style={{ width: "100%", marginTop: 18 }}>
-              {busy ? "…" : "Send reset link"}
+              {busy ? "…" : "Send Reset Link"}
             </button>
             {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
           </>

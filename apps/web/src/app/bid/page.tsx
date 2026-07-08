@@ -79,13 +79,13 @@ export default function BidPage() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1>Should I bid this job?</h1>
-          <p>Scored against your committed crew, worst-case cash, and recent margin trend.</p>
+          <h1>Should You Bid This Job?</h1>
+          <p>Weighed against your committed crew, worst-case cash, and how recent jobs have run.</p>
         </div>
       </div>
 
       <section className="card">
-        <div className="card-title">The job</div>
+        <div className="card-title">The Job</div>
         <div className="field-grid">
           <div>
             <label className="label">Contract value ($)</label>
@@ -103,7 +103,7 @@ export default function BidPage() {
 
         <div className="divider" />
 
-        <div className="label">Labor hours by month</div>
+        <div className="label">Labor Hours By Month</div>
         {rows.map((r, i) => (
           <div key={i} className="row">
             <input
@@ -127,12 +127,12 @@ export default function BidPage() {
           </div>
         ))}
         <button className="btn btn-ghost" onClick={addRow} style={{ padding: "8px 14px" }}>
-          + add month
+          + Add Month
         </button>
 
         <div style={{ marginTop: 22 }}>
           <button className="btn btn-primary" onClick={submit} disabled={loading}>
-            {loading ? "Evaluating…" : "Evaluate bid"}
+            {loading ? "Evaluating…" : "Evaluate Bid"}
           </button>
         </div>
         {error && <p className="neg" style={{ marginBottom: 0 }}>{error}</p>}
@@ -154,7 +154,7 @@ export default function BidPage() {
           </div>
 
           <div className="divider" />
-          <div className="card-title">Crew load if you win</div>
+          <div className="card-title">Crew Load If You Win</div>
           <table className="table">
             <thead>
               <tr>
