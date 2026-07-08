@@ -179,7 +179,7 @@ describe("digest", () => {
     const d = buildDigest({ asOf, companyName: "Foley", health, cash, wip });
     expect(cash.base.firstBreachDate).not.toBeNull();
     expect(d.items[0].severity).toBe("critical");
-    expect(d.headline).toContain("Cash dips below");
+    expect(d.headline).toContain("Cash drops below");
   });
 
   it("nudges to invoice an under-billed job", () => {
@@ -194,7 +194,7 @@ describe("digest", () => {
     const d = buildDigest({
       asOf, companyName: "Foley", health, cash, wip, projectNames: { p1: "Field House" },
     });
-    expect(d.items.some((i) => i.title.startsWith("Bill Field House"))).toBe(true);
+    expect(d.items.some((i) => i.title.includes("Field House") && i.title.includes("under-billed"))).toBe(true);
   });
 
   it("reports a healthy week when nothing needs attention", () => {
@@ -206,7 +206,7 @@ describe("digest", () => {
     const wip = computeWip([]);
     const d = buildDigest({ asOf, companyName: "Foley", health, cash, wip });
     expect(d.items[0].severity).toBe("good");
-    expect(d.headline).toContain("Healthy week");
+    expect(d.headline).toContain("good shape");
   });
 });
 

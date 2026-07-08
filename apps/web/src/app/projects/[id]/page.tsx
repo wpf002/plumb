@@ -224,19 +224,19 @@ export default function ProjectDetail() {
             <div className="stat-value num">{usd(margin.adjustedContractCents)}</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Projected final cost</div>
+            <div className="stat-label">Projected Final Cost</div>
             <div className="stat-value num">{usd(margin.projectedFinalCostCents)}</div>
             <div className="stat-sub">{Math.round(margin.percentComplete * 100)}% complete</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Bid → projected margin</div>
+            <div className="stat-label">Bid → Projected Margin</div>
             <div className="stat-value num" style={{ color: margin.atRisk ? C.red : C.green }}>
               {margin.originalMarginPct}% → {margin.projectedFinalMarginPct}%
             </div>
-            <div className="stat-sub">{margin.marginErosionPct} pts eroded · target {project.targetMarginPct}%</div>
+            <div className="stat-sub">{margin.marginErosionPct} pts off your {project.targetMarginPct}% target</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Cost overrun</div>
+            <div className="stat-label">Cost Overrun</div>
             <div
               className="stat-value num"
               style={{ color: margin.costOverrunCents > 0 ? C.red : C.green }}

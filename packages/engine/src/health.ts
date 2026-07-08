@@ -45,7 +45,7 @@ export function computeHealth(input: HealthInput): HealthResult {
       86_400_000;
     cashScore = clamp((days / 90) * 100);
     alerts.push(
-      `Worst-case cash dips below your safety threshold on ${breach} (${Math.round(days)} days out).`
+      `If payers run late, your cash falls below its safety floor around ${breach}.`
     );
   }
 
@@ -59,7 +59,7 @@ export function computeHealth(input: HealthInput): HealthResult {
   const marginScore = clamp(100 + marginGap * 6); // ~17 pts per margin point
   for (const m of input.margins.filter((x) => x.atRisk)) {
     alerts.push(
-      `${m.projectName} projected at ${m.projectedFinalMarginPct}% margin (${m.marginErosionPct} pts eroded since bid).`
+      `${m.projectName} is trending to ${m.projectedFinalMarginPct}% margin, ${m.marginErosionPct} points below your bid.`
     );
   }
 
@@ -70,11 +70,11 @@ export function computeHealth(input: HealthInput): HealthResult {
   else capacityScore = clamp(100 - (u - 1) * 120);
   if (u > 1)
     alerts.push(
-      `Peak 90-day capacity hits ${Math.round(u * 100)}% — a month is overbooked.`
+      `Your crew is overbooked next quarter — one month runs at ${Math.round(u * 100)}% of capacity.`
     );
   if (u < 0.6)
     alerts.push(
-      `Crew is under-booked over the next 90 days (peak ${Math.round(u * 100)}%). Time to bid more.`
+      `Your crew is light next quarter (peaks at ${Math.round(u * 100)}%). Good time to bid more work.`
     );
 
   // Receivables: share of A/R past due.
@@ -85,27 +85,27 @@ export function computeHealth(input: HealthInput): HealthResult {
   const receivablesScore = clamp(100 - pastDueShare * 120);
   if (pastDueShare > 0.25)
     alerts.push(
-      `${Math.round(pastDueShare * 100)}% of outstanding A/R is past due — chase it.`
+      `${Math.round(pastDueShare * 100)}% of what you're owed is past due. Time to chase it.`
     );
 
   const components: HealthComponent[] = [
     {
       key: "cash",
-      label: "Cash runway",
+      label: "Cash Runway",
       score: cashScore,
-      detail: breach ? `Breach ${breach}` : "No breach in horizon",
+      detail: breach ? `Dips low on ${breach}` : "No breach in horizon",
     },
     {
       key: "margin",
-      label: "Portfolio margin",
+      label: "Portfolio Margin",
       score: marginScore,
       detail: `Avg ${avgMargin.toFixed(1)}% vs ${input.portfolioTargetMarginPct}% target`,
     },
     {
       key: "capacity",
-      label: "Crew utilization",
+      label: "Crew Utilization",
       score: capacityScore,
-      detail: `Peak ${Math.round(u * 100)}% next 90d`,
+      detail: `Peaks at ${Math.round(u * 100)}% next 90 days`,
     },
     {
       key: "receivables",

@@ -114,24 +114,24 @@ export default async function Dashboard() {
         <div className="card-title">Cash: Expected vs Worst Case</div>
         <div className="stats">
           <div className="stat">
-            <div className="stat-label">Expected low</div>
+            <div className="stat-label">Expected Low</div>
             <div className="stat-value num">{usd(forecast.base.minBalanceCents)}</div>
-            <div className="stat-sub">{forecast.base.minBalanceDate}</div>
+            <div className="stat-sub">on {forecast.base.minBalanceDate}</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Worst case, if payers run 30 days late</div>
+            <div className="stat-label">If Payers Run Late</div>
             <div
               className="stat-value num"
               style={{ color: forecast.stress.firstBreachDate ? C.red : undefined }}
             >
               {usd(forecast.stress.minBalanceCents)}
             </div>
-            <div className="stat-sub">{forecast.stress.minBalanceDate}</div>
+            <div className="stat-sub">on {forecast.stress.minBalanceDate}</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Safety threshold</div>
+            <div className="stat-label">Safety Floor</div>
             <div className="stat-value num">{usd(forecast.safetyThresholdCents)}</div>
-            <div className="stat-sub">your floor</div>
+            <div className="stat-sub">don&apos;t drop below</div>
           </div>
         </div>
         {forecast.stress.firstBreachDate && (
@@ -235,16 +235,16 @@ export default async function Dashboard() {
         <div className="card-title">Retainage Held</div>
         <div className="stats" style={{ marginBottom: 18 }}>
           <div className="stat">
-            <div className="stat-label">Total held</div>
+            <div className="stat-label">Total Held</div>
             <div className="stat-value num">{usd(retainage.totalHeldCents)}</div>
-            <div className="stat-sub">earned, not yet collectible</div>
+            <div className="stat-sub">earned, not yet yours</div>
           </div>
           <div className="stat">
-            <div className="stat-label">Releasing within 90 days</div>
+            <div className="stat-label">Releasing Within 90 Days</div>
             <div className="stat-value num" style={{ color: C.green }}>
               {usd(retainage.releasingSoonCents)}
             </div>
-            <div className="stat-sub">coming back into cash</div>
+            <div className="stat-sub">coming back to you</div>
           </div>
         </div>
         <table className="table">

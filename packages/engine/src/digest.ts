@@ -52,18 +52,18 @@ export function buildDigest(input: DigestInput): DigestResult {
   if (baseBreach) {
     items.push({
       severity: "critical",
-      title: `Cash dips below your safety floor on ${baseBreach}`,
-      detail: `Expected balance breaches ${formatUsd(
+      title: `Cash drops below your safety floor on ${baseBreach}`,
+      detail: `You're on track to fall under ${formatUsd(
         cash.safetyThresholdCents
-      )} on ${baseBreach}. Pull invoicing forward or hold spend now.`,
+      )} on ${baseBreach}. Bill early or ease off spending to stay above it.`,
     });
   } else if (stressBreach) {
     items.push({
       severity: "critical",
-      title: `Cash breaches your floor on ${stressBreach} if payments slip`,
-      detail: `Worst-case (receivables 30 days late) drops below ${formatUsd(
+      title: `Cash could drop below your floor by ${stressBreach} if payers run late`,
+      detail: `One slow payer would put you under ${formatUsd(
         cash.safetyThresholdCents
-      )} on ${stressBreach}. One late payer would cause a crunch.`,
+      )} around ${stressBreach}. Worth watching.`,
     });
   }
 
@@ -84,18 +84,18 @@ export function buildDigest(input: DigestInput): DigestResult {
     const name = names[r.projectId] ?? r.projectId;
     items.push({
       severity: "warning",
-      title: `Bill ${name}: ${formatUsd(behind)} earned but not yet billed`,
-      detail: `You've earned ${formatUsd(
+      title: `${name} is under-billed by ${formatUsd(behind)}`,
+      detail: `You've done ${formatUsd(
         behind
-      )} more than you've billed on ${name}. Invoicing this milestone pulls that cash forward.`,
+      )} more work than you've billed here. Send the invoice to bring that cash in sooner.`,
     });
   }
 
   if (!items.some((i) => i.severity !== "good")) {
     items.push({
       severity: "good",
-      title: "Healthy week — nothing needs your attention",
-      detail: `Health ${health.score}/100. Cash, margins, crew load, and receivables are all in range.`,
+      title: "You're in good shape this week",
+      detail: `Health ${health.score}/100. Cash, margins, crew load, and receivables are all where they should be.`,
     });
   }
 
