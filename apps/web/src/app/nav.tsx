@@ -51,11 +51,22 @@ export function Topbar() {
       <div className="topbar-inner">
         <Link href="/" className="brand">
           <span className="brand-mark" aria-hidden>
-            {/* Plumb bob: a weight on a string that finds true vertical — the trade
-                tool behind the name, and the promise (a true read on the business). */}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1.5V4.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
-              <path d="M4.5 5h7l-3.5 9.5L4.5 5Z" fill="#fff" />
+            {/* Gauge ring — a reading on the business. Trade-neutral, and echoes the
+                health score at the heart of the product. */}
+            <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
+              <circle
+                cx="10"
+                cy="10"
+                r="6.4"
+                stroke="#fff"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                fill="none"
+                strokeDasharray="40.2"
+                strokeDashoffset="10"
+                transform="rotate(-90 10 10)"
+              />
+              <circle cx="10" cy="10" r="1.6" fill="#fff" />
             </svg>
           </span>
           Plumb
