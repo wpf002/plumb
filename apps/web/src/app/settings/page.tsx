@@ -320,16 +320,16 @@ export default function Settings() {
             <div style={{ display: "flex", gap: 12, flexWrap: "nowrap", alignItems: "flex-end" }}>
               <div style={{ flex: "1 1 240px" }}>
                 <label className="label">Invite By Email</label>
-                <input className="input" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="teammate@company.com" type="email" />
+                <input className="input" style={{ height: 44 }} value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="teammate@company.com" type="email" />
               </div>
               <div style={{ flex: "none" }}>
                 <label className="label">Role</label>
-                <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ width: 120 }}>
+                <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ width: 120, height: 44 }}>
                   <option value="MEMBER">Member</option>
                   <option value="OWNER">Owner</option>
                 </select>
               </div>
-              <button className="btn btn-primary" style={{ flex: "none" }} disabled={busy !== null || !inviteEmail} onClick={invite}>
+              <button className="btn btn-primary" style={{ flex: "none", height: 44 }} disabled={busy !== null || !inviteEmail} onClick={invite}>
                 {busy === "invite" ? "Inviting…" : "Send Invite"}
               </button>
             </div>
