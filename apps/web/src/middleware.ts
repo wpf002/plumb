@@ -15,5 +15,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Exclude /api — those are proxied to the backend, which does its own auth.
+  // Running the guard on them would redirect API calls to /login.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
