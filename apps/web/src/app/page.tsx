@@ -237,7 +237,7 @@ export default async function Dashboard() {
           <div className="stat">
             <div className="stat-label">Total Held</div>
             <div className="stat-value num">{usd(retainage.totalHeldCents)}</div>
-            <div className="stat-sub">earned, not yet yours</div>
+            <div className="stat-sub">earned</div>
           </div>
           <div className="stat">
             <div className="stat-label">Releasing Within 90 Days</div>
@@ -262,9 +262,12 @@ export default async function Dashboard() {
                 <td className="cell-name">{r.projectName}</td>
                 <td className="num">{r.retainagePct}%</td>
                 <td className="num">{usdExact(r.retainageHeldCents)}</td>
-                <td>
-                  {r.projectedReleaseDate}{" "}
-                  <span className={`badge ${r.releasesWithinHorizon ? "good" : "neutral"}`}>
+                <td style={{ whiteSpace: "nowrap" }}>
+                  {r.projectedReleaseDate}
+                  <span
+                    className={`badge ${r.releasesWithinHorizon ? "good" : "neutral"}`}
+                    style={{ marginLeft: 16 }}
+                  >
                     {r.releasesWithinHorizon ? "within 90d" : "later"}
                   </span>
                 </td>

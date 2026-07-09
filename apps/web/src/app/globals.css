@@ -534,6 +534,15 @@ h3 {
   border-color: var(--orange);
   box-shadow: 0 0 0 3px var(--orange-050);
 }
+/* Custom chevron so the arrow sits comfortably away from the border. */
+select.input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%235a6b7b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
 .row {
   display: flex;
   gap: 10px;
