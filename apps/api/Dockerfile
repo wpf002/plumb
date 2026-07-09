@@ -12,11 +12,7 @@ COPY . .
 # Dev install so tsc/prisma (devDeps) are available for the build.
 RUN NODE_ENV=development pnpm install --frozen-lockfile=false
 
-# A throwaway URL lets `prisma generate` load prisma.config.ts at build time;
-# the real DATABASE_URL is injected by Railway at runtime.
-RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" \
-  pnpm --filter @plumb/db exec prisma generate
-
+# Builds shared -> db (prisma generate + tsc) -> engine -> qbo -> api in order.
 RUN pnpm --filter @plumb/shared --filter @plumb/engine --filter @plumb/db --filter @plumb/qbo --filter @plumb/api build
 
 CMD ["node", "apps/api/dist/server.js"]
