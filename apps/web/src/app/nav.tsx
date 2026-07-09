@@ -54,18 +54,7 @@ export function Topbar() {
             {/* Gauge ring — a reading on the business. Trade-neutral, and echoes the
                 health score at the heart of the product. */}
             <svg width="19" height="19" viewBox="0 0 20 20" fill="none">
-              <circle
-                cx="10"
-                cy="10"
-                r="6.4"
-                stroke="#fff"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                fill="none"
-                strokeDasharray="40.2"
-                strokeDashoffset="10"
-                transform="rotate(-90 10 10)"
-              />
+              <circle cx="10" cy="10" r="6.4" stroke="#fff" strokeWidth="2.4" fill="none" />
               <circle cx="10" cy="10" r="1.6" fill="#fff" />
             </svg>
           </span>
