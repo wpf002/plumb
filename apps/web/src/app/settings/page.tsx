@@ -173,7 +173,7 @@ export default function Settings() {
         </div>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
           <div>
-            <label className="label">Set manually ($)</label>
+            <label className="label">Set Manually ($)</label>
             <input
               className="input num"
               style={{ maxWidth: 200 }}
@@ -218,7 +218,7 @@ export default function Settings() {
         <div className="card-title">Business Settings</div>
         <div className="field-grid">
           <div>
-            <label className="label">Crew capacity (labor hrs / month)</label>
+            <label className="label">Crew Capacity (Labor Hrs / Month)</label>
             <input
               className="input num"
               value={form.monthlyLaborHours ?? ""}
@@ -227,7 +227,7 @@ export default function Settings() {
             />
           </div>
           <div>
-            <label className="label">Cash safety threshold ($)</label>
+            <label className="label">Cash Safety Threshold ($)</label>
             <input
               className="input num"
               value={form.cashSafetyThreshold ?? ""}
@@ -236,7 +236,7 @@ export default function Settings() {
             />
           </div>
           <div>
-            <label className="label">Portfolio target margin (%)</label>
+            <label className="label">Portfolio Target Margin (%)</label>
             <input
               className="input num"
               value={form.portfolioTargetMarginPct ?? ""}
@@ -245,7 +245,7 @@ export default function Settings() {
             />
           </div>
           <div>
-            <label className="label">Default retainage (%)</label>
+            <label className="label">Default Retainage (%)</label>
             <input
               className="input num"
               value={form.defaultRetainagePct ?? ""}
@@ -318,7 +318,7 @@ export default function Settings() {
         {isOwner ? (
           <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
             <div style={{ display: "flex", gap: 12, flexWrap: "nowrap", alignItems: "flex-end" }}>
-              <div style={{ flex: 1, minWidth: 140 }}>
+              <div style={{ flex: "1 1 240px" }}>
                 <label className="label">Invite By Email</label>
                 <input className="input" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="teammate@company.com" type="email" />
               </div>

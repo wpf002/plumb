@@ -348,11 +348,11 @@ export default function ProjectDetail() {
         )}
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--line)", paddingTop: 16 }}>
           <div style={{ flex: 1, minWidth: 160 }}>
-            <label className="label">Phase name</label>
+            <label className="label">Phase Name</label>
             <input className="input" value={phaseName} onChange={(e) => setPhaseName(e.target.value)} placeholder="Trim-out" />
           </div>
           <div>
-            <label className="label">Cost code</label>
+            <label className="label">Cost Code</label>
             <input className="input num" style={{ maxWidth: 130 }} value={phaseCode} onChange={(e) => setPhaseCode(e.target.value)} placeholder="16-200" />
           </div>
           <button className="btn btn-ghost" disabled={phaseBusy || !phaseName} onClick={addPhase}>

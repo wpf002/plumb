@@ -25,7 +25,6 @@ export function renderDigestText(d: DigestResult): string {
     lines.push(`${MARK[item.severity]} ${item.title}`);
     if (item.detail && item.detail !== item.title) lines.push(`    ${item.detail}`);
   }
-  lines.push("", "Plumb. Reply if a number looks off.");
   return lines.join("\n");
 }
 
@@ -49,7 +48,7 @@ export function renderDigestHtml(d: DigestResult): string {
     <h1 style="font-size:20px;margin:4px 0">Business Health ${d.score}/100</h1>
     <p style="font-size:16px;font-weight:600;margin:12px 0 16px">${escape(d.headline)}</p>
     <table style="width:100%;border-collapse:collapse">${rows}</table>
-    <p style="color:#999;font-size:12px;margin-top:20px">Week of ${d.asOf}. Reply if a number looks off.</p>
+    <p style="color:#999;font-size:12px;margin-top:20px">Week of ${d.asOf}.</p>
   </div>`;
 }
 

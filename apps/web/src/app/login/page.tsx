@@ -53,9 +53,9 @@ export default function Login() {
       <section className="card">
         {mode === "register" && (
           <>
-            <label className="label">Your name</label>
+            <label className="label">Your Name</label>
             <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 14 }} />
-            <label className="label">Company name</label>
+            <label className="label">Company Name</label>
             <input className="input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={{ marginBottom: 14 }} placeholder="Acme Electric" />
             <label className="label">Trade</label>
             <input className="input" value={trade} onChange={(e) => setTrade(e.target.value)} style={{ marginBottom: 14 }} placeholder="ELECTRICAL" />

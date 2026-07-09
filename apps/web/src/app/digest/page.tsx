@@ -54,9 +54,6 @@ export default async function DigestPreview() {
               </div>
             </div>
           ))}
-          <p style={{ color: "var(--faint)", fontSize: 12.5, marginTop: 18, marginBottom: 0 }}>
-            Delivered by Plumb. Reply if a number looks off.
-          </p>
         </div>
       </section>
     </main>

@@ -204,7 +204,7 @@ export default async function Dashboard() {
               <th className="num">% Complete</th>
               <th className="num">Earned</th>
               <th className="num">Billed</th>
-              <th className="num">Over / under</th>
+              <th className="num">Over / Under</th>
               <th>State</th>
             </tr>
           </thead>
@@ -253,7 +253,7 @@ export default async function Dashboard() {
               <th>Project</th>
               <th className="num">Rate</th>
               <th className="num">Held</th>
-              <th>Projected release</th>
+              <th>Projected Release</th>
             </tr>
           </thead>
           <tbody>

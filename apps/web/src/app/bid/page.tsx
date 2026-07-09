@@ -6,9 +6,9 @@ import { apiFetch, getCompanyId, usd, C } from "../ui";
 type MonthRow = { month: string; hours: string };
 
 const recStyle: Record<string, { bg: string; label: string }> = {
-  BID_AGGRESSIVE: { bg: C.green, label: "Bid aggressive" },
-  BID_NORMAL: { bg: C.orange, label: "Bid normal" },
-  BID_SELECTIVE: { bg: C.amber, label: "Bid selective" },
+  BID_AGGRESSIVE: { bg: C.green, label: "Bid Aggressive" },
+  BID_NORMAL: { bg: C.orange, label: "Bid Normal" },
+  BID_SELECTIVE: { bg: C.amber, label: "Bid Selective" },
   PASS: { bg: C.red, label: "Pass" },
 };
 
@@ -88,15 +88,15 @@ export default function BidPage() {
         <div className="card-title">The Job</div>
         <div className="field-grid">
           <div>
-            <label className="label">Contract value ($)</label>
+            <label className="label">Contract Value ($)</label>
             <input className="input num" value={contract} onChange={(e) => setContract(e.target.value)} inputMode="decimal" />
           </div>
           <div>
-            <label className="label">Estimated cost ($)</label>
+            <label className="label">Estimated Cost ($)</label>
             <input className="input num" value={cost} onChange={(e) => setCost(e.target.value)} inputMode="decimal" />
           </div>
           <div>
-            <label className="label">Target margin (%)</label>
+            <label className="label">Target Margin (%)</label>
             <input className="input num" value={margin} onChange={(e) => setMargin(e.target.value)} inputMode="decimal" />
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function BidPage() {
                 <th>Month</th>
                 <th className="num">Capacity</th>
                 <th className="num">Committed</th>
-                <th className="num">This bid</th>
+                <th className="num">This Bid</th>
                 <th className="num">Utilization</th>
                 <th>State</th>
               </tr>

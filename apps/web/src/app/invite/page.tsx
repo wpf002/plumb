@@ -59,9 +59,9 @@ function AcceptInvite() {
             </p>
             {invite.needsPassword && (
               <>
-                <label className="label">Your name</label>
+                <label className="label">Your Name</label>
                 <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 14 }} />
-                <label className="label">Choose a password</label>
+                <label className="label">Choose a Password</label>
                 <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               </>
             )}

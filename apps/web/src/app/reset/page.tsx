@@ -76,7 +76,7 @@ function Reset() {
           ) : (
             <>
               {validEmail && <p style={{ marginTop: 0, color: "var(--muted)" }}>Set a new password for {validEmail}.</p>}
-              <label className="label">New password</label>
+              <label className="label">New Password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && reset()} />
               <button className="btn btn-primary" onClick={reset} disabled={busy || !password} style={{ width: "100%", marginTop: 18 }}>
                 {busy ? "…" : "Set New Password"}
