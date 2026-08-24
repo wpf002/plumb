@@ -33,6 +33,7 @@ import { registerMilestoneRoutes } from "./routes/milestones.js";
 import { registerPayerRoutes } from "./routes/payers.js";
 import { registerScenarioRoutes } from "./routes/scenarios.js";
 import { registerServiceRoutes } from "./routes/services.js";
+import { registerAnalysisRoutes } from "./routes/analysis.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -110,6 +111,7 @@ export function buildServer() {
   registerPayerRoutes(app);
   registerScenarioRoutes(app);
   registerServiceRoutes(app);
+  registerAnalysisRoutes(app);
 
   return app;
 }

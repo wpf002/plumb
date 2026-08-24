@@ -756,3 +756,95 @@ select.input {
   color: var(--navy);
   font-variant-numeric: tabular-nums;
 }
+
+/* --- The read: plain English before any table ----------------------------- */
+
+.readout {
+  border-left: 4px solid var(--navy);
+}
+
+.readout-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.readout-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--green);
+  flex: none;
+  transform: translateY(-2px);
+}
+
+.readout-dot.warning {
+  background: var(--amber);
+}
+
+.readout-dot.critical {
+  background: var(--red);
+}
+
+.readout-headline {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.readout-summary {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+.readout-list {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.readout-item {
+  display: grid;
+  gap: 3px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border-left: 3px solid var(--line-strong);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.readout-item.warning {
+  border-left-color: var(--amber);
+}
+
+.readout-item.critical {
+  border-left-color: var(--red);
+}
+
+.readout-item.good {
+  border-left-color: var(--green);
+}
+
+.readout-item b {
+  color: var(--navy);
+  font-weight: 650;
+}
+
+.readout-item span {
+  color: var(--muted);
+}
+
+.readout-foot {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--faint);
+  font-size: 12.5px;
+}

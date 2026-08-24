@@ -12,4 +12,5 @@ export * from "./schedule.js";
 export * from "./milestones.js";
 export * from "./payers.js";
 export * from "./services.js";
+export * from "./collisions.js";
 export * from "./scenario.js";

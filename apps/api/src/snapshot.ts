@@ -4,6 +4,7 @@ import {
   computeHealth,
   computeMargin,
   computeWip,
+  detectCollisions,
   expandSchedules,
   observePayerBehavior,
   stressDaysLate,
@@ -11,6 +12,7 @@ import {
   summarizeObligations,
   summarizeServices,
   type MilestoneGroup,
+  type CashCollision,
   type MilestoneScheduleSummary,
   type ServiceSummary,
   type CashFlowResult,
@@ -46,6 +48,8 @@ export interface CompanySnapshot {
   services: ServiceSummary;
   /** Per-project billing schedules, for slipped-milestone nudges. */
   billing: MilestoneScheduleSummary[];
+  /** Weeks where obligations land on money that may not arrive. */
+  collisions: CashCollision[];
   /** Per-payer lateness the forecast planned on, for "why is this the date". */
   payerBehavior: {
     payerId: string;
@@ -291,6 +295,23 @@ export async function loadSnapshot(
     .filter((e) => e.expectedDate < asOf)
     .reduce((a, e) => a + e.amountCents, 0);
 
+  // Weeks that are fine on paper but not if a slow payer slips — the collision
+  // the AI layer reports, and only expressible now that obligations and
+  // billings are structured data.
+  const payerDaysLateByProject: Record<string, number> = {};
+  for (const p of payerBehavior) {
+    for (const id of p.projectIds) payerDaysLateByProject[id] = p.typicalDaysLate;
+  }
+  const collisions = detectCollisions({
+    asOf,
+    horizonDays: world.horizonDays,
+    openingCashCents: world.openingCashCents,
+    safetyThresholdCents: world.safetyThresholdCents,
+    events: [...world.ledger, ...projected],
+    payerDaysLateByProject,
+    projectNames,
+  });
+
   const health = computeHealth({
     cash,
     margins,
@@ -307,6 +328,7 @@ export async function loadSnapshot(
     obligations,
     services,
     billing,
+    collisions,
     payerBehavior,
     projected,
     margins,

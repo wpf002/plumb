@@ -43,13 +43,14 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [health, forecast, projects, wip, digest, retainage] = await Promise.all([
+  const [health, forecast, projects, wip, digest, retainage, analysis] = await Promise.all([
     apiGet(`/companies/${companyId}/health`),
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/projects`),
     apiGet(`/companies/${companyId}/wip`),
     apiGet(`/companies/${companyId}/digest`),
     apiGet(`/companies/${companyId}/retainage`),
+    apiGet(`/companies/${companyId}/analysis?horizon=90`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
@@ -62,6 +63,32 @@ export default async function Dashboard() {
           <p>Your cash, margins, and workload over the next 90 days.</p>
         </div>
       </div>
+
+      {/* The read, in plain English, before any table. */}
+      <section className="card readout">
+        <div className="readout-head">
+          <span className={`readout-dot ${analysis.concerns[0]?.severity ?? "good"}`} />
+          <h2 className="readout-headline">{analysis.headline}</h2>
+        </div>
+        <p className="readout-summary">{analysis.summary}</p>
+        {analysis.concerns.length > 0 && (
+          <ul className="readout-list">
+            {analysis.concerns.map((c: any, i: number) => (
+              <li key={i} className={`readout-item ${c.severity}`}>
+                <b>{c.title}</b>
+                {c.body && <span>{c.body}</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="readout-foot">
+          {analysis.source === "claude"
+            ? "Written from your numbers — every figure above is computed, not estimated."
+            : "Built from your numbers by rule. Connect an AI key for the written read."}
+          {analysis.fallbackReason && ` (${analysis.fallbackReason})`}
+        </div>
+      </section>
+
 
       {/* Health hero */}
       <section className="card">
@@ -142,6 +169,31 @@ export default async function Dashboard() {
           </div>
         )}
       </section>
+
+      {analysis.collisions?.length > 0 && (
+        <section className="card">
+          <div className="card-title">Weeks Worth Watching</div>
+          <p style={{ marginTop: -6, marginBottom: 14, color: "var(--muted)", fontSize: 13.5 }}>
+            These weeks work on paper. They don&apos;t if the money you&apos;re owed shows up late.
+          </p>
+          {analysis.collisions.map((c: any) => (
+            <div key={c.weekStart} className="alert warning" style={{ marginBottom: 10 }}>
+              <div style={{ width: "100%" }}>
+                <div className="alert-title">
+                  {c.weekStart} to {c.weekEnd}: {usd(c.outflowCents)} goes out, and{" "}
+                  {usd(c.atRiskInflowCents)} of what comes in is from a payer who runs late.
+                </div>
+                <div className="alert-detail">
+                  If that money slips you finish the week at {usd(c.balanceIfLateCents)}.{" "}
+                  {c.items
+                    .map((i: any) => `${i.direction === "OUT" ? "−" : "+"}${usd(i.amountCents)} ${i.label}`)
+                    .join(" · ")}
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* Fixed obligations — the nut before a single job cost */}
       <section className="card">

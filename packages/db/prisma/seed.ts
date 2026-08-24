@@ -57,7 +57,8 @@ async function main() {
       employeeCount: 18,
       revenueModel: "BOTH",
       setupCompletedAt: new Date(),
-      cashSafetyThreshold: C(50_000),
+      // Roughly two months of fixed cost — the floor a $6M sub actually runs to.
+      cashSafetyThreshold: C(120_000),
       defaultRetainagePct: 10,
       portfolioTargetMargin: 14,
       monthlyLaborHours: 5 * 160,
@@ -398,6 +399,13 @@ async function main() {
         renewalTerms: "36-month term, 12-month renewal at market rate",
       },
     ],
+  });
+
+  // Opening cash. The seed previously had no snapshot at all, so every forecast
+  // started from the code default — a $6M sub with 3-4 months of fixed cost in
+  // the bank is a truer reference profile than a flush one.
+  await prisma.cashSnapshot.create({
+    data: { companyId: co.id, asOf: day(0), balance: C(168_000), source: "MANUAL" },
   });
 
   // Recurring overhead: the fixed nut before a single job cost.
