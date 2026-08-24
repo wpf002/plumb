@@ -141,6 +141,7 @@ model Project {
   costs            CostEntry[]
   changeOrders     ChangeOrder[]
   cashEvents       CashEvent[]
+  milestones       Milestone[]
   laborCommitments LaborCommitment[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -151,6 +152,7 @@ model Project {
 // Optional job phases (e.g. Rough-In, Trim, Gear). Enables phase-level costing.
 model Phase {
   id          String       @id @default(cuid())
+  milestones  Milestone[]
   projectId   String
   project     Project      @relation(fields: [projectId], references: [id])
   name        String
@@ -259,6 +261,35 @@ model LaborCommitment {
   hours     Int
 
   @@unique([projectId, month])
+}
+
+// A contract-defined point at which the business may invoice the client. This
+// is what drives a project's contribution to the cash forecast: without it the
+// timing of money coming in is inferred, and a slipped date can't ripple.
+model Milestone {
+  id                   String            @id @default(cuid())
+  projectId            String
+  project              Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name                 String
+  sequence             Int               @default(0)
+  trigger              MilestoneTrigger  @default(DATE)
+  /// Percent complete (0..1) for PERCENT_COMPLETE triggers.
+  triggerValue         Float?
+  phaseId              String?
+  phase                Phase?            @relation(fields: [phaseId], references: [id], onDelete: SetNull)
+  expectedDate         DateTime
+  /// Kept so slip is measurable rather than silently overwritten.
+  originalExpectedDate DateTime
+  amount               BigInt // cents
+  retainagePct         Float             @default(0)
+  status               MilestoneStatus   @default(PLANNED)
+  billedAt             DateTime?
+  paidAt               DateTime?
+  qboInvoiceId         String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  @@index([projectId, expectedDate])
 }
 
 // --- Balance sheet --------------------------------------------------------
@@ -370,6 +401,19 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum MilestoneTrigger {
+  DATE
+  PERCENT_COMPLETE
+  PHASE_COMPLETE
+}
+
+enum MilestoneStatus {
+  PLANNED
+  READY
+  BILLED
+  PAID
 }
 
 enum AssetCategory {

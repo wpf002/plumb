@@ -1,12 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
-import { computeMargin, computeRetainage } from "@plumb/engine";
+import { computeMargin, computeRetainage, summarizeMilestones } from "@plumb/engine";
 import {
   n,
   toEngineProject,
   toEngineCosts,
   toEngineChangeOrders,
   toEngineBudgets,
+  toEngineMilestone,
 } from "../map.js";
 
 const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"] as const;
@@ -51,9 +52,10 @@ export function registerProjectRoutes(app: FastifyInstance) {
   app.get<{ Params: { companyId: string } }>(
     "/companies/:companyId/projects",
     async (req) => {
+      const asOf = new Date();
       const projects = await prisma.project.findMany({
         where: { companyId: req.params.companyId, status: { not: "CLOSED" } },
-        include: { costs: true, changeOrders: true, budgetLines: true },
+        include: { costs: true, changeOrders: true, budgetLines: true, milestones: true },
       });
 
       return projects.map((p) => {
@@ -63,7 +65,26 @@ export function registerProjectRoutes(app: FastifyInstance) {
           toEngineChangeOrders(p.changeOrders),
           toEngineBudgets(p.budgetLines)
         );
-        return { project: { id: p.id, name: p.name, client: p.client }, margin };
+        return {
+          project: {
+            id: p.id,
+            name: p.name,
+            client: p.client,
+            clientType: p.clientType,
+            status: p.status,
+            contractValueCents: n(p.contractValue),
+            startDate: p.startDate,
+            endDate: p.endDate,
+            expectedEndDate: p.expectedEndDate,
+          },
+          margin,
+          billing: summarizeMilestones(
+            p.id,
+            n(p.contractValue),
+            p.milestones.map(toEngineMilestone),
+            asOf
+          ),
+        };
       });
     }
   );
@@ -96,7 +117,7 @@ export function registerProjectRoutes(app: FastifyInstance) {
     async (req) => {
       const p = await prisma.project.findFirstOrThrow({
         where: { id: req.params.projectId, companyId: req.params.companyId },
-        include: { costs: true, changeOrders: true, budgetLines: true, phases: true },
+        include: { costs: true, changeOrders: true, budgetLines: true, phases: true, milestones: true },
       });
       const margin = computeMargin(
         toEngineProject(p),

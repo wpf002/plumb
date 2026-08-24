@@ -6,6 +6,7 @@ import {
   computeWip,
   expandSchedules,
   summarizeObligations,
+  type MilestoneGroup,
   type CashFlowResult,
   type HealthResult,
   type MarginResult,
@@ -21,6 +22,7 @@ import {
   toEngineChangeOrders,
   toEngineLiability,
   toEngineRecurring,
+  toEngineMilestone,
 } from "./map.js";
 
 const DEFAULT_OPENING_CENTS = 250_000_00;
@@ -84,17 +86,37 @@ export async function loadSnapshot(
   // Scheduled obligations become projected events the forecast consumes exactly
   // like observed ones. Anything the ledger already settled (matched by source
   // key) is dropped here rather than counted twice.
-  const [liabilityRows, overheadRows] = await Promise.all([
+  const [liabilityRows, overheadRows, billingProjects] = await Promise.all([
     prisma.liability.findMany({ where: { companyId, active: true } }),
     prisma.recurringExpense.findMany({ where: { companyId, active: true } }),
+    prisma.project.findMany({
+      where: { companyId, status: { in: [...ACTIVE] } },
+      include: { milestones: true },
+    }),
   ]);
   const liabilities = liabilityRows.map(toEngineLiability);
   const overheads = overheadRows.map(toEngineRecurring);
+  const milestoneGroups: MilestoneGroup[] = billingProjects
+    .filter((p) => p.milestones.length > 0)
+    .map((p) => ({
+      context: {
+        projectId: p.id,
+        projectName: p.name,
+        netDays: p.netDays,
+        // Per-payer lateness lands in Phase 11; until then terms are taken at
+        // face value and lateness is explored through the stress scenario.
+        payerDaysLate: 0,
+        retainageReleaseDate: p.expectedEndDate ?? p.endDate,
+      },
+      milestones: p.milestones.map(toEngineMilestone),
+    }));
+
   const projected = expandSchedules({
     asOf,
     horizonEnd: addDays(asOf, horizonDays),
     liabilities,
     overheads,
+    milestoneGroups,
     supersededKeys: ledger.map((e) => e.sourceKey).filter((k): k is string => !!k),
   });
   const obligations = summarizeObligations(overheads, liabilities);

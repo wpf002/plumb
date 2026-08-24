@@ -6,6 +6,7 @@ import type {
   Asset as EAsset,
   Liability as ELiability,
   RecurringExpense as ERecurring,
+  Milestone as EMilestone,
 } from "@plumb/shared";
 
 // Prisma stores cents as BigInt. The engine works in `number` cents.
@@ -105,5 +106,24 @@ export function toEngineRecurring(r: any): ERecurring {
     startDate: r.startDate,
     endDate: r.endDate ?? undefined,
     active: r.active,
+  };
+}
+
+export function toEngineMilestone(m: any): EMilestone {
+  return {
+    id: m.id,
+    projectId: m.projectId,
+    name: m.name,
+    sequence: m.sequence,
+    trigger: m.trigger,
+    triggerValue: m.triggerValue ?? undefined,
+    phaseId: m.phaseId ?? undefined,
+    expectedDate: m.expectedDate,
+    originalExpectedDate: m.originalExpectedDate,
+    amountCents: n(m.amount),
+    retainagePct: m.retainagePct,
+    status: m.status,
+    billedAt: m.billedAt ?? undefined,
+    paidAt: m.paidAt ?? undefined,
   };
 }

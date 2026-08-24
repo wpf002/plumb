@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { apiFetch, getCompanyId, usd, usdExact, C } from "../../ui";
+import { apiFetch, getCompanyId, usd, usdExact, shortDate, dateInput, centsFrom, C } from "../../ui";
 
 const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"];
 
@@ -16,10 +16,16 @@ export default function ProjectDetail() {
   const [error, setError] = useState<string | null>(null);
 
   // Invoice write-back
-  const [billAmount, setBillAmount] = useState("");
-  const [billMemo, setBillMemo] = useState("");
   const [billing, setBilling] = useState(false);
   const [invoice, setInvoice] = useState<any>(null);
+
+  // Billing schedule
+  const [ms, setMs] = useState<any>(null);
+  const [ripple, setRipple] = useState<any>(null);
+  const [msBusy, setMsBusy] = useState<string | null>(null);
+  const [genCount, setGenCount] = useState("5");
+  const [addingMs, setAddingMs] = useState(false);
+  const [newMs, setNewMs] = useState({ name: "", date: dateInput(new Date()), amount: "" });
 
   // Change orders
   const [coContract, setCoContract] = useState("");
@@ -56,10 +62,14 @@ export default function ProjectDetail() {
   async function load() {
     setError(null);
     try {
-      const res = await apiFetch(`/companies/${getCompanyId()}/projects/${id}`, { cache: "no-store" });
+      const [res, msRes] = await Promise.all([
+        apiFetch(`/companies/${getCompanyId()}/projects/${id}`, { cache: "no-store" }),
+        apiFetch(`/companies/${getCompanyId()}/projects/${id}/milestones`, { cache: "no-store" }),
+      ]);
       if (!res.ok) throw new Error(`Load failed (${res.status})`);
       const json = await res.json();
       setData(json);
+      if (msRes.ok) setMs(await msRes.json());
       const b: Record<string, string> = {};
       for (const cat of CATEGORIES) b[cat] = "0";
       for (const line of json.budgets) b[line.category] = String(Math.round(line.budgetedCostCents / 100));
@@ -117,7 +127,9 @@ export default function ProjectDetail() {
     }
   }
 
-  async function bill() {
+  // Bill a milestone: the amount comes from the contract schedule, and on a live
+  // connection the milestone flips to BILLED with its QBO invoice id attached.
+  async function bill(milestoneId: string) {
     setBilling(true);
     setInvoice(null);
     setError(null);
@@ -125,11 +137,7 @@ export default function ProjectDetail() {
       const res = await apiFetch(`/companies/${getCompanyId()}/qbo/invoice`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId: id,
-          amountCents: Math.round((Number(billAmount) || 0) * 100),
-          memo: billMemo || undefined,
-        }),
+        body: JSON.stringify({ projectId: id, milestoneId }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message ?? `Failed (${res.status})`);
@@ -139,6 +147,50 @@ export default function ProjectDetail() {
       setError(e.message ?? String(e));
     } finally {
       setBilling(false);
+    }
+  }
+
+  async function msSend(path: string, method: string, payload?: any, label = "ms") {
+    setMsBusy(label);
+    setError(null);
+    try {
+      const res = await apiFetch(
+        `/companies/${getCompanyId()}/projects/${id}/milestones${path}`,
+        {
+          method,
+          headers: { "Content-Type": "application/json" },
+          ...(payload ? { body: JSON.stringify(payload) } : {}),
+        }
+      );
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.message ?? `Failed (${res.status})`);
+      await load();
+      return json;
+    } catch (e: any) {
+      setError(e.message ?? String(e));
+      return null;
+    } finally {
+      setMsBusy(null);
+    }
+  }
+
+  // Pushing a date is not a note field: the API recomputes cash before and
+  // after so the owner sees what the delay actually did.
+  async function pushDate(milestoneId: string, shiftDays: number) {
+    setRipple(null);
+    const r = await msSend(`/${milestoneId}/date`, "PATCH", { shiftDays }, milestoneId);
+    if (r) setRipple(r);
+  }
+
+  async function addMilestone() {
+    const ok = await msSend("", "POST", {
+      name: newMs.name,
+      expectedDate: new Date(newMs.date).toISOString(),
+      amountCents: centsFrom(newMs.amount),
+    });
+    if (ok) {
+      setNewMs({ name: "", date: dateInput(new Date()), amount: "" });
+      setAddingMs(false);
     }
   }
 
@@ -434,44 +486,254 @@ export default function ProjectDetail() {
         </div>
       </section>
 
+      {/* Billing schedule — what the contract lets you invoice, and when */}
       <section className="card">
-        <div className="card-title">Bill A Milestone</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Create a progress invoice in QuickBooks and move your billed-to-date up.
-        </p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <div>
-            <label className="label">Amount ($)</label>
+        <div className="row-between">
+          <div className="card-title" style={{ marginBottom: 0 }}>
+            Billing Schedule
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <button className="btn btn-ghost btn-xs" onClick={() => setAddingMs((v) => !v)}>
+              {addingMs ? "Cancel" : "Add Milestone"}
+            </button>
             <input
               className="input num"
-              style={{ maxWidth: 160 }}
-              value={billAmount}
-              onChange={(e) => setBillAmount(e.target.value)}
-              inputMode="decimal"
-              placeholder="75000"
+              style={{ width: 62, height: 32, padding: "4px 8px" }}
+              value={genCount}
+              onChange={(e) => setGenCount(e.target.value)}
+              inputMode="numeric"
+              aria-label="Number of milestones to draft"
             />
+            <button
+              className="btn btn-ghost btn-xs"
+              disabled={msBusy !== null}
+              onClick={() =>
+                msSend("/generate", "POST", { count: Number(genCount) || 5, replace: true }, "gen")
+              }
+            >
+              {msBusy === "gen" ? "Drafting…" : "Draft Schedule"}
+            </button>
           </div>
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <label className="label">Memo</label>
-            <input
-              className="input"
-              value={billMemo}
-              onChange={(e) => setBillMemo(e.target.value)}
-              placeholder="Rough-in milestone 3"
-            />
-          </div>
-          <button className="btn btn-primary" onClick={bill} disabled={billing || !billAmount}>
-            {billing ? "Creating…" : "Create Invoice"}
-          </button>
         </div>
+
+        {ms?.summary && (
+          <div className="stats" style={{ marginBottom: 16 }}>
+            <div className="stat">
+              <div className="stat-label">Scheduled</div>
+              <div className="stat-value num">{usd(ms.summary.scheduledCents)}</div>
+              <div className="stat-sub">
+                {ms.summary.unscheduledCents === 0
+                  ? "covers the full contract"
+                  : `${usd(ms.summary.unscheduledCents)} of contract unscheduled`}
+              </div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Still To Bill</div>
+              <div className="stat-value num">{usd(ms.summary.unbilledCents)}</div>
+              <div className="stat-sub">{ms.summary.count} milestones</div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Retainage Held Back</div>
+              <div className="stat-value num">{usd(ms.summary.retainageHeldCents)}</div>
+              <div className="stat-sub">released at completion</div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Slip</div>
+              <div className={`stat-value num ${ms.summary.totalSlipDays > 0 ? "neg" : ""}`}>
+                {ms.summary.totalSlipDays > 0 ? `+${ms.summary.totalSlipDays}d` : "None"}
+              </div>
+              <div className="stat-sub">
+                {ms.summary.slippedCount > 0
+                  ? `${ms.summary.slippedCount} milestone(s) moved`
+                  : "on the original dates"}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {addingMs && (
+          <div className="inline-form">
+            <div className="field-grid">
+              <div>
+                <label className="label">Name</label>
+                <input
+                  className="input"
+                  value={newMs.name}
+                  onChange={(e) => setNewMs((f) => ({ ...f, name: e.target.value }))}
+                  placeholder="Switchgear set & energized"
+                />
+              </div>
+              <div>
+                <label className="label">Expected Date</label>
+                <input
+                  className="input"
+                  type="date"
+                  value={newMs.date}
+                  onChange={(e) => setNewMs((f) => ({ ...f, date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="label">Amount ($)</label>
+                <input
+                  className="input num"
+                  value={newMs.amount}
+                  onChange={(e) => setNewMs((f) => ({ ...f, amount: e.target.value }))}
+                  inputMode="decimal"
+                />
+              </div>
+            </div>
+            <div style={{ marginTop: 14 }}>
+              <button
+                className="btn btn-primary"
+                disabled={msBusy !== null || !newMs.name || !newMs.amount}
+                onClick={addMilestone}
+              >
+                Save Milestone
+              </button>
+            </div>
+          </div>
+        )}
+
+        {ripple && (
+          <div
+            className={`alert ${ripple.delta.breachAppeared ? "critical" : ripple.delta.minBalanceCents < 0 ? "warning" : "good"}`}
+            style={{ marginBottom: 16 }}
+          >
+            <div style={{ width: "100%" }}>
+              <div className="alert-title">
+                {ripple.milestone.name} moved to {shortDate(ripple.milestone.expectedDate)}.
+              </div>
+              <div className="alert-detail">
+                {ripple.delta.minBalanceCents === 0 && !ripple.delta.minBalanceDateMoved
+                  ? "Your cash low point didn't change."
+                  : `Your low point ${
+                      ripple.delta.minBalanceDateMoved
+                        ? `moves from ${shortDate(ripple.before.minBalanceDate)} to ${shortDate(
+                            ripple.after.minBalanceDate
+                          )}`
+                        : `stays on ${shortDate(ripple.after.minBalanceDate)}`
+                    } and goes ${ripple.delta.minBalanceCents < 0 ? "down" : "up"} ${usd(
+                      Math.abs(ripple.delta.minBalanceCents)
+                    )}, to ${usd(ripple.after.minBalanceCents)}.`}
+                {ripple.delta.breachAppeared &&
+                  " That now puts you under your cash safety floor."}
+                {ripple.delta.breachCleared && " That clears your safety-floor breach."}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!ms || ms.milestones.length === 0 ? (
+          <p className="empty">
+            No billing schedule yet. Draft one from the contract value and dates above, then adjust
+            the pieces — this is what drives when this job turns into cash.
+          </p>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Milestone</th>
+                <th>Expected</th>
+                <th className="num">Amount</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {ms.milestones.map((m: any) => (
+                <tr key={m.id}>
+                  <td style={{ color: "var(--faint)" }}>{m.sequence}</td>
+                  <td className="cell-name">{m.name}</td>
+                  <td>
+                    {shortDate(m.expectedDate)}
+                    {m.slipDays !== 0 && (
+                      <div style={{ fontSize: 12, color: m.slipDays > 0 ? C.red : C.green }}>
+                        {m.slipDays > 0 ? `+${m.slipDays}d` : `${m.slipDays}d`} vs original
+                      </div>
+                    )}
+                  </td>
+                  <td className="num">
+                    {usd(m.amountCents)}
+                    {m.retainagePct > 0 && (
+                      <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                        {usd(Math.round((m.amountCents * (100 - m.retainagePct)) / 100))} after
+                        retainage
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        m.status === "PAID" ? "good" : m.status === "BILLED" ? "info" : "neutral"
+                      }`}
+                    >
+                      {m.status}
+                    </span>
+                  </td>
+                  <td className="num" style={{ whiteSpace: "nowrap" }}>
+                    {(m.status === "PLANNED" || m.status === "READY") && (
+                      <>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          disabled={msBusy !== null}
+                          onClick={() => pushDate(m.id, 14)}
+                          title="Push this milestone two weeks and see what it does to cash"
+                        >
+                          Push 2 Wks
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          disabled={msBusy !== null}
+                          onClick={() => pushDate(m.id, -14)}
+                        >
+                          Pull In
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          disabled={billing}
+                          onClick={() => bill(m.id)}
+                        >
+                          {billing ? "…" : "Bill It"}
+                        </button>
+                      </>
+                    )}
+                    {m.status === "BILLED" && (
+                      <button
+                        className="btn btn-ghost btn-xs"
+                        disabled={msBusy !== null}
+                        onClick={() => msSend(`/${m.id}`, "PUT", { status: "PAID" }, m.id)}
+                      >
+                        Mark Paid
+                      </button>
+                    )}
+                    <button
+                      className="btn btn-ghost btn-xs"
+                      disabled={msBusy !== null}
+                      onClick={() => msSend(`/${m.id}`, "DELETE", undefined, m.id)}
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         {invoice && (
           <div className={`alert ${invoice.live ? "good" : "warning"}`} style={{ marginTop: 16 }}>
             <div style={{ width: "100%" }}>
               <div className="alert-title">
-                {invoice.live ? `Invoice ${invoice.qboInvoiceId} created in QuickBooks` : "Dry run, no QuickBooks connection"}
+                {invoice.live
+                  ? `Invoice ${invoice.qboInvoiceId} created in QuickBooks`
+                  : "Dry run — no QuickBooks connection, nothing was changed"}
               </div>
-              <div className="alert-detail">{invoice.note}</div>
+              <div className="alert-detail">
+                {invoice.note}
+                {invoice.netOfRetainageCents !== null &&
+                  ` Expect ${usd(invoice.netOfRetainageCents)} in the bank after retainage.`}
+              </div>
               <pre
                 style={{
                   marginTop: 10,
@@ -490,6 +752,7 @@ export default function ProjectDetail() {
           </div>
         )}
       </section>
+
     </main>
   );
 }

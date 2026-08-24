@@ -2,12 +2,16 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
 import { authorizeUrl, exchangeCode, syncCompany, createInvoice } from "@plumb/qbo";
 
+// Either bill a milestone (amount comes from the contract schedule) or bill a
+// free-text amount. One of milestoneId / amountCents is required.
 const invoiceBodySchema = {
   type: "object",
-  required: ["projectId", "amountCents"],
+  required: ["projectId"],
   additionalProperties: false,
+  anyOf: [{ required: ["milestoneId"] }, { required: ["amountCents"] }],
   properties: {
     projectId: { type: "string", minLength: 1 },
+    milestoneId: { type: "string", minLength: 1 },
     amountCents: { type: "integer", minimum: 1 },
     memo: { type: "string", maxLength: 500 },
   },
@@ -86,7 +90,7 @@ export function registerQboRoutes(app: FastifyInstance) {
   // Dry-run and non-mutating when no QBO connection exists.
   app.post<{
     Params: { companyId: string };
-    Body: { projectId: string; amountCents: number; memo?: string };
+    Body: { projectId: string; amountCents?: number; memo?: string; milestoneId?: string };
   }>(
     "/companies/:companyId/qbo/invoice",
     { schema: { body: invoiceBodySchema } },

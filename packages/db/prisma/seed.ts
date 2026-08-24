@@ -31,6 +31,7 @@ async function main() {
   await prisma.session.deleteMany();
   await prisma.membership.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.milestone.deleteMany();
   await prisma.recurringExpense.deleteMany();
   await prisma.liability.deleteMany();
   await prisma.asset.deleteMany();
@@ -179,10 +180,47 @@ async function main() {
       { companyId: co.id, projectId: a.id, direction: "OUT", amount: C(62_000), category: "VENDOR_BILL", expectedDate: day(9), status: "EXPECTED" },
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(14_000), category: "OVERHEAD", expectedDate: day(15), status: "EXPECTED" },
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(38_000), category: "PAYROLL", expectedDate: day(17), status: "EXPECTED" },
-      { companyId: co.id, projectId: a.id, direction: "IN", amount: C(180_000), category: "PROGRESS_BILLING", expectedDate: day(22), status: "EXPECTED" },
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(38_000), category: "PAYROLL", expectedDate: day(31), status: "EXPECTED" },
-      { companyId: co.id, projectId: b.id, direction: "IN", amount: C(220_000), category: "PROGRESS_BILLING", expectedDate: day(45), status: "EXPECTED" },
-      { companyId: co.id, projectId: a.id, direction: "IN", amount: C(82_000), category: "RETAINAGE_RELEASE", expectedDate: day(75), status: "EXPECTED" },
+    ],
+  });
+
+  // Inbound cash comes from the contract's billing schedule, not from hand-entered
+  // progress-billing events — that's what lets a slipped date ripple.
+  const milestone = (
+    projectId: string,
+    sequence: number,
+    name: string,
+    offset: number,
+    dollars: number,
+    extra: { status?: "PLANNED" | "READY" | "BILLED" | "PAID"; billedOffset?: number; slipFrom?: number } = {}
+  ) => ({
+    projectId,
+    sequence,
+    name,
+    expectedDate: day(offset),
+    originalExpectedDate: day(extra.slipFrom ?? offset),
+    amount: C(dollars),
+    retainagePct: 10,
+    status: extra.status ?? ("PLANNED" as const),
+    billedAt: extra.billedOffset === undefined ? null : day(extra.billedOffset),
+  });
+
+  await prisma.milestone.createMany({
+    data: [
+      // Northwest ISD — field house. Two billed, three ahead; the switchgear
+      // milestone slipped two weeks on a gear delivery.
+      milestone(a.id, 1, "Mobilization & temp power", -75, 82_000, { status: "PAID", billedOffset: -72 }),
+      milestone(a.id, 2, "Underground & rough-in", -30, 205_000, { status: "BILLED", billedOffset: -28 }),
+      milestone(a.id, 3, "Switchgear set & energized", 22, 190_000, { slipFrom: 8 }),
+      milestone(a.id, 4, "Trim & devices", 48, 178_000),
+      milestone(a.id, 5, "Final & closeout", 62, 165_000),
+
+      // Hillwood Tower — floors 3-6. Earlier in its life.
+      milestone(b.id, 1, "Mobilization", -20, 115_000, { status: "PAID", billedOffset: -18 }),
+      milestone(b.id, 2, "Floors 3-4 rough-in", 18, 260_000),
+      milestone(b.id, 3, "Floors 5-6 rough-in", 55, 260_000),
+      milestone(b.id, 4, "Gear & feeders", 92, 240_000),
+      milestone(b.id, 5, "Trim, test & closeout", 145, 275_000),
     ],
   });
 

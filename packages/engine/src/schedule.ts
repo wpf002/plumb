@@ -7,6 +7,7 @@ import type {
 } from "@plumb/shared";
 import { addPeriod, monthlyEquivalentCents, sourceKeyFor } from "@plumb/shared";
 import { amortizationSchedule, monthlyDebtServiceCents } from "./liabilities.js";
+import { expandMilestones, type MilestoneGroup } from "./milestones.js";
 
 /**
  * A cash event Plumb computed rather than observed. Structurally a `CashEvent`
@@ -27,6 +28,8 @@ export interface ScheduleInput {
   horizonEnd: Date;
   liabilities?: Liability[];
   overheads?: RecurringExpense[];
+  /** Billing milestones, grouped by the project whose terms they bill under. */
+  milestoneGroups?: MilestoneGroup[];
   /** Keys already settled by a real ledger event. Those projections are dropped. */
   supersededKeys?: Iterable<string>;
 }
@@ -104,6 +107,7 @@ export function expandSchedules(input: ScheduleInput): ProjectedCashEvent[] {
   const events: ProjectedCashEvent[] = [
     ...(input.liabilities ?? []).flatMap((l) => expandLiability(l, asOf, horizonEnd)),
     ...(input.overheads ?? []).flatMap((e) => expandRecurring(e, asOf, horizonEnd)),
+    ...expandMilestones(input.milestoneGroups ?? [], asOf, horizonEnd),
   ];
 
   return events.filter((e) => !superseded.has(e.sourceKey));

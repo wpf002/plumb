@@ -221,3 +221,27 @@ export interface RecurringExpense {
   endDate?: Date;
   active: boolean;
 }
+
+export type MilestoneTrigger = "DATE" | "PERCENT_COMPLETE" | "PHASE_COMPLETE";
+export type MilestoneStatus = "PLANNED" | "READY" | "BILLED" | "PAID";
+
+/**
+ * A contract-defined billing point. Replaces inferring when a project turns
+ * into cash with the schedule the contract actually specifies.
+ */
+export interface Milestone {
+  id: string;
+  projectId: string;
+  name: string;
+  sequence: number;
+  trigger: MilestoneTrigger;
+  triggerValue?: number;
+  phaseId?: string;
+  expectedDate: Date;
+  originalExpectedDate: Date;
+  amountCents: Cents;
+  retainagePct: number;
+  status: MilestoneStatus;
+  billedAt?: Date;
+  paidAt?: Date;
+}
