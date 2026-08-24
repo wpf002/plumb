@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { usd, usdExact, scoreColor, C } from "./ui";
+import { usd, usdExact, shortDate, scoreColor, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
 
@@ -183,7 +183,8 @@ export default async function Dashboard() {
             <div key={c.weekStart} className="alert warning" style={{ marginBottom: 10 }}>
               <div style={{ width: "100%" }}>
                 <div className="alert-title">
-                  {c.weekStart} to {c.weekEnd}: {usd(c.outflowCents)} goes out, and{" "}
+                  {shortDate(c.weekStart)} to {shortDate(c.weekEnd)}: {usd(c.outflowCents)} goes
+                  out, and{" "}
                   {usd(c.atRiskInflowCents)} of what comes in is from a payer who runs late.
                 </div>
                 <div className="alert-detail">

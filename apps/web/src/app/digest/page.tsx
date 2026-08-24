@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { scoreColor } from "../ui";
+import { scoreColor, shortDate } from "../ui";
 import { apiGet, activeCompanyId } from "../server";
 
 export default async function DigestPreview() {
@@ -27,7 +27,7 @@ export default async function DigestPreview() {
           }}
         >
           <div style={{ color: "#8ea3b8", fontSize: 12.5, fontWeight: 600 }}>
-            {digest.companyName} · week of {digest.asOf}
+            {digest.companyName} · week of {shortDate(digest.asOf)}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
             <span
