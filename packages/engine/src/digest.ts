@@ -2,6 +2,9 @@ import { formatUsd } from "@plumb/shared";
 import type { HealthResult } from "./health.js";
 import type { CashFlowResult } from "./cashflow.js";
 import type { WipReport } from "./wip.js";
+import type { ServiceSummary } from "./services.js";
+import type { ObligationSummary } from "./schedule.js";
+import type { MilestoneScheduleSummary } from "./milestones.js";
 
 // The weekly digest is the "15 minutes a week" promise: the one thing the owner
 // must know, plus the short list of what needs attention — delivered so they
@@ -32,12 +35,30 @@ export interface DigestInput {
   wip: WipReport;
   /** projectId -> display name, for WIP "bill this now" nudges. */
   projectNames?: Record<string, string>;
+  /** Recurring revenue: renewals coming up and client concentration. */
+  services?: ServiceSummary;
+  /** The monthly fixed nut, for the "does recurring cover it" line. */
+  obligations?: ObligationSummary;
+  /** Per-project billing schedules, for slipped-milestone nudges. */
+  billing?: MilestoneScheduleSummary[];
 }
 
 const RANK: Record<DigestSeverity, number> = { critical: 0, warning: 1, good: 2 };
 
 function isoDay(d: Date): string {
   return d.toISOString().slice(0, 10);
+}
+
+/**
+ * "2026-10-29" -> "Oct 29". The digest is read by an owner on a phone, not
+ * parsed by a machine; formatted in UTC because engine dates are UTC midnight.
+ */
+function niceDay(iso: string): string {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 export function buildDigest(input: DigestInput): DigestResult {
@@ -52,18 +73,18 @@ export function buildDigest(input: DigestInput): DigestResult {
   if (baseBreach) {
     items.push({
       severity: "critical",
-      title: `Cash drops below your safety floor on ${baseBreach}`,
+      title: `Cash drops below your safety floor on ${niceDay(baseBreach)}`,
       detail: `You're on track to fall under ${formatUsd(
         cash.safetyThresholdCents
-      )} on ${baseBreach}. Bill early or ease off spending to stay above it.`,
+      )} on ${niceDay(baseBreach)}. Bill early or ease off spending to stay above it.`,
     });
   } else if (stressBreach) {
     items.push({
       severity: "critical",
-      title: `Cash could drop below your floor by ${stressBreach} if payers run late`,
+      title: `Cash could drop below your floor by ${niceDay(stressBreach)} if payers run late`,
       detail: `One slow payer would put you under ${formatUsd(
         cash.safetyThresholdCents
-      )} around ${stressBreach}. Worth watching.`,
+      )} around ${niceDay(stressBreach)}. Worth watching.`,
     });
   }
 
@@ -89,6 +110,56 @@ export function buildDigest(input: DigestInput): DigestResult {
         behind
       )} more work than you've billed here. Send the invoice to bring that cash in sooner.`,
     });
+  }
+
+  // 4. Billing schedule slip — a milestone that moved is money that moved.
+  for (const b of input.billing ?? []) {
+    if (b.totalSlipDays <= 0) continue;
+    const name = names[b.projectId] ?? b.projectId;
+    items.push({
+      severity: "warning",
+      title: `${name}'s billing has slipped ${b.totalSlipDays} days`,
+      detail: `${b.slippedCount} milestone${
+        b.slippedCount === 1 ? "" : "s"
+      } moved out, worth ${formatUsd(b.unbilledCents)} still to bill. That money arrives later than you planned for.`,
+    });
+  }
+
+  // 5. Recurring revenue: a renewal is the quietest way to lose income, and
+  //    concentration is what makes losing one of them matter.
+  const services = input.services;
+  if (services) {
+    for (const r of services.renewals) {
+      if (r.shareOfRecurringPct < 10 && r.autoRenew) continue;
+      items.push({
+        severity: r.shareOfRecurringPct >= 25 && !r.autoRenew ? "critical" : "warning",
+        title: `${r.client} — ${r.name} ${r.autoRenew ? "renews" : "must be re-signed"} in ${r.daysAway} days`,
+        detail: `${formatUsd(r.monthlyValueCents)} a month, ${
+          r.shareOfRecurringPct
+        }% of your recurring revenue.${
+          r.autoRenew ? "" : " It does not renew on its own."
+        }`,
+      });
+    }
+    if (services.largestClientSharePct >= 40 && services.largestClientName) {
+      items.push({
+        severity: "warning",
+        title: `${services.largestClientName} is ${services.largestClientSharePct}% of your recurring revenue`,
+        detail: `Losing them would take ${services.largestClientSharePct}% of the income that shows up whether or not you win the next bid.`,
+      });
+    }
+    if (input.obligations && services.monthlyRecurringCents > 0) {
+      const coverage = Math.round(
+        (services.monthlyRecurringCents / Math.max(1, input.obligations.monthlyFixedCents)) * 100
+      );
+      items.push({
+        severity: "good",
+        title: `Recurring work covers ${coverage}% of your monthly fixed cost`,
+        detail: `${formatUsd(services.monthlyRecurringCents)} a month against ${formatUsd(
+          input.obligations.monthlyFixedCents
+        )} of overhead and debt service.`,
+      });
+    }
   }
 
   if (!items.some((i) => i.severity !== "good")) {

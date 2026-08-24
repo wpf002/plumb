@@ -7,8 +7,12 @@ import {
   expandSchedules,
   observePayerBehavior,
   stressDaysLate,
+  summarizeMilestones,
   summarizeObligations,
+  summarizeServices,
   type MilestoneGroup,
+  type MilestoneScheduleSummary,
+  type ServiceSummary,
   type CashFlowResult,
   type HealthResult,
   type MarginResult,
@@ -26,6 +30,7 @@ import {
   toEngineLiability,
   toEngineRecurring,
   toEngineMilestone,
+  toEngineService,
 } from "./map.js";
 
 const DEFAULT_OPENING_CENTS = 250_000_00;
@@ -37,6 +42,10 @@ export interface CompanySnapshot {
   cash: CashFlowResult;
   /** Scheduled obligations feeding the forecast, and the monthly fixed nut. */
   obligations: ObligationSummary;
+  /** Recurring revenue rollup: monthly value, renewals, concentration. */
+  services: ServiceSummary;
+  /** Per-project billing schedules, for slipped-milestone nudges. */
+  billing: MilestoneScheduleSummary[];
   /** Per-payer lateness the forecast planned on, for "why is this the date". */
   payerBehavior: {
     payerId: string;
@@ -69,6 +78,10 @@ export async function openingCashCents(companyId: string, fallback?: number): Pr
 
 export interface LoadedWorld {
   world: ScenarioWorld;
+  /** Recurring revenue: what it's worth per month and what could walk. */
+  services: ServiceSummary;
+  /** Per-project billing schedules — coverage, what's left to bill, slip. */
+  billing: MilestoneScheduleSummary[];
   /** Capacity and target margin, needed by the health rollup. */
   targets: { monthlyLaborHours: number; portfolioTargetMarginPct: number };
   obligations: ObligationSummary;
@@ -107,9 +120,13 @@ export async function loadWorld(
     status: e.status,
   }));
 
-  const [liabilityRows, overheadRows, billingProjects] = await Promise.all([
+  const [liabilityRows, overheadRows, serviceRows, billingProjects] = await Promise.all([
     prisma.liability.findMany({ where: { companyId, active: true } }),
     prisma.recurringExpense.findMany({ where: { companyId, active: true } }),
+    prisma.serviceContract.findMany({
+      where: { companyId, status: "ACTIVE" },
+      include: { payer: { select: { typicalDaysLate: true } } },
+    }),
     prisma.project.findMany({
       where: { companyId, status: { in: [...ACTIVE] } },
       include: { milestones: true, payer: true },
@@ -167,12 +184,14 @@ export async function loadWorld(
       milestones: p.milestones.map(toEngineMilestone),
     }));
 
+  const services = serviceRows.map(toEngineService);
   const schedule = {
     asOf,
     horizonEnd: addDays(asOf, horizonDays),
     liabilities,
     overheads,
     milestoneGroups,
+    services,
     supersededKeys: ledger.map((e) => e.sourceKey).filter((k): k is string => !!k),
   };
 
@@ -192,6 +211,12 @@ export async function loadWorld(
       portfolioTargetMarginPct: company.portfolioTargetMargin,
     },
     obligations: summarizeObligations(overheads, liabilities),
+    services: summarizeServices(services, asOf),
+    billing: billingProjects
+      .filter((p) => p.milestones.length > 0)
+      .map((p) =>
+        summarizeMilestones(p.id, n(p.contractValue), p.milestones.map(toEngineMilestone), asOf)
+      ),
     payerBehavior,
     projected: expandSchedules(schedule),
     company: {
@@ -213,7 +238,8 @@ export async function loadSnapshot(
 ): Promise<CompanySnapshot> {
   const asOf = opts.asOf ?? new Date();
   const loaded = await loadWorld(companyId, opts);
-  const { world, obligations, payerBehavior, projected, company, targets } = loaded;
+  const { world, obligations, services, billing, payerBehavior, projected, company, targets } =
+    loaded;
 
   const cash = computeCashFlow({
     openingCashCents: world.openingCashCents,
@@ -279,6 +305,8 @@ export async function loadSnapshot(
     openingCashCents: world.openingCashCents,
     cash,
     obligations,
+    services,
+    billing,
     payerBehavior,
     projected,
     margins,

@@ -21,6 +21,9 @@ async function digestFor(companyId: string) {
     cash: snap.cash,
     wip: snap.wip,
     projectNames: snap.projectNames,
+    services: snap.services,
+    obligations: snap.obligations,
+    billing: snap.billing,
   });
 }
 

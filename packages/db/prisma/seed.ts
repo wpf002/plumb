@@ -32,6 +32,7 @@ async function main() {
   await prisma.membership.deleteMany();
   await prisma.user.deleteMany();
   await prisma.milestone.deleteMany();
+  await prisma.serviceContract.deleteMany();
   await prisma.payer.deleteMany();
   await prisma.recurringExpense.deleteMany();
   await prisma.liability.deleteMany();
@@ -409,6 +410,56 @@ async function main() {
       { companyId: co.id, name: "Software (estimating, QBO, phones)", category: "OVERHEAD", amount: C(940), frequency: "MONTHLY", startDate: day(7) },
       { companyId: co.id, name: "Office salaries (non-job)", category: "PAYROLL", amount: C(9_800), frequency: "MONTHLY", startDate: day(3) },
       { companyId: co.id, name: "Quarterly estimated tax", category: "TAX", amount: C(18_000), frequency: "QUARTERLY", startDate: day(24) },
+    ],
+  });
+
+  // Recurring revenue. Most trades run both models — bid work plus service
+  // agreements that pay whether or not the next bid lands.
+  await prisma.serviceContract.createMany({
+    data: [
+      {
+        companyId: co.id,
+        name: "Fire alarm & emergency lighting monitoring",
+        client: "Hillwood Properties",
+        amount: C(4_200),
+        billingFrequency: "MONTHLY",
+        netDays: 30,
+        startDate: monthsAgo(19),
+        renewalDate: day(52),
+        autoRenew: true,
+      },
+      {
+        companyId: co.id,
+        name: "Preventive maintenance agreement",
+        client: "Northwest ISD",
+        amount: C(18_500),
+        billingFrequency: "QUARTERLY",
+        netDays: 45,
+        startDate: monthsAgo(14),
+        renewalDate: day(210),
+        autoRenew: false,
+      },
+      {
+        companyId: co.id,
+        name: "Generator load-bank testing",
+        client: "Baylor Scott & White",
+        amount: C(9_800),
+        billingFrequency: "ANNUAL",
+        netDays: 30,
+        startDate: monthsAgo(8),
+        autoRenew: true,
+      },
+      {
+        companyId: co.id,
+        name: "Parking-lot lighting service",
+        client: "Rogers-Healy GC",
+        amount: C(1_150),
+        billingFrequency: "MONTHLY",
+        netDays: 30,
+        startDate: monthsAgo(6),
+        renewalDate: day(74),
+        autoRenew: true,
+      },
     ],
   });
 

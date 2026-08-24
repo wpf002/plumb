@@ -30,6 +30,9 @@ export function startScheduler(log: FastifyBaseLogger): void {
           cash: snap.cash,
           wip: snap.wip,
           projectNames: snap.projectNames,
+          services: snap.services,
+          obligations: snap.obligations,
+          billing: snap.billing,
         });
         if (!to) {
           log.info({ company: c.name, headline: digest.headline }, "digest ready (no DIGEST_TEST_TO; not sending)");

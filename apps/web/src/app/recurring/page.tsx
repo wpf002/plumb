@@ -8,8 +8,10 @@ import {
   centsFrom,
   dateInput,
   shortDate,
+  hasServices,
   FREQUENCIES,
   FREQUENCY_LABELS,
+  C,
 } from "../ui";
 
 const OVERHEAD_CATEGORIES = ["OVERHEAD", "PAYROLL", "INSURANCE", "TAX", "VENDOR_BILL"] as const;
@@ -34,8 +36,23 @@ const empty = {
   matchKeyword: "",
 };
 
+const emptyContract = {
+  name: "",
+  client: "",
+  amount: "",
+  billingFrequency: "MONTHLY",
+  netDays: "30",
+  startDate: dateInput(new Date()),
+  renewalDate: "",
+  autoRenew: true,
+};
+
 export default function Recurring() {
   const [data, setData] = useState<any>(null);
+  const [svc, setSvc] = useState<any>(null);
+  const [showServices, setShowServices] = useState(true);
+  const [addingContract, setAddingContract] = useState(false);
+  const [contract, setContract] = useState({ ...emptyContract });
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ ...empty });
   const [busy, setBusy] = useState(false);
@@ -45,8 +62,18 @@ export default function Recurring() {
   const load = useCallback(async () => {
     const id = getCompanyId();
     if (!id) return;
-    const res = await apiFetch(`/companies/${id}/recurring-expenses`, { cache: "no-store" });
+    const [res, sres, me] = await Promise.all([
+      apiFetch(`/companies/${id}/recurring-expenses`, { cache: "no-store" }),
+      apiFetch(`/companies/${id}/service-contracts`, { cache: "no-store" }),
+      apiFetch("/auth/me", { cache: "no-store" }),
+    ]);
     if (res.ok) setData(await res.json());
+    if (sres.ok) setSvc(await sres.json());
+    if (me.ok) {
+      const j = await me.json();
+      const active = j.companies.find((c: any) => c.id === j.activeCompanyId);
+      setShowServices(hasServices(active?.revenueModel));
+    }
   }, []);
 
   useEffect(() => {
@@ -88,6 +115,25 @@ export default function Recurring() {
     if (ok) {
       setForm({ ...empty });
       setAdding(false);
+    }
+  }
+
+  async function addContract() {
+    const ok = await send("/service-contracts", "POST", {
+      name: contract.name,
+      client: contract.client,
+      amountCents: centsFrom(contract.amount),
+      billingFrequency: contract.billingFrequency,
+      netDays: Number(contract.netDays) || 30,
+      startDate: new Date(contract.startDate).toISOString(),
+      ...(contract.renewalDate && {
+        renewalDate: new Date(contract.renewalDate).toISOString(),
+      }),
+      autoRenew: contract.autoRenew,
+    });
+    if (ok) {
+      setContract({ ...emptyContract });
+      setAddingContract(false);
     }
   }
 
@@ -321,6 +367,238 @@ export default function Recurring() {
           </table>
         )}
       </section>
+
+      {showServices && svc && (
+        <section className="card">
+          <div className="row-between">
+            <div className="card-title" style={{ marginBottom: 0 }}>
+              Recurring Revenue
+            </div>
+            <button className="btn btn-ghost" onClick={() => setAddingContract((v) => !v)}>
+              {addingContract ? "Cancel" : "Add Contract"}
+            </button>
+          </div>
+
+          <div className="stats" style={{ marginBottom: 16 }}>
+            <div className="stat">
+              <div className="stat-label">Coming In Every Month</div>
+              <div className="stat-value num">{usd(svc.summary.monthlyRecurringCents)}</div>
+              <div className="stat-sub">
+                {svc.summary.activeCount} active contract
+                {svc.summary.activeCount === 1 ? "" : "s"}
+              </div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Covers Your Fixed Cost</div>
+              <div
+                className="stat-value num"
+                style={{
+                  color:
+                    svc.summary.monthlyRecurringCents >= ob.monthlyFixedCents ? C.green : undefined,
+                }}
+              >
+                {ob.monthlyFixedCents > 0
+                  ? `${Math.round((svc.summary.monthlyRecurringCents / ob.monthlyFixedCents) * 100)}%`
+                  : "—"}
+              </div>
+              <div className="stat-sub">of the nut, before any job</div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Biggest Client</div>
+              <div
+                className="stat-value num"
+                style={{ color: svc.summary.largestClientSharePct >= 40 ? C.amber : undefined }}
+              >
+                {svc.summary.largestClientSharePct}%
+              </div>
+              <div className="stat-sub">{svc.summary.largestClientName ?? "—"}</div>
+            </div>
+          </div>
+
+          {svc.summary.renewals.length > 0 && (
+            <div className="alert warning" style={{ marginBottom: 16 }}>
+              <div style={{ width: "100%" }}>
+                <div className="alert-title">
+                  {svc.summary.renewals.length} contract
+                  {svc.summary.renewals.length === 1 ? "" : "s"} up for renewal in the next 90 days.
+                </div>
+                <div className="alert-detail">
+                  {svc.summary.renewals
+                    .map(
+                      (r: any) =>
+                        `${r.client} — ${r.name} (${r.shareOfRecurringPct}% of recurring) in ${r.daysAway} days${r.autoRenew ? ", auto-renews" : ""}`
+                    )
+                    .join(". ")}
+                  .
+                </div>
+              </div>
+            </div>
+          )}
+
+          {addingContract && (
+            <div className="inline-form">
+              <div className="field-grid">
+                <div>
+                  <label className="label">Contract</label>
+                  <input
+                    className="input"
+                    value={contract.name}
+                    onChange={(e) => setContract((f) => ({ ...f, name: e.target.value }))}
+                    placeholder="Fire alarm monitoring"
+                  />
+                </div>
+                <div>
+                  <label className="label">Client</label>
+                  <input
+                    className="input"
+                    value={contract.client}
+                    onChange={(e) => setContract((f) => ({ ...f, client: e.target.value }))}
+                    placeholder="Hillwood Properties"
+                  />
+                </div>
+                <div>
+                  <label className="label">Amount ($)</label>
+                  <input
+                    className="input num"
+                    value={contract.amount}
+                    onChange={(e) => setContract((f) => ({ ...f, amount: e.target.value }))}
+                    inputMode="decimal"
+                  />
+                </div>
+                <div>
+                  <label className="label">Billed</label>
+                  <select
+                    className="input"
+                    value={contract.billingFrequency}
+                    onChange={(e) =>
+                      setContract((f) => ({ ...f, billingFrequency: e.target.value }))
+                    }
+                  >
+                    {FREQUENCIES.map((f) => (
+                      <option key={f} value={f}>
+                        {FREQUENCY_LABELS[f]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="label">Payment Terms (Days)</label>
+                  <input
+                    className="input num"
+                    value={contract.netDays}
+                    onChange={(e) => setContract((f) => ({ ...f, netDays: e.target.value }))}
+                    inputMode="numeric"
+                  />
+                </div>
+                <div>
+                  <label className="label">Starts</label>
+                  <input
+                    className="input"
+                    type="date"
+                    value={contract.startDate}
+                    onChange={(e) => setContract((f) => ({ ...f, startDate: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="label">Renews / Ends</label>
+                  <input
+                    className="input"
+                    type="date"
+                    value={contract.renewalDate}
+                    onChange={(e) => setContract((f) => ({ ...f, renewalDate: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <button
+                  className="btn btn-primary"
+                  disabled={busy || !contract.name || !contract.client || !contract.amount}
+                  onClick={addContract}
+                >
+                  Save Contract
+                </button>
+              </div>
+            </div>
+          )}
+
+          {svc.contracts.length === 0 ? (
+            <p className="empty">
+              No recurring contracts yet. Maintenance agreements, monitoring, and service plans go
+              here &mdash; they&rsquo;re the income that shows up whether or not you win the next
+              bid.
+            </p>
+          ) : (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Contract</th>
+                  <th>Client</th>
+                  <th className="num">Amount</th>
+                  <th>Billed</th>
+                  <th className="num">Per Month</th>
+                  <th>Renews</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {svc.contracts.map((c: any) => {
+                  const perMonth = {
+                    WEEKLY: 52 / 12,
+                    BIWEEKLY: 26 / 12,
+                    MONTHLY: 1,
+                    QUARTERLY: 1 / 3,
+                    ANNUAL: 1 / 12,
+                  }[c.billingFrequency as string];
+                  return (
+                    <tr key={c.id} style={c.status === "ACTIVE" ? undefined : { opacity: 0.5 }}>
+                      <td className="cell-name">{c.name}</td>
+                      <td style={{ color: "var(--muted)" }}>
+                        {c.client}
+                        {c.payer && (
+                          <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                            pays {c.payer.typicalDaysLate}d past terms
+                          </div>
+                        )}
+                      </td>
+                      <td className="num">{usd(c.amountCents)}</td>
+                      <td style={{ color: "var(--muted)" }}>
+                        {FREQUENCY_LABELS[c.billingFrequency]}
+                      </td>
+                      <td className="num">{usd(Math.round(c.amountCents * (perMonth ?? 1)))}</td>
+                      <td>
+                        {c.renewalDate ? shortDate(c.renewalDate) : "—"}
+                        {c.renewalDate && (
+                          <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                            {c.autoRenew ? "auto-renews" : "must be re-signed"}
+                          </div>
+                        )}
+                      </td>
+                      <td className="num" style={{ whiteSpace: "nowrap" }}>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          onClick={() =>
+                            send(`/service-contracts/${c.id}`, "PUT", {
+                              status: c.status === "ACTIVE" ? "PAUSED" : "ACTIVE",
+                            })
+                          }
+                        >
+                          {c.status === "ACTIVE" ? "Pause" : "Resume"}
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-xs"
+                          onClick={() => send(`/service-contracts/${c.id}`, "DELETE")}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </section>
+      )}
 
       <section className="card">
         <div className="card-title">Leaving the Bank — Next 30 Days</div>

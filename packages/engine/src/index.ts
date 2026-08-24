@@ -11,4 +11,5 @@ export * from "./networth.js";
 export * from "./schedule.js";
 export * from "./milestones.js";
 export * from "./payers.js";
+export * from "./services.js";
 export * from "./scenario.js";

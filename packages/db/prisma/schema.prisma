@@ -98,6 +98,7 @@ model Company {
   liabilities           Liability[]
   recurringExpenses     RecurringExpense[]
   payers                Payer[]
+  serviceContracts      ServiceContract[]
   memberships           Membership[]
   invitations           Invitation[]
   createdAt             DateTime  @default(now())
@@ -311,6 +312,7 @@ model Payer {
   sampleSize      Int         @default(0)
   notes           String?
   projects        Project[]
+  serviceContracts ServiceContract[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
@@ -399,6 +401,31 @@ model RecurringExpense {
   @@index([companyId])
 }
 
+// Recurring revenue: maintenance agreements, service plans, monitoring. Simpler
+// than a project on purpose — there is no bid to track against, just money that
+// arrives on a schedule. Gated on the company's revenue model.
+model ServiceContract {
+  id               String        @id @default(cuid())
+  companyId        String
+  company          Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  payerId          String?
+  payer            Payer?        @relation(fields: [payerId], references: [id], onDelete: SetNull)
+  name             String
+  client           String
+  amount           BigInt // cents per billing period
+  billingFrequency Frequency     @default(MONTHLY)
+  netDays          Int           @default(30)
+  startDate        DateTime
+  endDate          DateTime?
+  renewalDate      DateTime?
+  autoRenew        Boolean       @default(true)
+  status           ServiceStatus @default(ACTIVE)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([companyId])
+}
+
 // --- Integrations ---------------------------------------------------------
 
 model QboConnection {
@@ -427,6 +454,12 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum ServiceStatus {
+  ACTIVE
+  PAUSED
+  ENDED
 }
 
 enum PayerType {

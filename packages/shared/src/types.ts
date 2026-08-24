@@ -258,3 +258,22 @@ export interface Payer {
   source: PayerSource;
   sampleSize: number;
 }
+
+export type ServiceStatus = "ACTIVE" | "PAUSED" | "ENDED";
+
+/** A recurring revenue agreement. No estimate-vs-actual — just money on a clock. */
+export interface ServiceContract {
+  id: string;
+  name: string;
+  client: string;
+  amountCents: Cents;
+  billingFrequency: Frequency;
+  netDays: number;
+  startDate: Date;
+  endDate?: Date;
+  renewalDate?: Date;
+  autoRenew: boolean;
+  status: ServiceStatus;
+  /** Days past terms this client typically takes. */
+  payerDaysLate?: number;
+}
