@@ -10,9 +10,20 @@ const hashPw = (pw: string) => {
   const salt = randomBytes(16).toString("hex");
   return `${salt}:${scryptSync(pw, salt, 64).toString("hex")}`;
 };
+// Anchored on today so the demo forecast is always forward-looking — a seed
+// pinned to a fixed date drifts into the past and the cash chart empties out.
+const TODAY = (() => {
+  const d = new Date();
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+})();
 const day = (offset: number) => {
-  const d = new Date("2026-07-06T00:00:00Z");
+  const d = new Date(TODAY.getTime());
   d.setUTCDate(d.getUTCDate() + offset);
+  return d;
+};
+const monthsAgo = (n: number) => {
+  const d = new Date(TODAY.getTime());
+  d.setUTCMonth(d.getUTCMonth() - n);
   return d;
 };
 
@@ -20,6 +31,8 @@ async function main() {
   await prisma.session.deleteMany();
   await prisma.membership.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.liability.deleteMany();
+  await prisma.asset.deleteMany();
   await prisma.categoryMapping.deleteMany();
   await prisma.syncLog.deleteMany();
   await prisma.qboConnection.deleteMany();
@@ -169,6 +182,125 @@ async function main() {
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(38_000), category: "PAYROLL", expectedDate: day(31), status: "EXPECTED" },
       { companyId: co.id, projectId: b.id, direction: "IN", amount: C(220_000), category: "PROGRESS_BILLING", expectedDate: day(45), status: "EXPECTED" },
       { companyId: co.id, projectId: a.id, direction: "IN", amount: C(82_000), category: "RETAINAGE_RELEASE", expectedDate: day(75), status: "EXPECTED" },
+    ],
+  });
+
+  // Balance sheet: what a $6M electrical sub actually owns and owes.
+  const truck = await prisma.asset.create({
+    data: {
+      companyId: co.id,
+      name: "2024 F-350 service truck",
+      category: "VEHICLE",
+      purchaseDate: monthsAgo(24),
+      purchaseCost: C(68_000),
+      usefulLifeMonths: 60,
+      salvageValue: C(8_000),
+    },
+  });
+  const shop = await prisma.asset.create({
+    data: {
+      companyId: co.id,
+      name: "Shop & yard — 4100 Irving Blvd",
+      category: "REAL_ESTATE",
+      purchaseDate: monthsAgo(96),
+      purchaseCost: C(540_000),
+      currentValue: C(690_000),
+      valueAsOf: monthsAgo(3),
+    },
+  });
+  await prisma.asset.createMany({
+    data: [
+      {
+        companyId: co.id,
+        name: "Bucket truck (used)",
+        category: "VEHICLE",
+        purchaseDate: monthsAgo(40),
+        purchaseCost: C(94_000),
+        usefulLifeMonths: 84,
+        salvageValue: C(12_000),
+      },
+      {
+        companyId: co.id,
+        name: "Wire pullers, benders & test gear",
+        category: "EQUIPMENT",
+        purchaseDate: monthsAgo(18),
+        purchaseCost: C(46_000),
+        usefulLifeMonths: 60,
+      },
+      {
+        companyId: co.id,
+        name: "Estimating workstations & tablets",
+        category: "TECHNOLOGY",
+        purchaseDate: monthsAgo(10),
+        purchaseCost: C(18_000),
+        usefulLifeMonths: 36,
+      },
+    ],
+  });
+
+  await prisma.liability.createMany({
+    data: [
+      {
+        companyId: co.id,
+        name: "Truck loan — Frost Bank",
+        lender: "Frost Bank",
+        kind: "TERM_LOAN",
+        originalPrincipal: C(58_000),
+        currentBalance: C(31_400),
+        interestRatePct: 6.4,
+        paymentAmount: C(1_180),
+        paymentFrequency: "MONTHLY",
+        nextPaymentDate: day(9),
+        assetId: truck.id,
+      },
+      {
+        companyId: co.id,
+        name: "Shop mortgage",
+        lender: "Frost Bank",
+        kind: "MORTGAGE",
+        originalPrincipal: C(430_000),
+        currentBalance: C(288_000),
+        interestRatePct: 5.85,
+        paymentAmount: C(3_240),
+        paymentFrequency: "MONTHLY",
+        nextPaymentDate: day(6),
+        assetId: shop.id,
+      },
+      {
+        companyId: co.id,
+        name: "Amex business card",
+        kind: "CREDIT_CARD",
+        currentBalance: C(24_600),
+        creditLimit: C(60_000),
+        interestRatePct: 22.9,
+        paymentAmount: C(2_500),
+        paymentFrequency: "MONTHLY",
+        nextPaymentDate: day(12),
+      },
+      {
+        companyId: co.id,
+        name: "SBA 7(a) working capital",
+        lender: "SBA / Amegy",
+        kind: "SBA_LOAN",
+        originalPrincipal: C(250_000),
+        currentBalance: C(164_000),
+        interestRatePct: 8.25,
+        paymentAmount: C(3_050),
+        paymentFrequency: "MONTHLY",
+        nextPaymentDate: day(2),
+      },
+      {
+        companyId: co.id,
+        name: "Scissor lift lease",
+        lender: "United Rentals",
+        kind: "EQUIPMENT_LEASE",
+        currentBalance: C(0),
+        paymentAmount: C(1_450),
+        paymentFrequency: "MONTHLY",
+        nextPaymentDate: day(4),
+        endDate: day(430),
+        renewalTerms: "36-month term, 12-month renewal at market rate",
+      },
     ],
   });
 

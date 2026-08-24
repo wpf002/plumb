@@ -84,3 +84,65 @@ export const REVENUE_MODEL_COPY: Record<RevenueModel, { title: string; sub: stri
 export const hasProjects = (m?: string) => m !== "RECURRING";
 /** …and recurring-revenue modules (service contracts)? */
 export const hasServices = (m?: string) => m === "RECURRING" || m === "BOTH";
+
+/** Balance-sheet vocabulary. Mirrors AssetCategory / LiabilityKind / Frequency. */
+export const ASSET_CATEGORIES = [
+  "VEHICLE",
+  "EQUIPMENT",
+  "REAL_ESTATE",
+  "TECHNOLOGY",
+  "OTHER",
+] as const;
+
+export const ASSET_CATEGORY_LABELS: Record<string, string> = {
+  VEHICLE: "Vehicle",
+  EQUIPMENT: "Equipment / machinery",
+  REAL_ESTATE: "Real estate / building",
+  TECHNOLOGY: "Technology",
+  OTHER: "Other",
+};
+
+export const LIABILITY_KINDS = [
+  "CREDIT_CARD",
+  "LINE_OF_CREDIT",
+  "TERM_LOAN",
+  "SBA_LOAN",
+  "MORTGAGE",
+  "EQUIPMENT_LEASE",
+  "BUILDING_LEASE",
+  "OTHER",
+] as const;
+
+export const LIABILITY_KIND_LABELS: Record<string, string> = {
+  CREDIT_CARD: "Credit card",
+  LINE_OF_CREDIT: "Line of credit",
+  TERM_LOAN: "Bank loan",
+  SBA_LOAN: "SBA loan",
+  MORTGAGE: "Mortgage",
+  EQUIPMENT_LEASE: "Equipment lease",
+  BUILDING_LEASE: "Building lease",
+  OTHER: "Other",
+};
+
+export const FREQUENCIES = ["WEEKLY", "BIWEEKLY", "MONTHLY", "QUARTERLY", "ANNUAL"] as const;
+
+export const FREQUENCY_LABELS: Record<string, string> = {
+  WEEKLY: "Weekly",
+  BIWEEKLY: "Every 2 weeks",
+  MONTHLY: "Monthly",
+  QUARTERLY: "Quarterly",
+  ANNUAL: "Annually",
+};
+
+/** YYYY-MM-DD for <input type="date">, from an ISO string or Date. */
+export const dateInput = (v: string | Date | null | undefined) =>
+  v ? new Date(v).toISOString().slice(0, 10) : "";
+
+/** Short human date for tables. */
+export const shortDate = (v: string | Date | null | undefined) =>
+  v
+    ? new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : "—";
+
+/** Dollars typed by a human → integer cents. */
+export const centsFrom = (v: string) => Math.round((Number(v) || 0) * 100);

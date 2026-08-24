@@ -15,6 +15,23 @@ export type Trade =
 /** Which revenue models a company runs. Gates which modules are active. */
 export type RevenueModel = "PROJECT" | "RECURRING" | "BOTH";
 export type ClientType = "OWNER_DIRECT" | "GC";
+export type AssetCategory =
+  | "VEHICLE"
+  | "EQUIPMENT"
+  | "REAL_ESTATE"
+  | "TECHNOLOGY"
+  | "OTHER";
+export type LiabilityKind =
+  | "CREDIT_CARD"
+  | "LINE_OF_CREDIT"
+  | "TERM_LOAN"
+  | "SBA_LOAN"
+  | "MORTGAGE"
+  | "EQUIPMENT_LEASE"
+  | "BUILDING_LEASE"
+  | "OTHER";
+/** Payment cadence shared by liabilities, recurring overhead, and services. */
+export type Frequency = "WEEKLY" | "BIWEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUAL";
 export type ProjectStatus = "BIDDING" | "AWARDED" | "ACTIVE" | "CLOSED";
 export type BillingType =
   | "FIXED_PRICE"
@@ -108,4 +125,84 @@ export interface LaborCommitment {
 export interface Capacity {
   /** Billable labor hours the crew can deliver in a month at full utilization. */
   monthlyLaborHours: number;
+}
+
+/** What the business owns. Depreciated, not just logged at sunk cost. */
+export interface Asset {
+  id: string;
+  name: string;
+  category: AssetCategory;
+  purchaseDate: Date;
+  purchaseCostCents: Cents;
+  /** Owner-entered value; anchors depreciation from `valueAsOf`. */
+  currentValueCents?: Cents;
+  valueAsOf?: Date;
+  /** Straight-line life. Omitted => the value holds flat at its anchor. */
+  usefulLifeMonths?: number;
+  salvageValueCents: Cents;
+  disposedAt?: Date;
+}
+
+/** What the business owes, with the payment obligation that feeds cash flow. */
+export interface Liability {
+  id: string;
+  name: string;
+  kind: LiabilityKind;
+  currentBalanceCents: Cents;
+  creditLimitCents?: Cents;
+  interestRatePct: number;
+  paymentAmountCents: Cents;
+  paymentFrequency: Frequency;
+  nextPaymentDate?: Date;
+  payoffDate?: Date;
+  /** Lease expiry. Payments stop here even if a balance remains. */
+  endDate?: Date;
+  assetId?: string;
+  active: boolean;
+}
+
+/** Payments per year for each cadence. The one place this mapping lives. */
+export const PERIODS_PER_YEAR: Record<Frequency, number> = {
+  WEEKLY: 52,
+  BIWEEKLY: 26,
+  MONTHLY: 12,
+  QUARTERLY: 4,
+  ANNUAL: 1,
+};
+
+/** Advance a date by one period of `frequency` (UTC-safe). */
+export function addPeriod(date: Date, frequency: Frequency): Date {
+  const d = new Date(date.getTime());
+  switch (frequency) {
+    case "WEEKLY":
+      d.setUTCDate(d.getUTCDate() + 7);
+      break;
+    case "BIWEEKLY":
+      d.setUTCDate(d.getUTCDate() + 14);
+      break;
+    case "MONTHLY":
+      d.setUTCMonth(d.getUTCMonth() + 1);
+      break;
+    case "QUARTERLY":
+      d.setUTCMonth(d.getUTCMonth() + 3);
+      break;
+    case "ANNUAL":
+      d.setUTCFullYear(d.getUTCFullYear() + 1);
+      break;
+  }
+  return d;
+}
+
+/** Normalize any cadence to a monthly-equivalent amount, for "what's my nut". */
+export function monthlyEquivalentCents(amountCents: Cents, frequency: Frequency): Cents {
+  return Math.round((amountCents * PERIODS_PER_YEAR[frequency]) / 12);
+}
+
+/** Whole months between two dates, floored at 0. */
+export function monthsBetween(from: Date, to: Date): number {
+  const months =
+    (to.getUTCFullYear() - from.getUTCFullYear()) * 12 +
+    (to.getUTCMonth() - from.getUTCMonth()) -
+    (to.getUTCDate() < from.getUTCDate() ? 1 : 0);
+  return Math.max(0, months);
 }

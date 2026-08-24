@@ -26,6 +26,19 @@ export interface CompanySnapshot {
 }
 
 /**
+ * Opening cash for a company: the latest bank snapshot, or the demo default
+ * before onboarding sets one. Single source so the forecast and the balance
+ * sheet never show different cash.
+ */
+export async function openingCashCents(companyId: string, fallback?: number): Promise<number> {
+  const snap = await prisma.cashSnapshot.findFirst({
+    where: { companyId },
+    orderBy: { asOf: "desc" },
+  });
+  return snap ? n(snap.balance) : fallback ?? DEFAULT_OPENING_CENTS;
+}
+
+/**
  * The full decision picture for a company at `asOf`: cash forecast (base +
  * stress), per-project margins, WIP, and the health rollup. Single source for
  * the health route and the weekly digest so their numbers never drift.
@@ -40,17 +53,11 @@ export async function loadSnapshot(
 
   const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
 
-  const snap = await prisma.cashSnapshot.findFirst({
-    where: { companyId },
-    orderBy: { asOf: "desc" },
-  });
-  const openingCashCents = snap
-    ? n(snap.balance)
-    : opts.openingCents ?? DEFAULT_OPENING_CENTS;
+  const openingCash = await openingCashCents(companyId, opts.openingCents);
 
   const events = await prisma.cashEvent.findMany({ where: { companyId } });
   const cash = computeCashFlow({
-    openingCashCents,
+    openingCashCents: openingCash,
     asOf,
     horizonDays,
     stressDelayDays,
@@ -122,7 +129,7 @@ export async function loadSnapshot(
       name: company.name,
       cashSafetyThresholdCents: n(company.cashSafetyThreshold),
     },
-    openingCashCents,
+    openingCashCents: openingCash,
     cash,
     margins,
     wip,

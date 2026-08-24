@@ -3,6 +3,8 @@ import type {
   CostEntry as ECost,
   ChangeOrder as ECO,
   BudgetLine as EBudget,
+  Asset as EAsset,
+  Liability as ELiability,
 } from "@plumb/shared";
 
 // Prisma stores cents as BigInt. The engine works in `number` cents.
@@ -57,4 +59,37 @@ export function toEngineBudgets(lines: any[]): EBudget[] {
     budgetedHours: b.budgetedHours,
     phaseId: b.phaseId ?? undefined,
   }));
+}
+
+export function toEngineAsset(a: any): EAsset {
+  return {
+    id: a.id,
+    name: a.name,
+    category: a.category,
+    purchaseDate: a.purchaseDate,
+    purchaseCostCents: n(a.purchaseCost),
+    currentValueCents: a.currentValue === null ? undefined : n(a.currentValue),
+    valueAsOf: a.valueAsOf ?? undefined,
+    usefulLifeMonths: a.usefulLifeMonths ?? undefined,
+    salvageValueCents: n(a.salvageValue),
+    disposedAt: a.disposedAt ?? undefined,
+  };
+}
+
+export function toEngineLiability(l: any): ELiability {
+  return {
+    id: l.id,
+    name: l.name,
+    kind: l.kind,
+    currentBalanceCents: n(l.currentBalance),
+    creditLimitCents: l.creditLimit === null ? undefined : n(l.creditLimit),
+    interestRatePct: l.interestRatePct,
+    paymentAmountCents: n(l.paymentAmount),
+    paymentFrequency: l.paymentFrequency,
+    nextPaymentDate: l.nextPaymentDate ?? undefined,
+    payoffDate: l.payoffDate ?? undefined,
+    endDate: l.endDate ?? undefined,
+    assetId: l.assetId ?? undefined,
+    active: l.active,
+  };
 }

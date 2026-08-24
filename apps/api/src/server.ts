@@ -25,6 +25,9 @@ import { registerIntegrationRoutes } from "./routes/integrations.js";
 import { registerChangeOrderRoutes } from "./routes/changeorders.js";
 import { registerTeamRoutes } from "./routes/team.js";
 import { registerConnectionRoutes } from "./routes/connections.js";
+import { registerAssetRoutes } from "./routes/assets.js";
+import { registerLiabilityRoutes } from "./routes/liabilities.js";
+import { registerBalanceSheetRoutes } from "./routes/balancesheet.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -94,6 +97,9 @@ export function buildServer() {
   registerChangeOrderRoutes(app);
   registerTeamRoutes(app);
   registerConnectionRoutes(app);
+  registerAssetRoutes(app);
+  registerLiabilityRoutes(app);
+  registerBalanceSheetRoutes(app);
 
   return app;
 }

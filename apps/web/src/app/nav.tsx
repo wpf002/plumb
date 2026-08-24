@@ -20,6 +20,7 @@ type Me = { user: { email: string }; companies: Company[]; activeCompanyId: stri
 // never sees service contracts, a pure service shop never sees bid coverage.
 const links: { href: string; label: string; show?: (m: string) => boolean }[] = [
   { href: "/", label: "Dashboard" },
+  { href: "/balance-sheet", label: "Balance Sheet" },
   { href: "/bid", label: "Bid", show: hasProjects },
   { href: "/digest", label: "Digest" },
   { href: "/integrations", label: "Integrations" },

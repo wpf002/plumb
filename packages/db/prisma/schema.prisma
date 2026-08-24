@@ -94,6 +94,8 @@ model Company {
   qbo                   QboConnection?
   syncLogs              SyncLog[]
   categoryMappings      CategoryMapping[]
+  assets                Asset[]
+  liabilities           Liability[]
   memberships           Membership[]
   invitations           Invitation[]
   createdAt             DateTime  @default(now())
@@ -253,6 +255,63 @@ model LaborCommitment {
   @@unique([projectId, month])
 }
 
+// --- Balance sheet --------------------------------------------------------
+
+// What the business owns. Tracked with enough structure to depreciate rather
+// than just show sunk cost, so it can feed net worth and buy-vs-wait decisions.
+model Asset {
+  id               String        @id @default(cuid())
+  companyId        String
+  company          Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name             String
+  description      String?
+  category         AssetCategory
+  purchaseDate     DateTime
+  purchaseCost     BigInt // cents
+  // Owner-entered current value. Anchors depreciation from `valueAsOf` — a
+  // manual number always beats the computed one.
+  currentValue     BigInt?
+  valueAsOf        DateTime?
+  usefulLifeMonths Int? // null => no straight-line decline, value holds flat
+  salvageValue     BigInt        @default(0)
+  disposedAt       DateTime?
+  liabilities      Liability[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([companyId])
+}
+
+// What the business owes. Every liability carries a payment obligation, which
+// `engine/schedule` expands into projected outflows — this is never a static list.
+model Liability {
+  id                String        @id @default(cuid())
+  companyId         String
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name              String
+  lender            String?
+  kind              LiabilityKind
+  originalPrincipal BigInt        @default(0) // cents
+  currentBalance    BigInt // cents outstanding today
+  creditLimit       BigInt? // cards / lines of credit
+  interestRatePct   Float         @default(0) // APR
+  paymentAmount     BigInt        @default(0) // cents per period
+  paymentFrequency  Frequency     @default(MONTHLY)
+  nextPaymentDate   DateTime?
+  payoffDate        DateTime?
+  termMonths        Int?
+  endDate           DateTime? // lease end
+  renewalTerms      String?
+  assetId           String? // the truck this loan bought, the building this lease rents
+  asset             Asset?        @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  active            Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@index([companyId])
+  @@index([assetId])
+}
+
 // --- Integrations ---------------------------------------------------------
 
 model QboConnection {
@@ -281,6 +340,34 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum AssetCategory {
+  VEHICLE
+  EQUIPMENT
+  REAL_ESTATE
+  TECHNOLOGY
+  OTHER
+}
+
+enum LiabilityKind {
+  CREDIT_CARD
+  LINE_OF_CREDIT
+  TERM_LOAN
+  SBA_LOAN
+  MORTGAGE
+  EQUIPMENT_LEASE
+  BUILDING_LEASE
+  OTHER
+}
+
+// Shared by liabilities, recurring overhead, and service contracts.
+enum Frequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
 }
 
 enum Trade {
