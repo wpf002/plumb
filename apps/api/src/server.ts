@@ -31,6 +31,7 @@ import { registerBalanceSheetRoutes } from "./routes/balancesheet.js";
 import { registerRecurringRoutes } from "./routes/recurring.js";
 import { registerMilestoneRoutes } from "./routes/milestones.js";
 import { registerPayerRoutes } from "./routes/payers.js";
+import { registerScenarioRoutes } from "./routes/scenarios.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -106,6 +107,7 @@ export function buildServer() {
   registerRecurringRoutes(app);
   registerMilestoneRoutes(app);
   registerPayerRoutes(app);
+  registerScenarioRoutes(app);
 
   return app;
 }

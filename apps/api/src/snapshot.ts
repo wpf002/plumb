@@ -14,6 +14,7 @@ import {
   type MarginResult,
   type ObligationSummary,
   type ProjectedCashEvent,
+  type ScenarioWorld,
   type WipReport,
 } from "@plumb/engine";
 import { addDays, monthKey } from "@plumb/shared";
@@ -66,21 +67,32 @@ export async function openingCashCents(companyId: string, fallback?: number): Pr
   return snap ? n(snap.balance) : fallback ?? DEFAULT_OPENING_CENTS;
 }
 
+export interface LoadedWorld {
+  world: ScenarioWorld;
+  /** Capacity and target margin, needed by the health rollup. */
+  targets: { monthlyLaborHours: number; portfolioTargetMarginPct: number };
+  obligations: ObligationSummary;
+  payerBehavior: CompanySnapshot["payerBehavior"];
+  projected: ProjectedCashEvent[];
+  company: { id: string; name: string; cashSafetyThresholdCents: number };
+}
+
 /**
- * The full decision picture for a company at `asOf`: cash forecast (base +
- * stress), per-project margins, WIP, and the health rollup. Single source for
- * the health route and the weekly digest so their numbers never drift.
+ * Everything a forecast is built from, assembled once.
+ *
+ * Both the snapshot and the scenario engine consume this, which is what
+ * guarantees a "what if" is compared against exactly the same base the
+ * dashboard is showing.
  */
-export async function loadSnapshot(
+export async function loadWorld(
   companyId: string,
   opts: { asOf?: Date; openingCents?: number; horizonDays?: number; stressDelayDays?: number } = {}
-): Promise<CompanySnapshot> {
+): Promise<LoadedWorld> {
   const asOf = opts.asOf ?? new Date();
   const horizonDays = opts.horizonDays ?? 90;
   const stressDelayDays = opts.stressDelayDays ?? 30;
 
   const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
-
   const openingCash = await openingCashCents(companyId, opts.openingCents);
 
   const ledger = await prisma.cashEvent.findMany({ where: { companyId } });
@@ -95,9 +107,6 @@ export async function loadSnapshot(
     status: e.status,
   }));
 
-  // Scheduled obligations become projected events the forecast consumes exactly
-  // like observed ones. Anything the ledger already settled (matched by source
-  // key) is dropped here rather than counted twice.
   const [liabilityRows, overheadRows, billingProjects] = await Promise.all([
     prisma.liability.findMany({ where: { companyId, active: true } }),
     prisma.recurringExpense.findMany({ where: { companyId, active: true } }),
@@ -127,11 +136,7 @@ export async function loadSnapshot(
   for (const p of billingProjects) {
     if (!p.payer) continue;
     const observation = observePayerBehavior(settledByPayer.get(p.payer.id) ?? []);
-    const worst = stressDaysLate(
-      { ...p.payer, typicalDaysLate: p.payer.typicalDaysLate },
-      observation,
-      stressDelayDays
-    );
+    const worst = stressDaysLate(p.payer, observation, stressDelayDays);
     stressDelayByProjectId[p.id] = worst;
     if (!seenPayers.has(p.payer.id)) {
       seenPayers.add(p.payer.id);
@@ -146,6 +151,7 @@ export async function loadSnapshot(
       });
     }
   }
+
   const liabilities = liabilityRows.map(toEngineLiability);
   const overheads = overheadRows.map(toEngineRecurring);
   const milestoneGroups: MilestoneGroup[] = billingProjects
@@ -161,24 +167,62 @@ export async function loadSnapshot(
       milestones: p.milestones.map(toEngineMilestone),
     }));
 
-  const projected = expandSchedules({
+  const schedule = {
     asOf,
     horizonEnd: addDays(asOf, horizonDays),
     liabilities,
     overheads,
     milestoneGroups,
     supersededKeys: ledger.map((e) => e.sourceKey).filter((k): k is string => !!k),
-  });
-  const obligations = summarizeObligations(overheads, liabilities);
+  };
+
+  return {
+    world: {
+      asOf,
+      horizonDays,
+      openingCashCents: openingCash,
+      safetyThresholdCents: n(company.cashSafetyThreshold),
+      stressDelayDays,
+      stressDelayByProjectId,
+      ledger: ledgerEvents,
+      schedule,
+    },
+    targets: {
+      monthlyLaborHours: company.monthlyLaborHours,
+      portfolioTargetMarginPct: company.portfolioTargetMargin,
+    },
+    obligations: summarizeObligations(overheads, liabilities),
+    payerBehavior,
+    projected: expandSchedules(schedule),
+    company: {
+      id: company.id,
+      name: company.name,
+      cashSafetyThresholdCents: n(company.cashSafetyThreshold),
+    },
+  };
+}
+
+/**
+ * The full decision picture for a company at `asOf`: cash forecast (base +
+ * stress), per-project margins, WIP, and the health rollup. Single source for
+ * the health route and the weekly digest so their numbers never drift.
+ */
+export async function loadSnapshot(
+  companyId: string,
+  opts: { asOf?: Date; openingCents?: number; horizonDays?: number; stressDelayDays?: number } = {}
+): Promise<CompanySnapshot> {
+  const asOf = opts.asOf ?? new Date();
+  const loaded = await loadWorld(companyId, opts);
+  const { world, obligations, payerBehavior, projected, company, targets } = loaded;
 
   const cash = computeCashFlow({
-    openingCashCents: openingCash,
-    asOf,
-    horizonDays,
-    stressDelayDays,
-    safetyThresholdCents: n(company.cashSafetyThreshold),
-    stressDelayByProjectId,
-    events: [...ledgerEvents, ...projected],
+    openingCashCents: world.openingCashCents,
+    asOf: world.asOf,
+    horizonDays: world.horizonDays,
+    stressDelayDays: world.stressDelayDays,
+    stressDelayByProjectId: world.stressDelayByProjectId,
+    safetyThresholdCents: world.safetyThresholdCents,
+    events: [...world.ledger, ...projected],
   });
 
   const projects = await prisma.project.findMany({
@@ -211,32 +255,28 @@ export async function loadSnapshot(
   const next3 = [0, 1, 2].map((m) =>
     monthKey(new Date(asOf.getUTCFullYear(), asOf.getUTCMonth() + m, 1))
   );
-  const cap = company.monthlyLaborHours || 1;
+  const cap = targets.monthlyLaborHours || 1;
   const peakUtilization90d = Math.max(0, ...next3.map((m) => (byMonth[m] ?? 0) / cap));
 
   // Receivables aging: inbound cash not yet received.
-  const inbound = ledger.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");
-  const arOutstandingCents = inbound.reduce((a, e) => a + n(e.amount), 0);
+  const inbound = world.ledger.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");
+  const arOutstandingCents = inbound.reduce((a, e) => a + e.amountCents, 0);
   const arPastDueCents = inbound
     .filter((e) => e.expectedDate < asOf)
-    .reduce((a, e) => a + n(e.amount), 0);
+    .reduce((a, e) => a + e.amountCents, 0);
 
   const health = computeHealth({
     cash,
     margins,
-    portfolioTargetMarginPct: company.portfolioTargetMargin,
+    portfolioTargetMarginPct: targets.portfolioTargetMarginPct,
     peakUtilization90d,
     arPastDueCents,
     arOutstandingCents,
   });
 
   return {
-    company: {
-      id: company.id,
-      name: company.name,
-      cashSafetyThresholdCents: n(company.cashSafetyThreshold),
-    },
-    openingCashCents: openingCash,
+    company,
+    openingCashCents: world.openingCashCents,
     cash,
     obligations,
     payerBehavior,

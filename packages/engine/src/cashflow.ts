@@ -107,7 +107,7 @@ export function computeCashFlow(input: CashFlowInput): CashFlowResult {
   // Stress: push every inbound (receivable) later; outbound obligations unchanged.
   // Money already received can't arrive late, so only unsettled inbounds move.
   const lateness = (e: CashEvent) =>
-    (e.projectId && stressDelayByProjectId?.[e.projectId]) ?? stressDelayDays;
+    (e.projectId ? stressDelayByProjectId?.[e.projectId] : undefined) ?? stressDelayDays;
   const stressEvents = events.map((e) => ({
     date:
       e.direction === "IN" && !e.actualDate
