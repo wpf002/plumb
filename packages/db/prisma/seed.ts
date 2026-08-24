@@ -32,6 +32,7 @@ async function main() {
   await prisma.membership.deleteMany();
   await prisma.user.deleteMany();
   await prisma.milestone.deleteMany();
+  await prisma.payer.deleteMany();
   await prisma.recurringExpense.deleteMany();
   await prisma.liability.deleteMany();
   await prisma.asset.deleteMany();
@@ -79,12 +80,33 @@ async function main() {
   });
 
   // --- Job A: school district, owner-direct, material running hot, OVERBILLED
+  // Who pays, and how late. A school district and a GC behave nothing alike.
+  const isd = await prisma.payer.create({
+    data: {
+      companyId: co.id,
+      name: "Northwest ISD",
+      type: "PUBLIC_ENTITY",
+      typicalDaysLate: 18,
+      notes: "Board approves pay apps monthly — misses the cycle, waits 30 more days.",
+    },
+  });
+  const gc = await prisma.payer.create({
+    data: {
+      companyId: co.id,
+      name: "Rogers-Healy GC",
+      type: "GC",
+      typicalDaysLate: 41,
+      notes: "Pays when the owner pays them. Chase at day 35.",
+    },
+  });
+
   const a = await prisma.project.create({
     data: {
       companyId: co.id,
       name: "Northwest ISD — Field House",
       client: "Northwest ISD",
       clientType: "OWNER_DIRECT",
+      payerId: isd.id,
       status: "ACTIVE",
       billingType: "FIXED_PRICE",
       netDays: 30,
@@ -135,6 +157,7 @@ async function main() {
       name: "Hillwood Tower — Floors 3-6",
       client: "Rogers-Healy GC",
       clientType: "GC",
+      payerId: gc.id,
       status: "ACTIVE",
       billingType: "AIA",
       netDays: 45,
@@ -181,6 +204,39 @@ async function main() {
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(14_000), category: "OVERHEAD", expectedDate: day(15), status: "EXPECTED" },
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(38_000), category: "PAYROLL", expectedDate: day(17), status: "EXPECTED" },
       { companyId: co.id, projectId: null, direction: "OUT", amount: C(38_000), category: "PAYROLL", expectedDate: day(31), status: "EXPECTED" },
+    ],
+  });
+
+  // Settled history, so "how late does this payer actually run" has something to
+  // observe rather than only the owner's guess.
+  const settled = (
+    projectId: string,
+    dueOffset: number,
+    lateDays: number,
+    dollars: number
+  ) => ({
+    companyId: co.id,
+    projectId,
+    direction: "IN" as const,
+    amount: C(dollars),
+    category: "PROGRESS_BILLING" as const,
+    expectedDate: day(dueOffset),
+    actualDate: day(dueOffset + lateDays),
+    status: "RECEIVED" as const,
+  });
+  await prisma.cashEvent.createMany({
+    data: [
+      // Northwest ISD: board-cycle slippage, fairly consistent.
+      settled(a.id, -250, 16, 96_000),
+      settled(a.id, -190, 21, 128_000),
+      settled(a.id, -140, 12, 104_000),
+      settled(a.id, -95, 47, 118_000),
+      settled(a.id, -42, 17, 73_800),
+      // Rogers-Healy: pay-when-paid, and it shows.
+      settled(b.id, -160, 38, 140_000),
+      settled(b.id, -110, 52, 165_000),
+      settled(b.id, -70, 44, 132_000),
+      settled(b.id, -35, 39, 103_500),
     ],
   });
 

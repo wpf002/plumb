@@ -25,9 +25,17 @@ export interface CashFlowInput {
   openingCashCents: Cents;
   events: CashEvent[];
   asOf: Date;
-  horizonDays: number; // 30 / 60 / 90 / 120
+  horizonDays: number; // 30 / 60 / 90 / 120 / 180 / 365
   safetyThresholdCents: Cents;
+  /** Fallback lateness for receivables with no payer history. */
   stressDelayDays: number; // e.g. 30 = GC pays a month late
+  /**
+   * Per-project stress lateness, keyed by project id. A receivable from a
+   * project listed here uses its payer's own worst observed lag instead of the
+   * flat fallback — "every payer at their worst" rather than one number for a
+   * school district and a GC alike.
+   */
+  stressDelayByProjectId?: Record<string, number>;
 }
 
 function isoDay(d: Date): string {
@@ -88,6 +96,7 @@ export function computeCashFlow(input: CashFlowInput): CashFlowResult {
     horizonDays,
     safetyThresholdCents,
     stressDelayDays,
+    stressDelayByProjectId,
   } = input;
 
   const baseEvents = events.map((e) => ({
@@ -96,10 +105,13 @@ export function computeCashFlow(input: CashFlowInput): CashFlowResult {
   }));
 
   // Stress: push every inbound (receivable) later; outbound obligations unchanged.
+  // Money already received can't arrive late, so only unsettled inbounds move.
+  const lateness = (e: CashEvent) =>
+    (e.projectId && stressDelayByProjectId?.[e.projectId]) ?? stressDelayDays;
   const stressEvents = events.map((e) => ({
     date:
-      e.direction === "IN"
-        ? addDays(e.actualDate ?? e.expectedDate, stressDelayDays)
+      e.direction === "IN" && !e.actualDate
+        ? addDays(e.expectedDate, lateness(e))
         : e.actualDate ?? e.expectedDate,
     deltaCents: signed(e),
   }));

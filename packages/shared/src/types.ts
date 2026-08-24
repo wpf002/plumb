@@ -245,3 +245,16 @@ export interface Milestone {
   billedAt?: Date;
   paidAt?: Date;
 }
+
+export type PayerType = "GC" | "OWNER_DIRECT" | "PUBLIC_ENTITY";
+export type PayerSource = "MANUAL" | "OBSERVED";
+
+/** Who pays, and how late they actually pay. */
+export interface Payer {
+  id: string;
+  name: string;
+  type: PayerType;
+  typicalDaysLate: number;
+  source: PayerSource;
+  sampleSize: number;
+}

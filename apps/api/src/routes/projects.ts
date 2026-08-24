@@ -55,7 +55,7 @@ export function registerProjectRoutes(app: FastifyInstance) {
       const asOf = new Date();
       const projects = await prisma.project.findMany({
         where: { companyId: req.params.companyId, status: { not: "CLOSED" } },
-        include: { costs: true, changeOrders: true, budgetLines: true, milestones: true },
+        include: { costs: true, changeOrders: true, budgetLines: true, milestones: true, payer: true },
       });
 
       return projects.map((p) => {
@@ -71,6 +71,9 @@ export function registerProjectRoutes(app: FastifyInstance) {
             name: p.name,
             client: p.client,
             clientType: p.clientType,
+            payerId: p.payerId,
+            payerName: p.payer?.name ?? null,
+            payerDaysLate: p.payer?.typicalDaysLate ?? 0,
             status: p.status,
             contractValueCents: n(p.contractValue),
             startDate: p.startDate,

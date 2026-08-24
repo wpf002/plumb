@@ -5,6 +5,8 @@ import {
   computeMargin,
   computeWip,
   expandSchedules,
+  observePayerBehavior,
+  stressDaysLate,
   summarizeObligations,
   type MilestoneGroup,
   type CashFlowResult,
@@ -34,6 +36,16 @@ export interface CompanySnapshot {
   cash: CashFlowResult;
   /** Scheduled obligations feeding the forecast, and the monthly fixed nut. */
   obligations: ObligationSummary;
+  /** Per-payer lateness the forecast planned on, for "why is this the date". */
+  payerBehavior: {
+    payerId: string;
+    name: string;
+    typicalDaysLate: number;
+    stressDaysLate: number;
+    sampleSize: number;
+    source: string;
+    projectIds: string[];
+  }[];
   projected: ProjectedCashEvent[];
   margins: MarginResult[];
   wip: WipReport & { rows: (WipReport["rows"][number] & { name?: string })[] };
@@ -91,9 +103,49 @@ export async function loadSnapshot(
     prisma.recurringExpense.findMany({ where: { companyId, active: true } }),
     prisma.project.findMany({
       where: { companyId, status: { in: [...ACTIVE] } },
-      include: { milestones: true },
+      include: { milestones: true, payer: true },
     }),
   ]);
+
+  // How late each payer actually runs. Terms say 30 days; a school district may
+  // take 70. The forecast plans on observed behaviour, and the stress scenario
+  // puts every payer at their own worst rather than one flat number for all.
+  const settled = ledger.filter((e) => e.direction === "IN" && e.actualDate && e.projectId);
+  const payerOfProject = new Map(billingProjects.map((p) => [p.id, p.payer]));
+  const settledByPayer = new Map<string, { dueDate: Date; paidDate: Date; amountCents: number }[]>();
+  for (const e of settled) {
+    const payer = payerOfProject.get(e.projectId!);
+    if (!payer) continue;
+    const list = settledByPayer.get(payer.id) ?? [];
+    list.push({ dueDate: e.expectedDate, paidDate: e.actualDate!, amountCents: n(e.amount) });
+    settledByPayer.set(payer.id, list);
+  }
+
+  const stressDelayByProjectId: Record<string, number> = {};
+  const payerBehavior: CompanySnapshot["payerBehavior"] = [];
+  const seenPayers = new Set<string>();
+  for (const p of billingProjects) {
+    if (!p.payer) continue;
+    const observation = observePayerBehavior(settledByPayer.get(p.payer.id) ?? []);
+    const worst = stressDaysLate(
+      { ...p.payer, typicalDaysLate: p.payer.typicalDaysLate },
+      observation,
+      stressDelayDays
+    );
+    stressDelayByProjectId[p.id] = worst;
+    if (!seenPayers.has(p.payer.id)) {
+      seenPayers.add(p.payer.id);
+      payerBehavior.push({
+        payerId: p.payer.id,
+        name: p.payer.name,
+        typicalDaysLate: p.payer.typicalDaysLate,
+        stressDaysLate: worst,
+        sampleSize: observation.sampleSize || p.payer.sampleSize,
+        source: p.payer.source,
+        projectIds: billingProjects.filter((x) => x.payerId === p.payer!.id).map((x) => x.id),
+      });
+    }
+  }
   const liabilities = liabilityRows.map(toEngineLiability);
   const overheads = overheadRows.map(toEngineRecurring);
   const milestoneGroups: MilestoneGroup[] = billingProjects
@@ -103,9 +155,7 @@ export async function loadSnapshot(
         projectId: p.id,
         projectName: p.name,
         netDays: p.netDays,
-        // Per-payer lateness lands in Phase 11; until then terms are taken at
-        // face value and lateness is explored through the stress scenario.
-        payerDaysLate: 0,
+        payerDaysLate: p.payer?.typicalDaysLate ?? 0,
         retainageReleaseDate: p.expectedEndDate ?? p.endDate,
       },
       milestones: p.milestones.map(toEngineMilestone),
@@ -127,6 +177,7 @@ export async function loadSnapshot(
     horizonDays,
     stressDelayDays,
     safetyThresholdCents: n(company.cashSafetyThreshold),
+    stressDelayByProjectId,
     events: [...ledgerEvents, ...projected],
   });
 
@@ -188,6 +239,7 @@ export async function loadSnapshot(
     openingCashCents: openingCash,
     cash,
     obligations,
+    payerBehavior,
     projected,
     margins,
     wip,

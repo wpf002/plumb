@@ -97,6 +97,7 @@ model Company {
   assets                Asset[]
   liabilities           Liability[]
   recurringExpenses     RecurringExpense[]
+  payers                Payer[]
   memberships           Membership[]
   invitations           Invitation[]
   createdAt             DateTime  @default(now())
@@ -123,6 +124,8 @@ model Project {
   name             String
   client           String
   clientType       ClientType
+  payerId          String?
+  payer            Payer?            @relation(fields: [payerId], references: [id], onDelete: SetNull)
   status           ProjectStatus     @default(BIDDING)
   billingType      BillingType       @default(FIXED_PRICE)
   netDays          Int               @default(30) // payment terms
@@ -292,6 +295,29 @@ model Milestone {
   @@index([projectId, expectedDate])
 }
 
+// Who actually pays this business: the GC, the school district, the property
+// owner. Subcontractors' payers behave very differently from each other, and
+// that behaviour — not the contract terms — is what determines when cash lands.
+model Payer {
+  id              String      @id @default(cuid())
+  companyId       String
+  company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name            String
+  type            PayerType   @default(GC)
+  /// Days past terms this payer typically takes. Applied on top of netDays.
+  typicalDaysLate Int         @default(0)
+  source          PayerSource @default(MANUAL)
+  /// How many settled invoices the observed figure is based on.
+  sampleSize      Int         @default(0)
+  notes           String?
+  projects        Project[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([companyId, name])
+  @@index([companyId])
+}
+
 // --- Balance sheet --------------------------------------------------------
 
 // What the business owns. Tracked with enough structure to depreciate rather
@@ -401,6 +427,17 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum PayerType {
+  GC
+  OWNER_DIRECT
+  PUBLIC_ENTITY
+}
+
+enum PayerSource {
+  MANUAL
+  OBSERVED
 }
 
 enum MilestoneTrigger {
