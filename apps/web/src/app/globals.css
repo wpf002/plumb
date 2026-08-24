@@ -848,3 +848,28 @@ select.input {
   color: var(--faint);
   font-size: 12.5px;
 }
+
+.confidence-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12.5px;
+}
+
+.confidence-text {
+  color: var(--muted);
+}
+
+.confidence-link {
+  color: var(--orange);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.confidence-link:hover {
+  text-decoration: underline;
+}

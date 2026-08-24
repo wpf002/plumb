@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch, getCompanyId, usd, centsFrom, shortDate, C } from "../ui";
+import { ReconciliationCard } from "../health-ui";
 
 const HORIZONS = [30, 60, 90, 120, 180, 365];
 
@@ -72,6 +73,7 @@ export default function Cash() {
   const [horizon, setHorizon] = useState(90);
   const [forecast, setForecast] = useState<any>(null);
   const [options, setOptions] = useState<any>(null);
+  const [dataHealth, setDataHealth] = useState<any>(null);
   const [wi, setWi] = useState({ ...emptyWhatIf });
   const [result, setResult] = useState<any>(null);
   const [timing, setTiming] = useState<any>(null);
@@ -81,16 +83,20 @@ export default function Cash() {
   const load = useCallback(async () => {
     const id = getCompanyId();
     if (!id) return;
-    const [f, o] = await Promise.all([
+    const [f, o, h] = await Promise.all([
       apiFetch(`/companies/${id}/forecast?horizon=${horizon}`, { cache: "no-store" }).then((r) =>
         r.ok ? r.json() : null
       ),
       apiFetch(`/companies/${id}/scenarios/options`, { cache: "no-store" }).then((r) =>
         r.ok ? r.json() : null
       ),
+      apiFetch(`/companies/${id}/data-health`, { cache: "no-store" }).then((r) =>
+        r.ok ? r.json() : null
+      ),
     ]);
     setForecast(f);
     setOptions(o);
+    setDataHealth(h);
     if (o?.projects?.length && !wi.projectId) {
       setWi((f2) => ({ ...f2, projectId: o.projects[0].id, originId: o.projects[0].id }));
     }
@@ -295,6 +301,8 @@ export default function Cash() {
           </table>
         )}
       </section>
+
+      {dataHealth && <ReconciliationCard health={dataHealth} />}
 
       {/* What if */}
       <section className="card">

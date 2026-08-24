@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
+import { DataHealthCard } from "../health-ui";
 
 const statusBadge: Record<string, { cls: string; label: string }> = {
   connected: { cls: "good", label: "Connected" },
@@ -164,6 +165,19 @@ async function get(path: string) {
   return j;
 }
 
+function DataHealth() {
+  const [health, setHealth] = useState<any>(null);
+  useEffect(() => {
+    if (!getCompanyId()) return;
+    apiFetch(`/companies/${getCompanyId()}/data-health`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setHealth)
+      .catch(() => setHealth(null));
+  }, []);
+  if (!health) return null;
+  return <DataHealthCard health={health} />;
+}
+
 export default function Integrations() {
   return (
     <main className="container" style={{ maxWidth: 860 }}>
@@ -173,6 +187,8 @@ export default function Integrations() {
           <p>Bring in the rest of your numbers. Each one previews here, and imports for real once you connect it.</p>
         </div>
       </div>
+
+      <DataHealth />
 
       <Connections />
 

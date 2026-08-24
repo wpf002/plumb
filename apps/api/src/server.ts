@@ -34,6 +34,7 @@ import { registerPayerRoutes } from "./routes/payers.js";
 import { registerScenarioRoutes } from "./routes/scenarios.js";
 import { registerServiceRoutes } from "./routes/services.js";
 import { registerAnalysisRoutes } from "./routes/analysis.js";
+import { registerTrustRoutes } from "./routes/trust.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -112,6 +113,7 @@ export function buildServer() {
   registerScenarioRoutes(app);
   registerServiceRoutes(app);
   registerAnalysisRoutes(app);
+  registerTrustRoutes(app);
 
   return app;
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usd, usdExact, scoreColor, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
+import { ConfidenceStrip } from "./health-ui";
 
 function ScoreRing({ score }: { score: number }) {
   const r = 54;
@@ -43,7 +44,7 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [health, forecast, projects, wip, digest, retainage, analysis] = await Promise.all([
+  const [health, forecast, projects, wip, digest, retainage, analysis, dataHealth] = await Promise.all([
     apiGet(`/companies/${companyId}/health`),
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/projects`),
@@ -51,6 +52,7 @@ export default async function Dashboard() {
     apiGet(`/companies/${companyId}/digest`),
     apiGet(`/companies/${companyId}/retainage`),
     apiGet(`/companies/${companyId}/analysis?horizon=90`),
+    apiGet(`/companies/${companyId}/data-health`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
@@ -87,6 +89,7 @@ export default async function Dashboard() {
             : "Built from your numbers by rule. Connect an AI key for the written read."}
           {analysis.fallbackReason && ` (${analysis.fallbackReason})`}
         </div>
+        <ConfidenceStrip health={dataHealth} />
       </section>
 
 
