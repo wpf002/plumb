@@ -9,10 +9,12 @@ like over the next 90 days.*
 
 > Revised 2026-08-23 against two source documents: the **Plumb Build/Rebuild
 > Spec** (running notes) and the **Plumb Competitive Landscape & Market
-> Opportunity Analysis**. Phases 1–6 shipped. Phases 7–16 below are the
-> remaining work, ordered by the competitive analysis' MVP priorities rather
-> than by the spec's numbering. §"Traceability" at the bottom maps every item in
-> both documents to a phase — nothing in either doc is unassigned.
+> Opportunity Analysis**, then built out the same day.
+>
+> **Phases 1–15 are shipped.** Every module in the spec and every MVP item in
+> the competitive analysis is implemented; Phase 16 is the explicitly deferred
+> list. §"Traceability" at the bottom maps each item in both documents to where
+> it landed.
 
 ---
 
@@ -90,20 +92,21 @@ each validated commercially.
 | 8 | Retainage tracking | **Built** | `engine/retainage` |
 | 9 | Auth, multi-company, roles, invitations | **Built** | `apps/api/src/routes/auth.ts`, `team.ts` |
 | 10 | Integrations (QBO 2-way, Plaid, payroll, FreshBooks, tax) | **Built (dry-run + live paths)** | `packages/qbo`, `apps/api/src/integrations` |
-| — | **Business profile** (employee count, revenue model, module gating) | **Missing** | — |
-| — | **Assets module** | **Missing** | — |
-| — | **Liabilities module** | **Missing** | — |
-| — | **Recurring overhead** as first-class records | **Missing** (only ad-hoc `CashEvent` rows tagged `OVERHEAD`/`LOAN`) | — |
-| — | **Invoicing milestones** | **Missing** (billing is a free-text memo on a QBO invoice) | — |
-| — | **Delay ripple** (shift a milestone → forecast moves) | **Missing** | — |
-| — | **Payer behavior modeling** (per-GC days-late) | **Missing** (single global `stressDelayDays`) | — |
-| — | **Scenario modeling** | **Missing** | — |
-| — | **Services / recurring revenue module** | **Missing** | — |
-| — | **AI analysis layer** | **Missing** (digest is templated strings, no model) | — |
-| — | **Net worth / balance sheet view** | **Missing** | — |
-| — | **Data-quality / forecast-confidence surface** | **Missing** | — |
+| — | Business profile (employee count, revenue model, module gating) | **Built** | `Company`, `/setup` |
+| — | Assets module | **Built** | `Asset`, `engine/assets` |
+| — | Liabilities module | **Built** | `Liability`, `engine/liabilities` |
+| — | Recurring overhead as first-class records | **Built** | `RecurringExpense`, `engine/schedule` |
+| — | Invoicing milestones | **Built** | `Milestone`, `engine/milestones` |
+| — | Delay ripple (shift a milestone → forecast moves) | **Built** | `PATCH .../milestones/:id/date` |
+| — | Payer behavior modeling (per-payer days-late, observed) | **Built** | `Payer`, `engine/payers` |
+| — | Scenario modeling | **Built** | `engine/scenario` |
+| — | Services / recurring revenue module | **Built** | `ServiceContract`, `engine/services` |
+| — | AI analysis layer | **Built** | `apps/api/src/ai.ts`, `engine/collisions` |
+| — | Net worth / balance sheet view | **Built** | `engine/networth`, `/balance-sheet` |
+| — | Data-quality / forecast-confidence surface | **Built** | `engine/confidence`, `/data-health` |
 
-**Honest read on the "rebuild" framing.** The running notes call the current
+**Honest read on the "rebuild" framing** (written before the build; kept because
+it explains the ordering). The running notes call the current
 build off-direction. The competitive analysis' own MVP ranking — (1) cash-flow
 engine, (2) job margin bid vs actual vs projected, (3) plain-English health
 screen, (4) QBO sync, (5) advisory recommendations — is largely already
@@ -157,7 +160,7 @@ approval. 38 tests green.
 
 ---
 
-### Phase 7 — Business profile & module gating
+### Phase 7 — Business profile & module gating — DONE
 *Small, unblocks gating for everything below. Do it first.*
 
 - `Company.employeeCount: Int`, `Company.revenueModel: RevenueModel`
@@ -179,7 +182,7 @@ differs between a `PROJECT` and a `RECURRING` company.
 
 ---
 
-### Phase 8 — Balance sheet: Assets & Liabilities
+### Phase 8 — Balance sheet: Assets & Liabilities — DONE
 *The spec's items 2 and 3. Missing entirely today.*
 
 **8a — Assets.**
@@ -219,7 +222,7 @@ and the loan's payments appear in the forecast (via Phase 9).
 
 ---
 
-### Phase 9 — Recurring overhead + the schedule-expansion layer
+### Phase 9 — Recurring overhead + the schedule-expansion layer — DONE
 *The spec's item 4, and the plumbing that makes 8b, 13 and 10 actually reach the
 forecast. **This is the load-bearing phase.***
 
@@ -247,7 +250,7 @@ the real QBO bill syncs.
 
 ---
 
-### Phase 10 — Invoicing milestones + delay ripple
+### Phase 10 — Invoicing milestones + delay ripple — DONE
 *The spec's item 5, and the highest-leverage single gap in the product.*
 
 Today a project's contribution to cash is inferred; the spec wants it driven by
@@ -281,7 +284,7 @@ breach date on the dashboard, with no manual recalculation.
 
 ---
 
-### Phase 11 — Payer behavior modeling
+### Phase 11 — Payer behavior modeling — DONE
 *From the competitive analysis §3.3 — the differentiator even against Siteline.*
 
 Today stress-testing uses one global `stressDelayDays`. Real subs know that one
@@ -304,7 +307,7 @@ dates from identical invoice dates.
 
 ---
 
-### Phase 12 — Scenario modeling
+### Phase 12 — Scenario modeling — DONE
 *The spec's item 7b. The "what if" half of the cash engine.*
 
 - `engine/scenario.ts`: pure `applyScenario(baseInput, mutation) → { base,
@@ -327,7 +330,7 @@ curves and a one-sentence answer with its reasons.
 
 ---
 
-### Phase 13 — Services / recurring revenue module
+### Phase 13 — Services / recurring revenue module — DONE
 *The spec's item 6. The competitive analysis explicitly recommends deferring it
 behind the cash-flow work — hence its position here, not earlier.*
 
@@ -347,7 +350,7 @@ winter projects gets one coherent forecast from both.
 
 ---
 
-### Phase 14 — AI analysis layer
+### Phase 14 — AI analysis layer — DONE
 *The spec's item 8. Currently the digest writes templated strings; there is no
 model in the repo.*
 
@@ -388,7 +391,7 @@ can be clicked back to its source rows.
 
 ---
 
-### Phase 15 — Trust, data quality & time-to-value
+### Phase 15 — Trust, data quality & time-to-value — DONE
 *Cross-cutting. Directly addresses risks 2, 4 and 5 in the competitive analysis
 — the ones most likely to kill the product regardless of feature completeness.*
 
@@ -665,6 +668,21 @@ Cheap and decisive, one weekend:
 | §10 product form — QBO-native add-on, service-assisted → self-serve | Go-to-market above |
 
 ---
+
+## Where it stands
+
+Phases 1–15 are committed. Full monorepo build green (6/6); 118 tests pass
+(engine 91, api 18, qbo 9). Reference profile: Foley Electric, a $6M commercial
+electrical sub — 2 open jobs with 10 billing milestones, 5 assets, 5 liabilities,
+7 recurring overhead lines, 4 service contracts, 2 payers with 9 settled
+invoices of payment history.
+
+What is **not** built, deliberately: everything in Phase 16, and the live paths
+that need real credentials (QuickBooks OAuth against a real Intuit app, Plaid,
+Gusto, and an `ANTHROPIC_API_KEY` for the written analysis). Each of those runs
+as a non-mutating dry run without credentials and switches to the live path when
+its key is set — the dry-run behaviour is tested; the live behaviour is tested
+against mocked transports, not a real account.
 
 ## Locked invariants
 
