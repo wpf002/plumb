@@ -3,14 +3,35 @@ import { prisma } from "@plumb/db";
 import { n } from "../map.js";
 import { getPlaid } from "../plaid.js";
 
+export const TRADES = [
+  "ELECTRICAL",
+  "HVAC",
+  "PLUMBING",
+  "ROOFING",
+  "MASONRY",
+  "DRYWALL",
+  "CONCRETE",
+  "MECHANICAL",
+  "LANDSCAPING",
+  "GENERAL",
+  "OTHER",
+] as const;
+
+export const REVENUE_MODELS = ["PROJECT", "RECURRING", "BOTH"] as const;
+
 const settingsBodySchema = {
   type: "object",
   additionalProperties: false,
   properties: {
+    name: { type: "string", minLength: 1, maxLength: 120 },
+    trade: { type: "string", enum: [...TRADES] },
+    employeeCount: { type: "integer", minimum: 0, maximum: 100000 },
+    revenueModel: { type: "string", enum: [...REVENUE_MODELS] },
     monthlyLaborHours: { type: "integer", minimum: 0, maximum: 100000 },
     cashSafetyThresholdCents: { type: "integer", minimum: 0 },
     portfolioTargetMarginPct: { type: "number", minimum: -100, maximum: 100 },
     defaultRetainagePct: { type: "number", minimum: 0, maximum: 100 },
+    setupCompleted: { type: "boolean" },
   },
 } as const;
 
@@ -38,6 +59,9 @@ async function currentSettings(companyId: string) {
       id: c.id,
       name: c.name,
       trade: c.trade,
+      employeeCount: c.employeeCount,
+      revenueModel: c.revenueModel,
+      setupCompletedAt: c.setupCompletedAt,
       monthlyLaborHours: c.monthlyLaborHours,
       cashSafetyThresholdCents: n(c.cashSafetyThreshold),
       portfolioTargetMarginPct: c.portfolioTargetMargin,
@@ -58,10 +82,15 @@ export function registerSettingsRoutes(app: FastifyInstance) {
   app.put<{
     Params: { companyId: string };
     Body: {
+      name?: string;
+      trade?: (typeof TRADES)[number];
+      employeeCount?: number;
+      revenueModel?: (typeof REVENUE_MODELS)[number];
       monthlyLaborHours?: number;
       cashSafetyThresholdCents?: number;
       portfolioTargetMarginPct?: number;
       defaultRetainagePct?: number;
+      setupCompleted?: boolean;
     };
   }>(
     "/companies/:companyId/settings",
@@ -71,6 +100,13 @@ export function registerSettingsRoutes(app: FastifyInstance) {
       await prisma.company.update({
         where: { id: req.params.companyId },
         data: {
+          ...(b.name !== undefined && { name: b.name }),
+          ...(b.trade !== undefined && { trade: b.trade }),
+          ...(b.employeeCount !== undefined && { employeeCount: b.employeeCount }),
+          ...(b.revenueModel !== undefined && { revenueModel: b.revenueModel }),
+          ...(b.setupCompleted !== undefined && {
+            setupCompletedAt: b.setupCompleted ? new Date() : null,
+          }),
           ...(b.monthlyLaborHours !== undefined && { monthlyLaborHours: b.monthlyLaborHours }),
           ...(b.cashSafetyThresholdCents !== undefined && {
             cashSafetyThreshold: BigInt(b.cashSafetyThresholdCents),

@@ -38,3 +38,49 @@ export function scoreColor(score: number): string {
   if (score >= 60) return C.amber;
   return C.red;
 }
+
+/** Business profile vocabulary. Mirrors the Trade / RevenueModel enums in the DB. */
+export const TRADES = [
+  "ELECTRICAL",
+  "HVAC",
+  "PLUMBING",
+  "ROOFING",
+  "MASONRY",
+  "DRYWALL",
+  "CONCRETE",
+  "MECHANICAL",
+  "LANDSCAPING",
+  "GENERAL",
+  "OTHER",
+] as const;
+
+export type Trade = (typeof TRADES)[number];
+
+export const TRADE_LABELS: Record<Trade, string> = {
+  ELECTRICAL: "Electrical",
+  HVAC: "HVAC",
+  PLUMBING: "Plumbing",
+  ROOFING: "Roofing",
+  MASONRY: "Masonry",
+  DRYWALL: "Drywall",
+  CONCRETE: "Concrete",
+  MECHANICAL: "Mechanical",
+  LANDSCAPING: "Landscaping",
+  GENERAL: "General contracting",
+  OTHER: "Other trade",
+};
+
+export const REVENUE_MODELS = ["PROJECT", "RECURRING", "BOTH"] as const;
+
+export type RevenueModel = (typeof REVENUE_MODELS)[number];
+
+export const REVENUE_MODEL_COPY: Record<RevenueModel, { title: string; sub: string }> = {
+  PROJECT: { title: "Bid work", sub: "Jobs you win by bid, with a start and an end." },
+  RECURRING: { title: "Recurring service", sub: "Contracts that bill on a schedule." },
+  BOTH: { title: "Both", sub: "Bid jobs plus recurring service agreements." },
+};
+
+/** Does this company's revenue model turn on project-based modules? */
+export const hasProjects = (m?: string) => m !== "RECURRING";
+/** …and recurring-revenue modules (service contracts)? */
+export const hasServices = (m?: string) => m === "RECURRING" || m === "BOTH";

@@ -37,6 +37,9 @@ async function main() {
     data: {
       name: "Foley Electric",
       trade: "ELECTRICAL",
+      employeeCount: 18,
+      revenueModel: "BOTH",
+      setupCompletedAt: new Date(),
       cashSafetyThreshold: C(50_000),
       defaultRetainagePct: 10,
       portfolioTargetMargin: 14,

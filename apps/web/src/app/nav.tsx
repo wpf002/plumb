@@ -3,17 +3,30 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { apiFetch } from "./ui";
+import { apiFetch, hasProjects } from "./ui";
 
-const links = [
+type Company = {
+  id: string;
+  name: string;
+  role: string;
+  trade: string;
+  employeeCount: number;
+  revenueModel: string;
+  setupCompletedAt: string | null;
+};
+type Me = { user: { email: string }; companies: Company[]; activeCompanyId: string | null };
+
+// `show` gates a link on the active company's revenue model — a pure bid shop
+// never sees service contracts, a pure service shop never sees bid coverage.
+const links: { href: string; label: string; show?: (m: string) => boolean }[] = [
   { href: "/", label: "Dashboard" },
-  { href: "/bid", label: "Bid Decision" },
-  { href: "/digest", label: "Weekly Digest" },
+  { href: "/bid", label: "Bid", show: hasProjects },
+  { href: "/digest", label: "Digest" },
   { href: "/integrations", label: "Integrations" },
   { href: "/settings", label: "Settings" },
 ];
 
-type Me = { user: { email: string }; companies: { id: string; name: string }[]; activeCompanyId: string | null };
+const PUBLIC = ["/login", "/invite", "/reset"];
 
 export function Topbar() {
   const path = usePathname();
@@ -26,6 +39,16 @@ export function Topbar() {
       .then(setMe)
       .catch(() => setMe(null));
   }, [path]);
+
+  const active = me?.companies.find((c) => c.id === me.activeCompanyId);
+  const onPublic = PUBLIC.some((p) => path.startsWith(p));
+
+  // A company that hasn't finished the wizard has no capacity, targets, or
+  // opening cash — every number downstream would be fiction. Send them there.
+  useEffect(() => {
+    if (!active || onPublic) return;
+    if (!active.setupCompletedAt && path !== "/setup") router.replace("/setup");
+  }, [active, onPublic, path, router]);
 
   async function logout() {
     await apiFetch("/auth/logout", { method: "POST" });
@@ -43,8 +66,7 @@ export function Topbar() {
     router.refresh();
   }
 
-  const onLogin = path === "/login";
-  const active = me?.companies.find((c) => c.id === me.activeCompanyId);
+  const visible = links.filter((l) => !l.show || l.show(active?.revenueModel ?? "BOTH"));
 
   return (
     <header className="topbar">
@@ -61,8 +83,8 @@ export function Topbar() {
           Plumb
         </Link>
 
-        {me && !onLogin &&
-          links.map((l) => {
+        {me && !onPublic && path !== "/setup" &&
+          visible.map((l) => {
             const isActive = l.href === "/" ? path === "/" : path.startsWith(l.href);
             return (
               <Link key={l.href} href={l.href} className={`navlink${isActive ? " active" : ""}`}>
@@ -73,7 +95,7 @@ export function Topbar() {
 
         <span className="topbar-spacer" />
 
-        {me && !onLogin && (
+        {me && !onPublic && (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {me.companies.length > 1 ? (
               <select

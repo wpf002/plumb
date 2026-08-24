@@ -1,5 +1,19 @@
 import type { Cents } from "./money.js";
 
+export type Trade =
+  | "ELECTRICAL"
+  | "HVAC"
+  | "PLUMBING"
+  | "ROOFING"
+  | "MASONRY"
+  | "DRYWALL"
+  | "CONCRETE"
+  | "MECHANICAL"
+  | "LANDSCAPING"
+  | "GENERAL"
+  | "OTHER";
+/** Which revenue models a company runs. Gates which modules are active. */
+export type RevenueModel = "PROJECT" | "RECURRING" | "BOTH";
 export type ClientType = "OWNER_DIRECT" | "GC";
 export type ProjectStatus = "BIDDING" | "AWARDED" | "ACTIVE" | "CLOSED";
 export type BillingType =

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd } from "../ui";
+import { apiFetch, getCompanyId, usd, TRADES, TRADE_LABELS, REVENUE_MODELS, REVENUE_MODEL_COPY } from "../ui";
 
 const sourceLabel: Record<string, string> = {
   MANUAL: "Entered manually",
@@ -88,6 +88,10 @@ export default function Settings() {
       cashSafetyThreshold: String(Math.round(json.company.cashSafetyThresholdCents / 100)),
       portfolioTargetMarginPct: String(json.company.portfolioTargetMarginPct),
       defaultRetainagePct: String(json.company.defaultRetainagePct),
+      name: json.company.name,
+      trade: json.company.trade,
+      employeeCount: String(json.company.employeeCount),
+      revenueModel: json.company.revenueModel,
     });
   }
 
@@ -213,9 +217,91 @@ export default function Settings() {
         </div>
       </section>
 
+      {/* Business profile — drives which modules are active */}
+      <section className="card">
+        <div className="card-title">Business Profile</div>
+        <div className="field-grid">
+          <div>
+            <label className="label">Business Name</label>
+            <input
+              className="input"
+              value={form.name ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              disabled={!isOwner}
+            />
+          </div>
+          <div>
+            <label className="label">Trade</label>
+            <select
+              className="input"
+              value={form.trade ?? "GENERAL"}
+              onChange={(e) => setForm((f) => ({ ...f, trade: e.target.value }))}
+              disabled={!isOwner}
+            >
+              {TRADES.map((t) => (
+                <option key={t} value={t}>
+                  {TRADE_LABELS[t]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Employees</label>
+            <input
+              className="input num"
+              value={form.employeeCount ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, employeeCount: e.target.value }))}
+              inputMode="numeric"
+              disabled={!isOwner}
+            />
+          </div>
+        </div>
+        <label className="label" style={{ marginTop: 18 }}>
+          Revenue Model
+        </label>
+        <div className="choice-grid">
+          {REVENUE_MODELS.map((m) => (
+            <button
+              key={m}
+              type="button"
+              className={`choice${(form.revenueModel ?? "BOTH") === m ? " selected" : ""}`}
+              onClick={() => isOwner && setForm((f) => ({ ...f, revenueModel: m }))}
+            >
+              <span className="choice-title">{REVENUE_MODEL_COPY[m].title}</span>
+              <span className="choice-sub">{REVENUE_MODEL_COPY[m].sub}</span>
+            </button>
+          ))}
+        </div>
+        <p className="hint">Decides which modules Plumb turns on. Changing it changes the nav.</p>
+        <div style={{ marginTop: 18 }}>
+          <button
+            className="btn btn-primary"
+            disabled={busy !== null || !isOwner}
+            onClick={() =>
+              post(
+                "/settings",
+                {
+                  _method: "PUT",
+                  payload: {
+                    name: form.name,
+                    trade: form.trade,
+                    employeeCount: Math.round(Number(form.employeeCount) || 0),
+                    revenueModel: form.revenueModel,
+                  },
+                  success: "Business profile saved.",
+                },
+                "profile"
+              )
+            }
+          >
+            {busy === "profile" ? "Saving…" : "Save Profile"}
+          </button>
+        </div>
+      </section>
+
       {/* Business settings */}
       <section className="card">
-        <div className="card-title">Business Settings</div>
+        <div className="card-title">Capacity &amp; Targets</div>
         <div className="field-grid">
           <div>
             <label className="label">Crew Capacity (Labor Hrs / Month)</label>

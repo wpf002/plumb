@@ -10,6 +10,7 @@ import {
   COMPANY_COOKIE,
 } from "../auth.js";
 import { getNotifier } from "../notify.js";
+import { TRADES, REVENUE_MODELS } from "./settings.js";
 
 const WEB_URL = process.env.WEB_URL ?? "http://localhost:4200";
 const RESET_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -23,7 +24,9 @@ const registerSchema = {
     password: { type: "string", minLength: 8, maxLength: 200 },
     name: { type: "string", maxLength: 120 },
     companyName: { type: "string", minLength: 1, maxLength: 120 },
-    trade: { type: "string", maxLength: 60 },
+    trade: { type: "string", enum: [...TRADES] },
+    employeeCount: { type: "integer", minimum: 0, maximum: 100000 },
+    revenueModel: { type: "string", enum: [...REVENUE_MODELS] },
   },
 } as const;
 
@@ -58,14 +61,37 @@ async function setAuthCookies(reply: FastifyReply, sessionId: string, expiresAt:
 async function companiesFor(userId: string) {
   const memberships = await prisma.membership.findMany({
     where: { userId },
-    include: { company: { select: { id: true, name: true } } },
+    include: {
+      company: {
+        select: {
+          id: true,
+          name: true,
+          trade: true,
+          employeeCount: true,
+          revenueModel: true,
+          setupCompletedAt: true,
+        },
+      },
+    },
     orderBy: { createdAt: "asc" },
   });
-  return memberships.map((m) => ({ id: m.company.id, name: m.company.name, role: m.role }));
+  // The web gates nav and dashboard sections on revenueModel, and bounces to the
+  // setup wizard when setupCompletedAt is null — so both travel with /auth/me.
+  return memberships.map((m) => ({ ...m.company, role: m.role }));
 }
 
 export function registerAuthRoutes(app: FastifyInstance) {
-  app.post<{ Body: { email: string; password: string; name?: string; companyName: string; trade?: string } }>(
+  app.post<{
+    Body: {
+      email: string;
+      password: string;
+      name?: string;
+      companyName: string;
+      trade?: (typeof TRADES)[number];
+      employeeCount?: number;
+      revenueModel?: (typeof REVENUE_MODELS)[number];
+    };
+  }>(
     "/auth/register",
     { schema: { body: registerSchema } },
     async (req, reply) => {
@@ -77,7 +103,12 @@ export function registerAuthRoutes(app: FastifyInstance) {
         data: { email, name: req.body.name ?? null, passwordHash: await hashPassword(req.body.password) },
       });
       const company = await prisma.company.create({
-        data: { name: req.body.companyName, trade: req.body.trade ?? "GENERAL" },
+        data: {
+          name: req.body.companyName,
+          trade: req.body.trade ?? "GENERAL",
+          employeeCount: req.body.employeeCount ?? 0,
+          revenueModel: req.body.revenueModel ?? "BOTH",
+        },
       });
       await prisma.membership.create({ data: { userId: user.id, companyId: company.id, role: "OWNER" } });
 

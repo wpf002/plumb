@@ -117,7 +117,7 @@ h3 {
   box-shadow: 0 6px 20px rgba(14, 42, 71, 0.18);
 }
 .topbar-inner {
-  max-width: 1080px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 0 28px;
   height: 62px;
@@ -155,7 +155,7 @@ h3 {
   border-radius: 8px;
   transition: color 0.15s, background 0.15s;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1180px) {
   .topbar-tag {
     display: none;
   }
@@ -583,4 +583,115 @@ select.input {
   height: 1px;
   background: var(--line);
   margin: 20px 0;
+}
+
+/* --- Setup wizard --------------------------------------------------------- */
+
+.stepper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faint);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+}
+
+.step.current {
+  color: var(--navy);
+  border-color: var(--orange);
+}
+
+.step.done {
+  color: var(--green);
+}
+
+.step-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.step.current .step-dot {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #fff;
+}
+
+.step.done .step-dot {
+  background: var(--green-050);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font: inherit;
+}
+
+.choice:hover {
+  border-color: var(--line-strong);
+}
+
+.choice.selected {
+  border-color: var(--orange);
+  background: var(--orange-050);
+}
+
+.choice-title {
+  font-weight: 650;
+  color: var(--navy);
+  font-size: 14.5px;
+}
+
+.choice-sub {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 14px 0 0;
+}
+
+.wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }

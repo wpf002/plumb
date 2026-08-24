@@ -77,7 +77,13 @@ model PasswordResetToken {
 model Company {
   id                    String    @id @default(cuid())
   name                  String
-  trade                 String // ELECTRICAL, HVAC, PLUMBING, etc.
+  trade                 Trade     @default(GENERAL)
+  employeeCount         Int       @default(0)
+  // Which revenue models this business runs. Gates which modules are active:
+  // PROJECT hides service contracts, RECURRING hides bid coverage. Most trades
+  // are BOTH (bid work plus recurring service agreements).
+  revenueModel          RevenueModel @default(BOTH)
+  setupCompletedAt      DateTime?
   cashSafetyThreshold   BigInt    @default(0) // cents
   defaultRetainagePct   Float     @default(10)
   portfolioTargetMargin Float     @default(12)
@@ -275,6 +281,26 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum Trade {
+  ELECTRICAL
+  HVAC
+  PLUMBING
+  ROOFING
+  MASONRY
+  DRYWALL
+  CONCRETE
+  MECHANICAL
+  LANDSCAPING
+  GENERAL
+  OTHER
+}
+
+enum RevenueModel {
+  PROJECT
+  RECURRING
+  BOTH
 }
 
 enum ClientType {
