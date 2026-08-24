@@ -1,3 +1,4 @@
+import { sourceKeyFor, type Frequency } from "@plumb/shared";
 import type { CostCategory } from "@plumb/shared";
 
 // --- Minimal QBO entity shapes (only fields we consume) ---------------------
@@ -200,4 +201,35 @@ export function mapTime(t: QboTimeActivity): MappedCost {
     docType: "PAYROLL",
     incurredDate: new Date(t.TxnDate),
   };
+}
+
+/** An obligation that a synced bill can settle, matched by vendor substring. */
+export interface ObligationMatcher {
+  origin: "LIABILITY" | "OVERHEAD";
+  id: string;
+  frequency: Frequency;
+  keyword: string;
+}
+
+/**
+ * Does this bill settle a scheduled obligation?
+ *
+ * Returns the source key of the obligation-and-period so the projected payment
+ * is superseded rather than counted a second time. Matching is a case-insensitive
+ * substring on the vendor name — the same shape as the category-mapping
+ * overrides, and the same thing an owner can reason about.
+ */
+export function matchObligation(
+  vendorName: string | undefined,
+  date: Date,
+  matchers: ObligationMatcher[]
+): string | null {
+  if (!vendorName) return null;
+  const v = vendorName.toLowerCase();
+  for (const m of matchers) {
+    if (m.keyword && v.includes(m.keyword.toLowerCase())) {
+      return sourceKeyFor(m.origin, m.id, m.frequency, date);
+    }
+  }
+  return null;
 }

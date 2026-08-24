@@ -143,6 +143,39 @@ export default async function Dashboard() {
         )}
       </section>
 
+      {/* Fixed obligations — the nut before a single job cost */}
+      <section className="card">
+        <div className="row-between">
+          <div className="card-title" style={{ marginBottom: 0 }}>
+            Recurring Obligations
+          </div>
+          <Link href="/recurring" className="btn btn-ghost btn-xs">
+            Manage
+          </Link>
+        </div>
+        <div className="stats">
+          <div className="stat">
+            <div className="stat-label">Every Month, No Matter What</div>
+            <div className="stat-value num">{usd(forecast.obligations.monthlyFixedCents)}</div>
+            <div className="stat-sub">overhead + debt service</div>
+          </div>
+          <div className="stat">
+            <div className="stat-label">Overhead</div>
+            <div className="stat-value num">{usd(forecast.obligations.monthlyOverheadCents)}</div>
+            <div className="stat-sub">insurance, fuel, rent, software</div>
+          </div>
+          <div className="stat">
+            <div className="stat-label">Debt Service</div>
+            <div className="stat-value num">
+              {usd(forecast.obligations.monthlyDebtServiceCents)}
+            </div>
+            <div className="stat-sub">
+              <Link href="/balance-sheet">loans, cards, leases</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Projects */}
       <section className="card">
         <div className="card-title">Project Margins</div>

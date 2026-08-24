@@ -5,6 +5,7 @@ import type {
   BudgetLine as EBudget,
   Asset as EAsset,
   Liability as ELiability,
+  RecurringExpense as ERecurring,
 } from "@plumb/shared";
 
 // Prisma stores cents as BigInt. The engine works in `number` cents.
@@ -91,5 +92,18 @@ export function toEngineLiability(l: any): ELiability {
     endDate: l.endDate ?? undefined,
     assetId: l.assetId ?? undefined,
     active: l.active,
+  };
+}
+
+export function toEngineRecurring(r: any): ERecurring {
+  return {
+    id: r.id,
+    name: r.name,
+    category: r.category,
+    amountCents: n(r.amount),
+    frequency: r.frequency,
+    startDate: r.startDate,
+    endDate: r.endDate ?? undefined,
+    active: r.active,
   };
 }

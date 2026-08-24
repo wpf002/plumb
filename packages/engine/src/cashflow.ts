@@ -122,3 +122,39 @@ export function computeCashFlow(input: CashFlowInput): CashFlowResult {
     safetyThresholdCents,
   };
 }
+
+export interface MonthPoint {
+  month: string; // YYYY-MM
+  /** Balance at the end of the month. */
+  endingBalanceCents: Cents;
+  lowBalanceCents: Cents;
+  lowDate: string;
+}
+
+/**
+ * Collapse a daily series to month ends. A 12-month view has to exist once
+ * multi-year liabilities and leases do — a 120-day window can't show a payoff
+ * date or a lease expiry — but 365 daily points is unreadable.
+ */
+export function rollupMonthly(series: CashPoint[]): MonthPoint[] {
+  const byMonth = new Map<string, MonthPoint>();
+  for (const p of series) {
+    const month = p.date.slice(0, 7);
+    const existing = byMonth.get(month);
+    if (!existing) {
+      byMonth.set(month, {
+        month,
+        endingBalanceCents: p.balanceCents,
+        lowBalanceCents: p.balanceCents,
+        lowDate: p.date,
+      });
+      continue;
+    }
+    existing.endingBalanceCents = p.balanceCents; // series is chronological
+    if (p.balanceCents < existing.lowBalanceCents) {
+      existing.lowBalanceCents = p.balanceCents;
+      existing.lowDate = p.date;
+    }
+  }
+  return [...byMonth.values()];
+}

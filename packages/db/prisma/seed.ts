@@ -31,6 +31,7 @@ async function main() {
   await prisma.session.deleteMany();
   await prisma.membership.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.recurringExpense.deleteMany();
   await prisma.liability.deleteMany();
   await prisma.asset.deleteMany();
   await prisma.categoryMapping.deleteMany();
@@ -301,6 +302,19 @@ async function main() {
         endDate: day(430),
         renewalTerms: "36-month term, 12-month renewal at market rate",
       },
+    ],
+  });
+
+  // Recurring overhead: the fixed nut before a single job cost.
+  await prisma.recurringExpense.createMany({
+    data: [
+      { companyId: co.id, name: "General liability & umbrella", category: "INSURANCE", amount: C(3_850), frequency: "MONTHLY", startDate: day(-2), matchKeyword: "Travelers" },
+      { companyId: co.id, name: "Workers' comp", category: "INSURANCE", amount: C(6_200), frequency: "MONTHLY", startDate: day(1) },
+      { companyId: co.id, name: "Fuel & fleet cards", category: "OVERHEAD", amount: C(1_150), frequency: "WEEKLY", startDate: day(-1), matchKeyword: "WEX" },
+      { companyId: co.id, name: "Office rent & utilities", category: "OVERHEAD", amount: C(2_400), frequency: "MONTHLY", startDate: day(5) },
+      { companyId: co.id, name: "Software (estimating, QBO, phones)", category: "OVERHEAD", amount: C(940), frequency: "MONTHLY", startDate: day(7) },
+      { companyId: co.id, name: "Office salaries (non-job)", category: "PAYROLL", amount: C(9_800), frequency: "MONTHLY", startDate: day(3) },
+      { companyId: co.id, name: "Quarterly estimated tax", category: "TAX", amount: C(18_000), frequency: "QUARTERLY", startDate: day(24) },
     ],
   });
 

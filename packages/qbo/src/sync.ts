@@ -6,6 +6,8 @@ import {
   mapCustomer,
   mapInvoice,
   mapTime,
+  matchObligation,
+  type ObligationMatcher,
   type QboBill,
   type QboCustomer,
   type QboInvoice,
@@ -118,9 +120,14 @@ export async function syncCompany(
     }
 
     // 3. Bills + Purchases -> job cost + outbound cash.
-    for (const b of bills) await upsertBill(companyId, resolveProject, b, "BILL", overrides);
+    // Obligations that named a vendor keyword can be settled by a synced bill;
+    // stamping the source key is what stops a real payment from landing on top
+    // of its own projection in the forecast.
+    const matchers = await loadObligationMatchers(companyId);
+    for (const b of bills)
+      await upsertBill(companyId, resolveProject, b, "BILL", overrides, matchers);
     for (const p of purchases)
-      await upsertBill(companyId, resolveProject, p, "PURCHASE", overrides);
+      await upsertBill(companyId, resolveProject, p, "PURCHASE", overrides, matchers);
 
     // 4. Time -> labor cost.
     for (const t of times) {
@@ -155,10 +162,38 @@ export async function syncCompany(
   }
 }
 
+async function loadObligationMatchers(companyId: string): Promise<ObligationMatcher[]> {
+  const [liabilities, expenses] = await Promise.all([
+    prisma.liability.findMany({
+      where: { companyId, active: true, matchKeyword: { not: null } },
+      select: { id: true, paymentFrequency: true, matchKeyword: true },
+    }),
+    prisma.recurringExpense.findMany({
+      where: { companyId, active: true, matchKeyword: { not: null } },
+      select: { id: true, frequency: true, matchKeyword: true },
+    }),
+  ]);
+  return [
+    ...liabilities.map((l) => ({
+      origin: "LIABILITY" as const,
+      id: l.id,
+      frequency: l.paymentFrequency,
+      keyword: l.matchKeyword!,
+    })),
+    ...expenses.map((e) => ({
+      origin: "OVERHEAD" as const,
+      id: e.id,
+      frequency: e.frequency,
+      keyword: e.matchKeyword!,
+    })),
+  ];
+}
+
 async function upsertCash(
   companyId: string,
   projectId: string | null,
-  m: ReturnType<typeof mapInvoice>
+  m: ReturnType<typeof mapInvoice>,
+  sourceKey: string | null = null
 ) {
   const existing = await prisma.cashEvent.findFirst({ where: { qboId: m.qboId } });
   const data = {
@@ -170,6 +205,7 @@ async function upsertCash(
     expectedDate: m.expectedDate,
     status: m.status,
     qboId: m.qboId,
+    ...(sourceKey ? { sourceKey } : {}),
   };
   if (existing)
     await prisma.cashEvent.update({ where: { id: existing.id }, data });
@@ -202,10 +238,12 @@ async function upsertBill(
   resolveProject: (jobId?: string) => string | null,
   bill: QboBill,
   kind: "BILL" | "PURCHASE",
-  overrides: Parameters<typeof mapBill>[2] = []
+  overrides: Parameters<typeof mapBill>[2] = [],
+  matchers: ObligationMatcher[] = []
 ) {
   const { cost, cash } = mapBill(bill, kind, overrides);
   const projectId = resolveProject(cost.qboJobId);
   if (projectId) await upsertCost(projectId, cost);
-  await upsertCash(companyId, projectId, cash);
+  const sourceKey = matchObligation(cost.vendorName, cash.expectedDate, matchers);
+  await upsertCash(companyId, projectId, cash, sourceKey);
 }

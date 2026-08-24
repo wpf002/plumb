@@ -206,3 +206,18 @@ export function monthsBetween(from: Date, to: Date): number {
     (to.getUTCDate() < from.getUTCDate() ? 1 : 0);
   return Math.max(0, months);
 }
+
+/**
+ * A recurring running cost that isn't debt — insurance, software, fuel, rent.
+ * Expanded into projected outflows by `engine/schedule`.
+ */
+export interface RecurringExpense {
+  id: string;
+  name: string;
+  category: CashCategory;
+  amountCents: Cents;
+  frequency: Frequency;
+  startDate: Date;
+  endDate?: Date;
+  active: boolean;
+}

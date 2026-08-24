@@ -4,13 +4,24 @@ import {
   computeHealth,
   computeMargin,
   computeWip,
+  expandSchedules,
+  summarizeObligations,
   type CashFlowResult,
   type HealthResult,
   type MarginResult,
+  type ObligationSummary,
+  type ProjectedCashEvent,
   type WipReport,
 } from "@plumb/engine";
-import { monthKey } from "@plumb/shared";
-import { n, toEngineProject, toEngineCosts, toEngineChangeOrders } from "./map.js";
+import { addDays, monthKey } from "@plumb/shared";
+import {
+  n,
+  toEngineProject,
+  toEngineCosts,
+  toEngineChangeOrders,
+  toEngineLiability,
+  toEngineRecurring,
+} from "./map.js";
 
 const DEFAULT_OPENING_CENTS = 250_000_00;
 const ACTIVE = ["ACTIVE", "AWARDED"] as const;
@@ -19,6 +30,9 @@ export interface CompanySnapshot {
   company: { id: string; name: string; cashSafetyThresholdCents: number };
   openingCashCents: number;
   cash: CashFlowResult;
+  /** Scheduled obligations feeding the forecast, and the monthly fixed nut. */
+  obligations: ObligationSummary;
+  projected: ProjectedCashEvent[];
   margins: MarginResult[];
   wip: WipReport & { rows: (WipReport["rows"][number] & { name?: string })[] };
   health: HealthResult;
@@ -55,23 +69,43 @@ export async function loadSnapshot(
 
   const openingCash = await openingCashCents(companyId, opts.openingCents);
 
-  const events = await prisma.cashEvent.findMany({ where: { companyId } });
+  const ledger = await prisma.cashEvent.findMany({ where: { companyId } });
+  const ledgerEvents = ledger.map((e) => ({
+    id: e.id,
+    projectId: e.projectId,
+    direction: e.direction,
+    amountCents: n(e.amount),
+    category: e.category,
+    expectedDate: e.expectedDate,
+    actualDate: e.actualDate,
+    status: e.status,
+  }));
+
+  // Scheduled obligations become projected events the forecast consumes exactly
+  // like observed ones. Anything the ledger already settled (matched by source
+  // key) is dropped here rather than counted twice.
+  const [liabilityRows, overheadRows] = await Promise.all([
+    prisma.liability.findMany({ where: { companyId, active: true } }),
+    prisma.recurringExpense.findMany({ where: { companyId, active: true } }),
+  ]);
+  const liabilities = liabilityRows.map(toEngineLiability);
+  const overheads = overheadRows.map(toEngineRecurring);
+  const projected = expandSchedules({
+    asOf,
+    horizonEnd: addDays(asOf, horizonDays),
+    liabilities,
+    overheads,
+    supersededKeys: ledger.map((e) => e.sourceKey).filter((k): k is string => !!k),
+  });
+  const obligations = summarizeObligations(overheads, liabilities);
+
   const cash = computeCashFlow({
     openingCashCents: openingCash,
     asOf,
     horizonDays,
     stressDelayDays,
     safetyThresholdCents: n(company.cashSafetyThreshold),
-    events: events.map((e) => ({
-      id: e.id,
-      projectId: e.projectId,
-      direction: e.direction,
-      amountCents: n(e.amount),
-      category: e.category,
-      expectedDate: e.expectedDate,
-      actualDate: e.actualDate,
-      status: e.status,
-    })),
+    events: [...ledgerEvents, ...projected],
   });
 
   const projects = await prisma.project.findMany({
@@ -108,7 +142,7 @@ export async function loadSnapshot(
   const peakUtilization90d = Math.max(0, ...next3.map((m) => (byMonth[m] ?? 0) / cap));
 
   // Receivables aging: inbound cash not yet received.
-  const inbound = events.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");
+  const inbound = ledger.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");
   const arOutstandingCents = inbound.reduce((a, e) => a + n(e.amount), 0);
   const arPastDueCents = inbound
     .filter((e) => e.expectedDate < asOf)
@@ -131,6 +165,8 @@ export async function loadSnapshot(
     },
     openingCashCents: openingCash,
     cash,
+    obligations,
+    projected,
     margins,
     wip,
     health,

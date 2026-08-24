@@ -138,10 +138,19 @@ export const FREQUENCY_LABELS: Record<string, string> = {
 export const dateInput = (v: string | Date | null | undefined) =>
   v ? new Date(v).toISOString().slice(0, 10) : "";
 
-/** Short human date for tables. */
+/**
+ * Short human date for tables. Rendered in UTC on purpose: dates are stored at
+ * UTC midnight, and formatting them in a western timezone would show the day
+ * before.
+ */
 export const shortDate = (v: string | Date | null | undefined) =>
   v
-    ? new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    ? new Date(v).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        timeZone: "UTC",
+      })
     : "—";
 
 /** Dollars typed by a human → integer cents. */

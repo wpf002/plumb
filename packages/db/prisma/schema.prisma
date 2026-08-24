@@ -96,6 +96,7 @@ model Company {
   categoryMappings      CategoryMapping[]
   assets                Asset[]
   liabilities           Liability[]
+  recurringExpenses     RecurringExpense[]
   memberships           Membership[]
   invitations           Invitation[]
   createdAt             DateTime  @default(now())
@@ -226,8 +227,13 @@ model CashEvent {
   actualDate   DateTime?
   status       CashStatus    @default(EXPECTED)
   qboId        String?
+  // Identity of the obligation-and-period this event settles, e.g.
+  // "OVERHEAD:<id>:2026-09". A ledger event carrying a key supersedes the
+  // projection with the same key — that is how projections never double-count.
+  sourceKey    String?
   createdAt    DateTime      @default(now())
 
+  @@unique([companyId, sourceKey])
   @@index([companyId, expectedDate])
   @@index([qboId])
 }
@@ -302,6 +308,9 @@ model Liability {
   termMonths        Int?
   endDate           DateTime? // lease end
   renewalTerms      String?
+  // If a synced QBO bill's vendor contains this, the actual supersedes the
+  // projected payment for that period instead of double-counting it.
+  matchKeyword      String?
   assetId           String? // the truck this loan bought, the building this lease rents
   asset             Asset?        @relation(fields: [assetId], references: [id], onDelete: SetNull)
   active            Boolean       @default(true)
@@ -310,6 +319,27 @@ model Liability {
 
   @@index([companyId])
   @@index([assetId])
+}
+
+// The ordinary running costs that aren't debt: insurance, software, fuel,
+// utilities, rent, non-job payroll. Deliberately simpler than Liability — this
+// is the low-friction entry point for "what does it cost to open the doors".
+model RecurringExpense {
+  id           String       @id @default(cuid())
+  companyId    String
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name         String
+  category     CashCategory @default(OVERHEAD)
+  amount       BigInt // cents per occurrence
+  frequency    Frequency    @default(MONTHLY)
+  startDate    DateTime
+  endDate      DateTime?
+  matchKeyword String? // QBO vendor substring; see Liability.matchKeyword
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([companyId])
 }
 
 // --- Integrations ---------------------------------------------------------

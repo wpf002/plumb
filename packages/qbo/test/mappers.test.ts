@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { classifyCategory, mapBill, type QboBill } from "../src/mappers.js";
+import { classifyCategory, mapBill, matchObligation, type QboBill } from "../src/mappers.js";
 
 describe("classifyCategory", () => {
   it("falls back to the built-in rules", () => {
@@ -33,5 +33,24 @@ describe("classifyCategory", () => {
     const { cost } = mapBill(bill, "BILL", [{ keyword: "rexel", category: "MATERIAL" }]);
     expect(cost.category).toBe("MATERIAL");
     expect(cost.amountCents).toBe(123456);
+  });
+});
+
+describe("obligation matching", () => {
+  const matchers = [
+    { origin: "OVERHEAD" as const, id: "e1", frequency: "MONTHLY" as const, keyword: "Travelers" },
+    { origin: "LIABILITY" as const, id: "l1", frequency: "MONTHLY" as const, keyword: "Frost" },
+  ];
+
+  it("matches a vendor substring case-insensitively and keys by month", () => {
+    expect(matchObligation("TRAVELERS INSURANCE CO", new Date("2026-09-14T00:00:00Z"), matchers))
+      .toBe("OVERHEAD:e1:2026-09");
+    expect(matchObligation("Frost Bank", new Date("2026-09-02T00:00:00Z"), matchers))
+      .toBe("LIABILITY:l1:2026-09");
+  });
+
+  it("returns null for an unrelated or missing vendor", () => {
+    expect(matchObligation("Home Depot", new Date("2026-09-14T00:00:00Z"), matchers)).toBeNull();
+    expect(matchObligation(undefined, new Date("2026-09-14T00:00:00Z"), matchers)).toBeNull();
   });
 });
