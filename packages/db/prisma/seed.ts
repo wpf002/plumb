@@ -48,6 +48,8 @@ async function main() {
   await prisma.budgetLine.deleteMany();
   await prisma.phase.deleteMany();
   await prisma.project.deleteMany();
+  await prisma.importRun.deleteMany();
+  await prisma.glAccount.deleteMany();
   await prisma.company.deleteMany();
 
   const co = await prisma.company.create({
@@ -64,6 +66,9 @@ async function main() {
       monthlyLaborHours: 5 * 160,
     },
   });
+
+  // Every company has a primary legal entity; multi-entity companies add more.
+  await prisma.entity.create({ data: { companyId: co.id, name: "Foley Electric, LLC", isPrimary: true } });
 
   // Demo owner login: owner@foley.test / plumb1234
   const owner = await prisma.user.create({

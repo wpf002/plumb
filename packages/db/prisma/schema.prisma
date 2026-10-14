@@ -88,7 +88,39 @@ model Company {
   defaultRetainagePct   Float     @default(10)
   portfolioTargetMargin Float     @default(12)
   monthlyLaborHours     Int       @default(0) // crew capacity
+  // Profile fields carried by imported test accounts and onboarding.
+  externalId            String?
+  naicsCode             String?
+  city                  String?
+  state                 String?
+  foundedYear           Int?
+  ownerName             String?
+  ownerAge              Int?
+  legalStructure        String?
+  accountingMethod      String?
+  fiscalYearEnd         String?
+  ownerSalaryCents      BigInt?
+  ownerDistributionsCents BigInt?
+  goals                 String?
+  // Where this company's data came from: SEED, IMPORT, or QBO.
+  dataSource            String    @default("SEED")
   projects              Project[]
+  entities              Entity[]
+  customers             Customer[]
+  vendors               Vendor[]
+  invoices              Invoice[]
+  bills                 Bill[]
+  crews                 Crew[]
+  employees             Employee[]
+  timeEntries           TimeEntry[]
+  opportunities         Opportunity[]
+  serviceCallPeriods    ServiceCallPeriod[]
+  recurringRevenue      RecurringRevenueEntry[]
+  budgets               Budget[]
+  forecastSnapshots     ForecastSnapshot[]
+  glAccounts            GlAccount[]
+  valuationInput        ValuationInput?
+  importRuns            ImportRun[]
   cashEvents            CashEvent[]
   cashSnapshots         CashSnapshot[]
   qbo                   QboConnection?
@@ -140,6 +172,16 @@ model Project {
   endDate          DateTime
   expectedEndDate  DateTime? // current projection if slipping (delay impact)
   qboJobId         String? // QBO Customer:Job id
+  externalId       String? // source system id (import, field-service tool)
+  customerId       String?
+  customer         Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  category         String? // job type, for underbid-by-type analysis
+  segment          String? // service line / market segment
+  performanceFlag  String? // source system's own on-track / over flag, kept for audit
+  periods          ProjectPeriod[]
+  invoices         Invoice[]
+  bills            Bill[]
+  timeEntries      TimeEntry[]
   phases           Phase[]
   budgetLines      BudgetLine[]
   costs            CostEntry[]
@@ -150,6 +192,7 @@ model Project {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 
+  @@unique([companyId, externalId])
   @@index([companyId, status])
 }
 
@@ -218,6 +261,10 @@ model ChangeOrder {
   createdAt     DateTime          @default(now())
 
   @@index([projectId, status])
+  /// Days this change adds to the schedule.
+  timeImpactDays Int?
+  /// Work started before the change was approved — unbilled exposure.
+  performedBeforeApproval Boolean @default(false)
 }
 
 model CashEvent {
@@ -312,6 +359,7 @@ model Payer {
   sampleSize      Int         @default(0)
   notes           String?
   projects        Project[]
+  customers       Customer[]
   serviceContracts ServiceContract[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -340,6 +388,17 @@ model Asset {
   usefulLifeMonths Int? // null => no straight-line decline, value holds flat
   salvageValue     BigInt        @default(0)
   disposedAt       DateTime?
+  externalId       String?
+  assetType        String? // truck, van, excavator, skid steer, lift, trailer...
+  unitCount        Int           @default(1)
+  replacementCost  BigInt?
+  // Annual operating cost and use, for fleet ROI and repair-vs-replace.
+  maintenanceCostAnnual BigInt?
+  repairCostAnnual BigInt?
+  fuelCostAnnual   BigInt?
+  insuranceCostAnnual BigInt?
+  utilizationPct   Float?
+  downtimeDaysAnnual Int?
   liabilities      Liability[]
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -370,6 +429,10 @@ model Liability {
   // If a synced QBO bill's vendor contains this, the actual supersedes the
   // projected payment for that period instead of double-counting it.
   matchKeyword      String?
+  externalId        String?
+  collateral        String?
+  originationDate   DateTime?
+  maturityDate      DateTime?
   assetId           String? // the truck this loan bought, the building this lease rents
   asset             Asset?        @relation(fields: [assetId], references: [id], onDelete: SetNull)
   active            Boolean       @default(true)
@@ -426,6 +489,386 @@ model ServiceContract {
   @@index([companyId])
 }
 
+// --- DNRD canonical model ---------------------------------------------------
+//
+// DNRD owns its data model. QuickBooks, Jobber, ServiceTitan, Procore, and CSV
+// imports all map into these objects; none of them define the schema.
+//
+// Where an object in the DNRD spec maps onto an existing model rather than a new
+// one: Estimate = BudgetLine (estimate by cost category, optional hours);
+// Material = CostEntry with category MATERIAL; Contract = the contract terms on
+// Project; Recurring Contract = ServiceContract; Loan = Liability; Vehicle =
+// Asset with assetType; Job = Project (bid work) or ServiceCallPeriod (service).
+
+model Entity {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name      String
+  isPrimary Boolean  @default(true)
+  branches  Branch[]
+  createdAt DateTime @default(now())
+
+  @@index([companyId])
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  entityId  String
+  entity    Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  name      String
+  city      String?
+  state     String?
+  createdAt DateTime @default(now())
+
+  @@index([entityId])
+}
+
+model Customer {
+  id               String        @id @default(cuid())
+  companyId        String
+  company          Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId       String?
+  name             String
+  segment          String?
+  customerType     String?
+  paymentTermsDays Int?
+  avgDaysToPay     Float?
+  active           Boolean       @default(true)
+  relationshipStart DateTime?
+  /// Payment-behaviour profile used by the forecast (see Payer).
+  payerId          String?
+  payer            Payer?        @relation(fields: [payerId], references: [id], onDelete: SetNull)
+  projects         Project[]
+  invoices         Invoice[]
+  opportunities    Opportunity[]
+  recurringRevenue RecurringRevenueEntry[]
+  createdAt        DateTime      @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId])
+}
+
+model Vendor {
+  id              String   @id @default(cuid())
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId      String?
+  name            String
+  category        String?
+  termsDays       Int?
+  isSubcontractor Boolean  @default(false)
+  bills           Bill[]
+  createdAt       DateTime @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId])
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  companyId  String
+  company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId String?
+  customerId String?
+  customer   Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  projectId  String?
+  project    Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  /// PROJECT, RECURRING, or SERVICE.
+  source     String?
+  segment    String?
+  issueDate  DateTime
+  dueDate    DateTime
+  termsDays  Int
+  amount     BigInt // cents
+  paidDate   DateTime?
+  status     InvoiceStatus @default(OPEN)
+  payments   Payment[]
+  createdAt  DateTime      @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId, issueDate])
+  @@index([companyId, status])
+}
+
+model Payment {
+  id           String   @id @default(cuid())
+  invoiceId    String
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount       BigInt // cents
+  receivedDate DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([invoiceId])
+}
+
+model Bill {
+  id         String     @id @default(cuid())
+  companyId  String
+  company    Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId String?
+  vendorId   String?
+  vendor     Vendor?    @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  projectId  String?
+  project    Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  category   String?
+  billDate   DateTime
+  dueDate    DateTime
+  termsDays  Int
+  amount     BigInt // cents
+  paidDate   DateTime?
+  status     BillStatus @default(OPEN)
+  createdAt  DateTime   @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId, billDate])
+}
+
+model Crew {
+  id                   String     @id @default(cuid())
+  companyId            String
+  company              Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name                 String
+  kind                 CrewKind   @default(PROJECT)
+  /// Billable hours this crew can deliver per month at full utilization.
+  monthlyCapacityHours Int?
+  employees            Employee[]
+  capacity             CrewCapacityPeriod[]
+  createdAt            DateTime   @default(now())
+
+  @@unique([companyId, name])
+}
+
+model CrewCapacityPeriod {
+  id             String @id @default(cuid())
+  crewId         String
+  crew           Crew   @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  period         String // YYYY-MM
+  capacityHours  Float?
+  usedHours      Float?
+  utilizationPct Float?
+
+  @@unique([crewId, period])
+}
+
+model Employee {
+  id                String      @id @default(cuid())
+  companyId         String
+  company           Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId        String?
+  name              String
+  position          String?
+  /// SALARY or HOURLY.
+  payType           String
+  baseAnnualCents   BigInt?
+  hourlyRateCents   Int?
+  crewId            String?
+  crew              Crew?       @relation(fields: [crewId], references: [id], onDelete: SetNull)
+  hireDate          DateTime?
+  terminationDate   DateTime?
+  /// Share of this person's pay that is direct job cost rather than overhead.
+  cogsAllocationPct Float       @default(0)
+  timeEntries       TimeEntry[]
+  createdAt         DateTime    @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId])
+}
+
+// Hours and pay for one employee over one period. Monthly when that is all the
+// source has (payroll exports); daily or per job when time tracking provides it.
+model TimeEntry {
+  id                String    @id @default(cuid())
+  companyId         String
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employeeId        String
+  employee          Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  period            String // YYYY-MM
+  date              DateTime?
+  projectId         String?
+  project           Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  regularHours      Float     @default(0)
+  overtimeHours     Float     @default(0)
+  regularPay        BigInt    @default(0)
+  overtimePay       BigInt    @default(0)
+  grossPay          BigInt // cents
+  cogsAllocationPct Float?
+  createdAt         DateTime  @default(now())
+
+  @@index([companyId, period])
+  @@index([employeeId, period])
+}
+
+// One row of a project's monthly WIP schedule.
+model ProjectPeriod {
+  id                      String  @id @default(cuid())
+  projectId               String
+  project                 Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  period                  String // YYYY-MM
+  pctComplete             Float
+  costMonth               BigInt  @default(0)
+  costCumulative          BigInt  @default(0)
+  revenueMonth            BigInt  @default(0)
+  revenueCumulative       BigInt  @default(0)
+  billedMonth             BigInt?
+  billedCumulative        BigInt?
+  retainageHeldCumulative BigInt?
+  changeOrdersApprovedCumulative BigInt?
+  changeOrdersPending     BigInt?
+  revisedContract         BigInt?
+  estimatedTotalCost      BigInt?
+  estimatedCostToComplete BigInt?
+  committedCost           BigInt?
+  overbilling             BigInt?
+  underbilling            BigInt?
+  projectedGrossProfit    BigInt?
+
+  @@unique([projectId, period])
+}
+
+model Opportunity {
+  id                String            @id @default(cuid())
+  companyId         String
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  externalId        String?
+  customerId        String?
+  customer          Customer?         @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  description       String
+  projectType       String?
+  segment           String?
+  estimatedValue    BigInt // cents
+  probabilityPct    Float
+  expectedMarginPct Float?
+  expectedStart     DateTime?
+  expectedClose     DateTime?
+  status            OpportunityStatus @default(OPEN)
+  lostReason        String?
+  lostYear          Int?
+  createdAt         DateTime          @default(now())
+
+  @@unique([companyId, externalId])
+  @@index([companyId, status])
+}
+
+// Service-call volume and revenue by segment and category per month. Ticket
+// detail per job comes from field-service integrations when connected.
+model ServiceCallPeriod {
+  id             String  @id @default(cuid())
+  companyId      String
+  company        Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  period         String // YYYY-MM
+  segment        String
+  category       String
+  ticketCount    Int
+  avgTicketCents BigInt
+  revenue        BigInt // cents
+  laborHours     Float?
+  materialCost   BigInt?
+  callbacks      Int?
+
+  @@unique([companyId, period, segment, category])
+}
+
+// Recurring revenue actually billed, per customer per month. ServiceContract is
+// the forward-looking agreement; this is the history churn and renewal come from.
+model RecurringRevenueEntry {
+  id         String    @id @default(cuid())
+  companyId  String
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  segment    String?
+  period     String // YYYY-MM
+  amount     BigInt // cents
+  kind       String    @default("RECURRING")
+
+  @@index([companyId, period])
+  @@index([customerId, period])
+}
+
+model Budget {
+  id        String  @id @default(cuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  year      Int
+  /// REVENUE, DIRECT_COST, OPEX, CAPEX, NET_INCOME, or a GL account key.
+  line      String
+  budget    BigInt // cents
+  actual    BigInt?
+
+  @@unique([companyId, year, line])
+}
+
+// A forecast as it stood on a given day, kept so it can be graded against what
+// actually happened.
+model ForecastSnapshot {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  asOf      DateTime
+  kind      String // CASH_13W, CASH_12M, REVENUE_12M, BACKLOG, PAYROLL
+  payload   Json
+  createdAt DateTime @default(now())
+
+  @@index([companyId, kind, asOf])
+}
+
+// Ledger accounts. Accounts from a chart of accounts carry a code; accounts
+// created from statement imports carry the statement line key. Monthly amounts
+// live in GlAmount, which is what the statements are built from.
+model GlAccount {
+  id          String      @id @default(cuid())
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  key         String
+  code        String?
+  name        String
+  statement   GlStatement
+  type        GlType
+  /// Finer classification: CURRENT, FIXED, LABOR, MATERIALS, DEPRECIATION, INTEREST, OWNER_COMP...
+  subtype     String?
+  /// Revenue rollup bucket for the service-line view.
+  serviceLine String?
+  sortOrder   Int         @default(0)
+  amounts     GlAmount[]
+
+  @@unique([companyId, statement, key])
+  @@index([companyId, statement])
+}
+
+model GlAmount {
+  id          String    @id @default(cuid())
+  glAccountId String
+  glAccount   GlAccount @relation(fields: [glAccountId], references: [id], onDelete: Cascade)
+  period      String // YYYY-MM
+  amount      BigInt // cents
+
+  @@unique([glAccountId, period])
+}
+
+model ValuationInput {
+  id        String   @id @default(cuid())
+  companyId String   @unique
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  asOf      DateTime
+  data      Json
+  createdAt DateTime @default(now())
+}
+
+// One import of a file set: what was read, written, and skipped.
+model ImportRun {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  source     String // CSV, QBO, PLAID...
+  status     String // OK, PARTIAL, ERROR
+  report     Json
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+
+  @@index([companyId, startedAt])
+}
+
 // --- Integrations ---------------------------------------------------------
 
 model QboConnection {
@@ -454,6 +897,53 @@ model SyncLog {
   error      String?
 
   @@index([companyId, startedAt])
+}
+
+enum InvoiceStatus {
+  OPEN
+  PAID
+  VOID
+}
+
+enum BillStatus {
+  OPEN
+  PAID
+  VOID
+}
+
+enum CrewKind {
+  PROJECT
+  SERVICE
+  MAINTENANCE
+  SUPPORT
+}
+
+enum OpportunityStatus {
+  OPEN
+  WON
+  LOST
+}
+
+enum GlStatement {
+  CHART
+  INCOME
+  BALANCE
+  CASH_FLOW
+}
+
+enum GlType {
+  REVENUE
+  COGS
+  OPEX
+  OTHER_INCOME
+  OTHER_EXPENSE
+  ASSET
+  LIABILITY
+  EQUITY
+  CF_OPERATING
+  CF_INVESTING
+  CF_FINANCING
+  SUBTOTAL
 }
 
 enum ServiceStatus {
@@ -601,6 +1091,7 @@ enum CashStatus {
 }
 
 enum ChangeOrderStatus {
+  REQUESTED
   PENDING
   APPROVED
   REJECTED
