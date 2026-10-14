@@ -84,7 +84,7 @@ export function Topbar() {
               <circle cx="10" cy="10" r="1.6" fill="#fff" />
             </svg>
           </span>
-          Plumb
+          DNRD
         </Link>
 
         {me && !onPublic && path !== "/setup" &&
@@ -100,12 +100,12 @@ export function Topbar() {
         <span className="topbar-spacer" />
 
         {me && !onPublic && (
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {me.companies.length > 1 ? (
               <select
                 value={me.activeCompanyId ?? ""}
                 onChange={(e) => switchCompany(e.target.value)}
-                style={{ background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, padding: "6px 8px", fontSize: 13 }}
+                style={{ background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, padding: "6px 8px", fontSize: 14 }}
               >
                 {me.companies.map((c) => (
                   <option key={c.id} value={c.id} style={{ color: "#111" }}>

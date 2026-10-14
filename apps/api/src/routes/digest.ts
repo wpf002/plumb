@@ -37,7 +37,7 @@ export function registerDigestRoutes(app: FastifyInstance) {
       return {
         digest,
         rendered: {
-          subject: `Plumb weekly — ${digest.headline}`,
+          subject: `DNRD Weekly — ${digest.headline}`,
           text: renderDigestText(digest),
           html: renderDigestHtml(digest),
         },
@@ -54,7 +54,7 @@ export function registerDigestRoutes(app: FastifyInstance) {
       const digest = await digestFor(req.params.companyId);
       const result = await getNotifier().send({
         to: req.body.to,
-        subject: `Plumb weekly — ${digest.headline}`,
+        subject: `DNRD Weekly — ${digest.headline}`,
         text: renderDigestText(digest),
         html: renderDigestHtml(digest),
       });

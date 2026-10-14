@@ -145,17 +145,16 @@ export default function Settings() {
       <div className="page-head">
         <div>
           <h1>Settings</h1>
-          <p>The numbers Plumb plans against. A couple of minutes to set up.</p>
         </div>
       </div>
 
       {!isOwner && (
-        <div className="alert warning" style={{ marginBottom: 20 }}>
+        <div className="alert warning" style={{ marginBottom: 16 }}>
           <div className="alert-title">View only. Only an owner can change company settings.</div>
         </div>
       )}
       {(msg || error) && (
-        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 20 }}>
+        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 16 }}>
           <div className="alert-title">{error ?? msg}</div>
         </div>
       )}
@@ -163,10 +162,7 @@ export default function Settings() {
       {/* Opening cash */}
       <section className="card">
         <div className="card-title">Opening Cash</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          The starting bank balance every cash forecast builds from.
-        </p>
-        <div className="stats" style={{ marginBottom: 18 }}>
+        <div className="stats" style={{ marginBottom: 16 }}>
           <div className="stat">
             <div className="stat-label">Current</div>
             <div className="stat-value num">{oc ? usd(oc.balanceCents) : "—"}</div>
@@ -256,7 +252,7 @@ export default function Settings() {
             />
           </div>
         </div>
-        <label className="label" style={{ marginTop: 18 }}>
+        <label className="label" style={{ marginTop: 16 }}>
           Revenue Model
         </label>
         <div className="choice-grid">
@@ -272,8 +268,7 @@ export default function Settings() {
             </button>
           ))}
         </div>
-        <p className="hint">Decides which modules Plumb turns on. Changing it changes the nav.</p>
-        <div style={{ marginTop: 18 }}>
+        <div style={{ marginTop: 16 }}>
           <button
             className="btn btn-primary"
             disabled={busy !== null || !isOwner}
@@ -340,7 +335,7 @@ export default function Settings() {
             />
           </div>
         </div>
-        <div style={{ marginTop: 18 }}>
+        <div style={{ marginTop: 16 }}>
           <button
             className="btn btn-primary"
             disabled={busy !== null || !isOwner}
@@ -376,13 +371,13 @@ export default function Settings() {
                 <tr key={m.membershipId}>
                   <td className="cell-name">
                     {m.name ?? m.email}
-                    {m.userId === myUserId && <span style={{ color: "var(--faint)", fontWeight: 400 }}> (you)</span>}
+                    {m.userId === myUserId && <span style={{ color: "var(--text-faint)", fontWeight: 400 }}> (you)</span>}
                   </td>
-                  <td style={{ color: "var(--muted)" }}>{m.email}</td>
+                  <td style={{ color: "var(--text-muted)" }}>{m.email}</td>
                   <td><span className={`badge ${m.role === "OWNER" ? "info" : "neutral"}`}>{m.role}</span></td>
                   <td className="num">
                     {isOwner && m.userId !== myUserId && (
-                      <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 13 }} disabled={busy !== null} onClick={() => removeMember(m.membershipId)}>
+                      <button className="btn btn-ghost" style={{ padding: "4px 10px", fontSize: 14 }} disabled={busy !== null} onClick={() => removeMember(m.membershipId)}>
                         Remove
                       </button>
                     )}
@@ -391,8 +386,8 @@ export default function Settings() {
               ))}
               {team.invites.map((i: any, idx: number) => (
                 <tr key={`inv-${idx}`}>
-                  <td className="cell-name" style={{ color: "var(--muted)" }}>{i.email}</td>
-                  <td style={{ color: "var(--faint)" }}>invited</td>
+                  <td className="cell-name" style={{ color: "var(--text-muted)" }}>{i.email}</td>
+                  <td style={{ color: "var(--text-faint)" }}>invited</td>
                   <td><span className="badge warn">Pending {i.role}</span></td>
                   <td></td>
                 </tr>
@@ -402,7 +397,7 @@ export default function Settings() {
         )}
 
         {isOwner ? (
-          <div style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+          <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16 }}>
             <div style={{ display: "flex", gap: 12, flexWrap: "nowrap", alignItems: "flex-end" }}>
               <div style={{ flex: "1 1 240px" }}>
                 <label className="label">Invite By Email</label>
@@ -420,7 +415,7 @@ export default function Settings() {
               </button>
             </div>
             {inviteLink && (
-              <div className="alert good" style={{ marginTop: 14 }}>
+              <div className="alert good" style={{ marginTop: 12 }}>
                 <div style={{ width: "100%" }}>
                   <div className="alert-title">Invitation created</div>
                   <div className="alert-detail">No email provider set up yet. Share this link so they can join:</div>
@@ -430,7 +425,7 @@ export default function Settings() {
             )}
           </div>
         ) : (
-          <p style={{ color: "var(--faint)", fontSize: 13.5, margin: 0 }}>Only owners can invite or remove teammates.</p>
+          <p style={{ color: "var(--text-faint)", fontSize: 14, margin: 0 }}>Only owners can invite or remove teammates.</p>
         )}
       </section>
     </main>

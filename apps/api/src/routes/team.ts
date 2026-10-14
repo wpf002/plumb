@@ -59,9 +59,9 @@ export function registerTeamRoutes(app: FastifyInstance) {
       const acceptUrl = `${WEB_URL}/invite?token=${token}`;
       const delivery = await getNotifier().send({
         to: email,
-        subject: `You're invited to ${company.name} on Plumb`,
-        text: `${company.name} invited you to Plumb as ${invite.role}. Accept: ${acceptUrl}`,
-        html: `<p>${company.name} invited you to Plumb as <b>${invite.role}</b>.</p><p><a href="${acceptUrl}">Accept the invitation</a></p>`,
+        subject: `You're invited to ${company.name} on DNRD`,
+        text: `${company.name} invited you to DNRD as ${invite.role}. Accept: ${acceptUrl}`,
+        html: `<p>${company.name} invited you to DNRD as <b>${invite.role}</b>.</p><p><a href="${acceptUrl}">Accept the invitation</a></p>`,
       });
       return { invite: { email, role: invite.role, expiresAt: invite.expiresAt }, acceptUrl, delivery };
     }

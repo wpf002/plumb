@@ -69,7 +69,7 @@ export function registerTrustRoutes(app: FastifyInstance) {
         monthlyFixedCents: 0,
       });
 
-      // Reconciliation: the bank balance Plumb is planning from, plus everything
+      // Reconciliation: the bank balance the forecast plans from, plus everything
       // that has actually settled since, so the owner can check it by hand.
       const cashNow = await openingCashCents(companyId);
       const settledSince = snapshot

@@ -6,10 +6,10 @@ import { apiFetch, getCompanyId, usd, C } from "../ui";
 type MonthRow = { month: string; hours: string };
 
 const recStyle: Record<string, { bg: string; label: string }> = {
-  BID_AGGRESSIVE: { bg: C.green, label: "Bid Aggressive" },
-  BID_NORMAL: { bg: C.orange, label: "Bid Normal" },
-  BID_SELECTIVE: { bg: C.amber, label: "Bid Selective" },
-  PASS: { bg: C.red, label: "Pass" },
+  BID_AGGRESSIVE: { bg: C.good, label: "Bid Aggressive" },
+  BID_NORMAL: { bg: C.accent, label: "Bid Normal" },
+  BID_SELECTIVE: { bg: C.warn, label: "Bid Selective" },
+  PASS: { bg: C.danger, label: "Pass" },
 };
 
 const loadBadge: Record<string, string> = {
@@ -80,7 +80,6 @@ export default function BidPage() {
       <div className="page-head">
         <div>
           <h1>Should You Bid This Job?</h1>
-          <p>Weighed against your committed crew, worst-case cash, and how recent jobs have run.</p>
         </div>
       </div>
 
@@ -130,7 +129,7 @@ export default function BidPage() {
           + Add Month
         </button>
 
-        <div style={{ marginTop: 22 }}>
+        <div style={{ marginTop: 24 }}>
           <button className="btn btn-primary" onClick={submit} disabled={loading}>
             {loading ? "Evaluating…" : "Evaluate Bid"}
           </button>
@@ -145,11 +144,11 @@ export default function BidPage() {
             <span className="rec-badge" style={{ background: rec.bg }}>
               {rec.label}
             </span>
-            <span style={{ color: "var(--muted)" }}>
-              Bid margin <strong className="num" style={{ color: "var(--navy)" }}>{result.bidMarginPct}%</strong>{" "}
+            <span style={{ color: "var(--text-muted)" }}>
+              Bid margin <strong className="num" style={{ color: "var(--ink)" }}>{result.bidMarginPct}%</strong>{" "}
               ({result.marginVsTargetPct >= 0 ? "+" : ""}
               {result.marginVsTargetPct} pts vs target) · Cash headroom{" "}
-              <strong className="num" style={{ color: "var(--navy)" }}>{usd(result.cashHeadroomCents)}</strong>
+              <strong className="num" style={{ color: "var(--ink)" }}>{usd(result.cashHeadroomCents)}</strong>
             </span>
           </div>
 
@@ -184,7 +183,7 @@ export default function BidPage() {
 
           <div className="divider" />
           <div className="card-title">Why</div>
-          <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "var(--ink)" }}>
+          <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "var(--text)" }}>
             {result.reasons.map((r: string, i: number) => (
               <li key={i}>{r}</li>
             ))}

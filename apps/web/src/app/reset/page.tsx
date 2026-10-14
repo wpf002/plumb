@@ -75,10 +75,10 @@ function Reset() {
             <p className="neg" style={{ margin: 0 }}>{error}</p>
           ) : (
             <>
-              {validEmail && <p style={{ marginTop: 0, color: "var(--muted)" }}>Set a new password for {validEmail}.</p>}
+              {validEmail && <p style={{ marginTop: 0, color: "var(--text-muted)" }}>Set a new password for {validEmail}.</p>}
               <label className="label">New Password</label>
               <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && reset()} />
-              <button className="btn btn-primary" onClick={reset} disabled={busy || !password} style={{ width: "100%", marginTop: 18 }}>
+              <button className="btn btn-primary" onClick={reset} disabled={busy || !password} style={{ width: "100%", marginTop: 16 }}>
                 {busy ? "…" : "Set New Password"}
               </button>
               {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
@@ -101,7 +101,7 @@ function Reset() {
           <>
             <label className="label">Email</label>
             <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && request()} />
-            <button className="btn btn-primary" onClick={request} disabled={busy || !email} style={{ width: "100%", marginTop: 18 }}>
+            <button className="btn btn-primary" onClick={request} disabled={busy || !email} style={{ width: "100%", marginTop: 16 }}>
               {busy ? "…" : "Send Reset Link"}
             </button>
             {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}

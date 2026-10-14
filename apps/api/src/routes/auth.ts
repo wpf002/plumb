@@ -224,9 +224,9 @@ export function registerAuthRoutes(app: FastifyInstance) {
         const url = `${WEB_URL}/reset?token=${token}`;
         const delivery = await getNotifier().send({
           to: email,
-          subject: "Reset your Plumb password",
+          subject: "Reset your DNRD password",
           text: `Reset your password: ${url}`,
-          html: `<p><a href="${url}">Reset your Plumb password</a> (expires in 1 hour).</p>`,
+          html: `<p><a href="${url}">Reset your DNRD password</a> (expires in 1 hour).</p>`,
         });
         if (!delivery.delivered) resetUrl = url; // dry-run: surface the link
       }

@@ -161,12 +161,11 @@ export default function BalanceSheet() {
       <div className="page-head">
         <div>
           <h1>Balance Sheet</h1>
-          <p>What the business owns, what it owes, and what it&rsquo;s worth today.</p>
         </div>
       </div>
 
       {error && (
-        <div className="alert critical" style={{ marginBottom: 20 }}>
+        <div className="alert critical" style={{ marginBottom: 16 }}>
           <div className="alert-title">{error}</div>
         </div>
       )}
@@ -286,11 +285,7 @@ export default function BalanceSheet() {
                 />
               </div>
             </div>
-            <p className="hint">
-              With a useful life set, Plumb depreciates straight-line. Enter a current value any
-              time and that number wins &mdash; depreciation continues from there.
-            </p>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 className="btn btn-primary"
                 disabled={busy || !assetForm.name || !assetForm.purchaseCost}
@@ -303,10 +298,7 @@ export default function BalanceSheet() {
         )}
 
         {assets.length === 0 ? (
-          <p className="empty">
-            Nothing logged yet. Add the trucks, machines, and property the business owns so net
-            worth and buy-vs-wait decisions have something to work from.
-          </p>
+          <p className="empty">No assets.</p>
         ) : (
           <table className="table">
             <thead>
@@ -326,13 +318,13 @@ export default function BalanceSheet() {
                   <td className="cell-name">
                     {a.name}
                     {a.financedBy?.length > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 400 }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
                         financed by {a.financedBy.map((f: any) => f.name).join(", ")}
                       </div>
                     )}
                   </td>
-                  <td style={{ color: "var(--muted)" }}>{ASSET_CATEGORY_LABELS[a.category]}</td>
-                  <td style={{ color: "var(--muted)" }}>{shortDate(a.purchaseDate)}</td>
+                  <td style={{ color: "var(--text-muted)" }}>{ASSET_CATEGORY_LABELS[a.category]}</td>
+                  <td style={{ color: "var(--text-muted)" }}>{shortDate(a.purchaseDate)}</td>
                   <td className="num">{usd(a.purchaseCostCents)}</td>
                   <td className="num">
                     {usd(a.valuation?.currentValueCents ?? 0)}
@@ -342,7 +334,7 @@ export default function BalanceSheet() {
                       </span>
                     )}
                   </td>
-                  <td className="num" style={{ color: "var(--muted)" }}>
+                  <td className="num" style={{ color: "var(--text-muted)" }}>
                     {a.valuation?.monthlyDepreciationCents
                       ? `${usd(a.valuation.monthlyDepreciationCents)}/mo`
                       : "—"}
@@ -499,11 +491,7 @@ export default function BalanceSheet() {
                 </select>
               </div>
             </div>
-            <p className="hint">
-              Every liability becomes a scheduled outflow in the cash forecast &mdash; this is not a
-              static list.
-            </p>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 className="btn btn-primary"
                 disabled={busy || !liabilityForm.name}
@@ -516,10 +504,7 @@ export default function BalanceSheet() {
         )}
 
         {liabilities.length === 0 ? (
-          <p className="empty">
-            Nothing logged yet. Add loans, cards, and leases so their payments land in the cash
-            forecast automatically.
-          </p>
+          <p className="empty">No liabilities.</p>
         ) : (
           <table className="table">
             <thead>
@@ -539,24 +524,24 @@ export default function BalanceSheet() {
                   <td className="cell-name">
                     {l.name}
                     {l.asset && (
-                      <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 400 }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
                         on {l.asset.name}
                       </div>
                     )}
                   </td>
-                  <td style={{ color: "var(--muted)" }}>{LIABILITY_KIND_LABELS[l.kind]}</td>
+                  <td style={{ color: "var(--text-muted)" }}>{LIABILITY_KIND_LABELS[l.kind]}</td>
                   <td className="num">
                     {usd(l.currentBalanceCents)}
                     {l.summary?.creditUtilizationPct !== null &&
                       l.summary?.creditUtilizationPct !== undefined && (
-                        <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                        <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                           {l.summary.creditUtilizationPct}% of limit
                         </div>
                       )}
                   </td>
                   <td className="num">
                     {usd(l.paymentAmountCents)}
-                    <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                    <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                       {FREQUENCY_LABELS[l.paymentFrequency]}
                     </div>
                   </td>
@@ -569,7 +554,7 @@ export default function BalanceSheet() {
                     ) : l.endDate ? (
                       `${shortDate(l.endDate)} (lease)`
                     ) : (
-                      <span style={{ color: "var(--faint)" }}>beyond 5 yrs</span>
+                      <span style={{ color: "var(--text-faint)" }}>beyond 5 yrs</span>
                     )}
                   </td>
                   <td className="num" style={{ whiteSpace: "nowrap" }}>
@@ -600,9 +585,6 @@ export default function BalanceSheet() {
               Close
             </button>
           </div>
-          <p className="hint" style={{ marginTop: 0 }}>
-            The same payments the cash forecast uses. Interest first, the rest against principal.
-          </p>
           <div style={{ maxHeight: 340, overflowY: "auto", marginTop: 12 }}>
             <table className="table">
               <thead>
@@ -619,7 +601,7 @@ export default function BalanceSheet() {
                   <tr key={i}>
                     <td>{shortDate(p.date)}</td>
                     <td className="num">{usd(p.amountCents)}</td>
-                    <td className="num" style={{ color: "var(--muted)" }}>
+                    <td className="num" style={{ color: "var(--text-muted)" }}>
                       {usd(p.interestCents)}
                     </td>
                     <td className="num">{usd(p.principalCents)}</td>

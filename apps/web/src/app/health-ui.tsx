@@ -26,12 +26,9 @@ export function DataHealthCard({ health }: { health: any }) {
   const sync = health.sync;
   return (
     <section className="card">
-      <div className="card-title">Can You Trust These Numbers?</div>
-      <p className="hint" style={{ marginTop: -6, marginBottom: 16 }}>
-        A forecast is only as good as what feeds it. Here is exactly what Plumb is working from.
-      </p>
+      <div className="card-title">Data Health</div>
 
-      <div className="stats" style={{ marginBottom: 18 }}>
+      <div className="stats" style={{ marginBottom: 16 }}>
         <div className="stat">
           <div className="stat-label">Forecast Confidence</div>
           <div className="stat-value num">{c.score}%</div>
@@ -63,7 +60,7 @@ export function DataHealthCard({ health }: { health: any }) {
           <tr>
             <th>Input</th>
             <th>State</th>
-            <th>What Plumb Knows</th>
+            <th>Detail</th>
           </tr>
         </thead>
         <tbody>
@@ -77,10 +74,10 @@ export function DataHealthCard({ health }: { health: any }) {
                   {ck.status === "good" ? "Solid" : ck.status === "partial" ? "Partial" : "Missing"}
                 </span>
               </td>
-              <td style={{ color: "var(--muted)" }}>
+              <td style={{ color: "var(--text-muted)" }}>
                 {ck.detail}
                 {ck.fix && (
-                  <div style={{ color: "var(--orange)", marginTop: 3, fontSize: 12.5 }}>{ck.fix}</div>
+                  <div style={{ color: "var(--accent)", marginTop: 4, fontSize: 12 }}>{ck.fix}</div>
                 )}
               </td>
             </tr>
@@ -96,14 +93,10 @@ export function ReconciliationCard({ health }: { health: any }) {
   const stale = r.ageDays === null || r.ageDays > 14;
   return (
     <section className="card">
-      <div className="card-title">Check It Against Your Bank</div>
-      <p className="hint" style={{ marginTop: -6, marginBottom: 16 }}>
-        Every forecast starts from one number. This is that number, and everything that has settled
-        since &mdash; so you can check it by hand.
-      </p>
+      <div className="card-title">Reconciliation</div>
       <div className="stats">
         <div className="stat">
-          <div className="stat-label">Balance Plumb Is Planning From</div>
+          <div className="stat-label">Starting Balance</div>
           <div className="stat-value num">{usd(r.bankBalanceCents)}</div>
           <div className="stat-sub">
             {r.asOf ? `${shortDate(r.asOf)} · ${r.source.toLowerCase()}` : "never set — using a placeholder"}
@@ -118,9 +111,9 @@ export function ReconciliationCard({ health }: { health: any }) {
           <div className="stat-sub">{r.settledSinceCount} transaction(s)</div>
         </div>
         <div className="stat">
-          <div className="stat-label">So You Should Have</div>
+          <div className="stat-label">Expected Bank Balance</div>
           <div className="stat-value num">{usd(r.expectedNowCents)}</div>
-          <div className="stat-sub">compare this to your bank</div>
+          
         </div>
       </div>
 
@@ -129,7 +122,7 @@ export function ReconciliationCard({ health }: { health: any }) {
           <div className="alert-title">
             {r.asOf
               ? `That balance is ${r.ageDays} days old. Refresh it before trusting the forecast.`
-              : "Plumb has never been told your bank balance, so it's using a placeholder."}
+              : "No bank balance on file."}
           </div>
         </div>
       )}
@@ -147,10 +140,10 @@ export function ReconciliationCard({ health }: { health: any }) {
             {r.entries.map((e: any, i: number) => (
               <tr key={i}>
                 <td>{shortDate(e.date)}</td>
-                <td style={{ color: "var(--muted)" }}>
+                <td style={{ color: "var(--text-muted)" }}>
                   {e.category.toLowerCase().replace(/_/g, " ")}
                 </td>
-                <td className="num" style={{ color: e.direction === "IN" ? "var(--green)" : undefined }}>
+                <td className="num" style={{ color: e.direction === "IN" ? "var(--good)" : undefined }}>
                   {e.direction === "IN" ? "+" : "−"}
                   {usd(e.amountCents)}
                 </td>

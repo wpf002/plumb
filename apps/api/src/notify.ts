@@ -15,7 +15,7 @@ const SEV_COLOR: Record<DigestSeverity, string> = {
 
 export function renderDigestText(d: DigestResult): string {
   const lines = [
-    `Plumb Weekly — ${d.companyName}`,
+    `DNRD Weekly — ${d.companyName}`,
     `Week of ${d.asOf} · Business Health ${d.score}/100`,
     "",
     d.headline,
@@ -44,7 +44,7 @@ export function renderDigestHtml(d: DigestResult): string {
     )
     .join("");
   return `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;color:#111">
-    <p style="color:#888;margin:0">Plumb Weekly — ${escape(d.companyName)}</p>
+    <p style="color:#888;margin:0">DNRD Weekly — ${escape(d.companyName)}</p>
     <h1 style="font-size:20px;margin:4px 0">Business Health ${d.score}/100</h1>
     <p style="font-size:16px;font-weight:600;margin:12px 0 16px">${escape(d.headline)}</p>
     <table style="width:100%;border-collapse:collapse">${rows}</table>

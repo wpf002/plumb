@@ -40,7 +40,7 @@ export function startScheduler(log: FastifyBaseLogger): void {
         }
         const res = await getNotifier().send({
           to,
-          subject: `Plumb weekly — ${digest.headline}`,
+          subject: `DNRD Weekly — ${digest.headline}`,
           text: renderDigestText(digest),
           html: renderDigestHtml(digest),
         });

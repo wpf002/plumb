@@ -50,7 +50,7 @@ pnpm install
 # --- 5. Database -------------------------------------------------------------
 say "Generating Prisma client + pushing schema"
 pnpm --filter @plumb/db exec prisma generate
-pnpm --filter @plumb/db exec prisma db push
+pnpm --filter @plumb/db exec prisma migrate deploy
 
 say "Seeding demo data (Foley Electric reference profile)"
 pnpm --filter @plumb/db exec tsx prisma/seed.ts

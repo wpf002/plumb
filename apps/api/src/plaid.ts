@@ -41,7 +41,7 @@ class LivePlaid implements PlaidClient {
   async createLinkToken(userId: string) {
     const r = await this.call<{ link_token: string }>("/link/token/create", {
       user: { client_user_id: userId },
-      client_name: "Plumb",
+      client_name: "DNRD",
       products: ["auth"],
       country_codes: ["US"],
       language: "en",

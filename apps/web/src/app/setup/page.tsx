@@ -113,8 +113,7 @@ export default function Setup() {
     <main className="container" style={{ maxWidth: 720 }}>
       <div className="page-head">
         <div>
-          <h1>Set Up Plumb</h1>
-          <p>Four short steps. Everything here can be changed later in Settings.</p>
+          <h1>Setup</h1>
         </div>
       </div>
 
@@ -128,7 +127,7 @@ export default function Setup() {
       </div>
 
       {error && (
-        <div className="alert critical" style={{ marginBottom: 20 }}>
+        <div className="alert critical" style={{ marginBottom: 16 }}>
           <div className="alert-title">{error}</div>
         </div>
       )}
@@ -164,7 +163,7 @@ export default function Setup() {
               </div>
             </div>
 
-            <label className="label" style={{ marginTop: 20 }}>
+            <label className="label" style={{ marginTop: 16 }}>
               How Do You Make Money?
             </label>
             <div className="choice-grid">
@@ -180,10 +179,6 @@ export default function Setup() {
                 </button>
               ))}
             </div>
-            <p className="hint">
-              This decides which modules Plumb turns on. Most trades run both — bid work plus
-              recurring service agreements.
-            </p>
           </>
         )}
 
@@ -230,19 +225,12 @@ export default function Setup() {
                 />
               </div>
             </div>
-            <p className="hint">
-              The safety threshold is the balance you never want to drop below. Plumb reports the
-              date you would cross it, not just the low point.
-            </p>
           </>
         )}
 
         {step === 2 && (
           <>
             <div className="card-title">Opening Cash</div>
-            <p className="hint" style={{ marginTop: -6 }}>
-              The starting bank balance every forecast builds from.
-            </p>
             {cash !== null && (
               <div className="alert good" style={{ margin: "16px 0" }}>
                 <div className="alert-title">
@@ -287,12 +275,7 @@ export default function Setup() {
         {step === 3 && (
           <>
             <div className="card-title">Connect QuickBooks</div>
-            <p className="hint" style={{ marginTop: -6 }}>
-              Plumb never replaces QuickBooks — it reads from it. Connecting is what turns manual
-              estimates into a forecast built on your real costs and payment timing. You can do this
-              now or later; everything else works without it.
-            </p>
-            <div style={{ marginTop: 18 }}>
+            <div style={{ marginTop: 16 }}>
               <a className="btn btn-ghost" href="/integrations">
                 Open Connections
               </a>

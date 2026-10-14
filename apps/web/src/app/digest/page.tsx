@@ -13,28 +13,27 @@ export default async function DigestPreview() {
       <div className="page-head">
         <div>
           <h1>Weekly Digest</h1>
-          <p>What lands in your inbox every Monday. No login required.</p>
         </div>
       </div>
 
       <section className="card" style={{ padding: 0, overflow: "hidden" }}>
         <div
           style={{
-            background: "linear-gradient(180deg, var(--navy-800), var(--navy))",
+            background: "linear-gradient(180deg, var(--ink-2), var(--ink))",
             color: "#fff",
             padding: "22px 24px",
-            borderBottom: "3px solid var(--orange)",
+            borderBottom: "3px solid var(--accent)",
           }}
         >
-          <div style={{ color: "#8ea3b8", fontSize: 12.5, fontWeight: 600 }}>
+          <div style={{ color: "#8ea3b8", fontSize: 12, fontWeight: 500 }}>
             {digest.companyName} · week of {shortDate(digest.asOf)}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
             <span
               className="num"
               style={{
-                fontSize: 30,
-                fontWeight: 800,
+                fontSize: 32,
+                fontWeight: 700,
                 color: scoreColor(digest.score),
               }}
             >
@@ -42,7 +41,7 @@ export default async function DigestPreview() {
             </span>
             <span style={{ color: "#b9c6d4", fontSize: 14 }}>Business Health / 100</span>
           </div>
-          <p style={{ fontSize: 16, fontWeight: 600, margin: "12px 0 0" }}>{digest.headline}</p>
+          <p style={{ fontSize: 16, fontWeight: 500, margin: "12px 0 0" }}>{digest.headline}</p>
         </div>
 
         <div style={{ padding: "18px 24px 24px" }}>

@@ -35,15 +35,15 @@ function CashChart({
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img" aria-label="Cash forecast">
-      <line x1={pad.l} x2={w - pad.r} y1={y(floor)} y2={y(floor)} stroke={C.red} strokeDasharray="4 4" strokeWidth="1.5" />
-      <text x={pad.l + 4} y={y(floor) - 5} fontSize="11" fill={C.red}>
+      <line x1={pad.l} x2={w - pad.r} y1={y(floor)} y2={y(floor)} stroke={C.danger} strokeDasharray="4 4" strokeWidth="1.5" />
+      <text x={pad.l + 4} y={y(floor) - 5} fontSize="11" fill={C.danger}>
         safety floor {usd(floor)}
       </text>
       {min < 0 && (
-        <line x1={pad.l} x2={w - pad.r} y1={y(0)} y2={y(0)} stroke={C.line} strokeWidth="1" />
+        <line x1={pad.l} x2={w - pad.r} y1={y(0)} y2={y(0)} stroke={C.border} strokeWidth="1" />
       )}
-      <path d={path(stress)} fill="none" stroke={C.amber} strokeWidth="2" strokeDasharray="5 4" />
-      <path d={path(base)} fill="none" stroke={C.navy} strokeWidth="2.5" />
+      <path d={path(stress)} fill="none" stroke={C.warn} strokeWidth="2" strokeDasharray="5 4" />
+      <path d={path(base)} fill="none" stroke={C.ink} strokeWidth="2.5" />
       {ticks.map((i) => (
         <text key={i} x={x(i, base.length)} y={h - 6} fontSize="11" fill="#8695a3" textAnchor={i === 0 ? "start" : i === base.length - 1 ? "end" : "middle"}>
           {base[i]?.date}
@@ -206,15 +206,11 @@ export default function Cash() {
       <div className="page-head">
         <div>
           <h1>Cash</h1>
-          <p>
-            What&rsquo;s coming in, what&rsquo;s going out, and the day it gets tight &mdash; with
-            retainage and how your payers actually behave already in the numbers.
-          </p>
         </div>
       </div>
 
       {error && (
-        <div className="alert critical" style={{ marginBottom: 20 }}>
+        <div className="alert critical" style={{ marginBottom: 16 }}>
           <div className="alert-title">{error}</div>
         </div>
       )}
@@ -224,7 +220,7 @@ export default function Cash() {
           <div className="card-title" style={{ marginBottom: 0 }}>
             Next {horizon} Days
           </div>
-          <div style={{ display: "flex", gap: 6 }}>
+          <div style={{ display: "flex", gap: 4 }}>
             {HORIZONS.map((h) => (
               <button
                 key={h}
@@ -250,7 +246,7 @@ export default function Cash() {
           </div>
           <div className="stat">
             <div className="stat-label">If Payers Run Late</div>
-            <div className="stat-value num" style={{ color: forecast.stress.firstBreachDate ? C.red : undefined }}>
+            <div className="stat-value num" style={{ color: forecast.stress.firstBreachDate ? C.danger : undefined }}>
               {usd(forecast.stress.minBalanceCents)}
             </div>
             <div className="stat-sub">on {shortDate(forecast.stress.minBalanceDate)}</div>
@@ -291,7 +287,7 @@ export default function Cash() {
               {forecast.monthly.map((m: any) => (
                 <tr key={m.month}>
                   <td className="cell-name">{m.month}</td>
-                  <td className="num" style={{ color: m.lowBalanceCents < forecast.safetyThresholdCents ? C.red : undefined }}>
+                  <td className="num" style={{ color: m.lowBalanceCents < forecast.safetyThresholdCents ? C.danger : undefined }}>
                     {usd(m.lowBalanceCents)}
                   </td>
                   <td className="num">{usd(m.endingBalanceCents)}</td>
@@ -307,9 +303,6 @@ export default function Cash() {
       {/* What if */}
       <section className="card">
         <div className="card-title">What If</div>
-        <p className="hint" style={{ marginTop: -6, marginBottom: 16 }}>
-          Test a decision before you make it. Nothing here is saved.
-        </p>
 
         <div className="field-grid">
           <div>
@@ -403,7 +396,7 @@ export default function Cash() {
         {result && (
           <div
             className={`alert ${result.delta.breachAppeared ? "critical" : result.delta.minBalanceCents < 0 ? "warning" : "good"}`}
-            style={{ marginTop: 18 }}
+            style={{ marginTop: 16 }}
           >
             <div style={{ width: "100%" }}>
               <div className="alert-title">{result.description}</div>
@@ -445,9 +438,6 @@ export default function Cash() {
       {/* Buy now or wait */}
       <section className="card">
         <div className="card-title">Buy Now Or Wait?</div>
-        <p className="hint" style={{ marginTop: -6, marginBottom: 16 }}>
-          The same purchase at three timings, judged on how close each one takes you to running out.
-        </p>
         <div className="field-grid">
           <div>
             <label className="label">Price ($)</label>
@@ -474,7 +464,7 @@ export default function Cash() {
 
         {timing && (
           <>
-            <div className="alert good" style={{ marginTop: 18 }}>
+            <div className="alert good" style={{ marginTop: 16 }}>
               <div className="alert-title">Best timing: {timing.recommendedLabel}.</div>
             </div>
             <table className="table" style={{ marginTop: 12 }}>
@@ -500,7 +490,7 @@ export default function Cash() {
                     <td>{shortDate(o.purchaseDate)}</td>
                     <td className="num">
                       {usd(o.minBalanceCents)}
-                      <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                         on {shortDate(o.minBalanceDate)}
                       </div>
                     </td>

@@ -50,23 +50,23 @@ function Connections() {
               <tr key={c.key}>
                 <td className="cell-name">{c.name}</td>
                 <td><span className={`badge ${b.cls}`}>{b.label}</span></td>
-                <td style={{ color: "var(--muted)", fontSize: 13.5 }}>
+                <td style={{ color: "var(--text-muted)", fontSize: 14 }}>
                   {c.detail}
                   {c.lastSync && ` · last sync ${c.lastSync.status}`}
                 </td>
                 <td className="num">
                   {c.key === "qbo" && c.action === "connect" && c.connectUrl && (
-                    <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 13 }} onClick={() => connectQbo(c.connectUrl)}>
+                    <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 14 }} onClick={() => connectQbo(c.connectUrl)}>
                       Connect
                     </button>
                   )}
                   {c.key === "qbo" && c.action === "sync" && (
-                    <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 13 }} disabled={busy === "qbo"} onClick={syncQbo}>
+                    <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 14 }} disabled={busy === "qbo"} onClick={syncQbo}>
                       {busy === "qbo" ? "Syncing…" : "Sync Now"}
                     </button>
                   )}
                   {c.action === "settings" && (
-                    <a className="navlink" href="/settings" style={{ color: "var(--orange)", padding: 0 }}>Settings →</a>
+                    <a className="navlink" href="/settings" style={{ color: "var(--accent)", padding: 0 }}>Settings →</a>
                   )}
                 </td>
               </tr>
@@ -118,8 +118,7 @@ function Panel({
     <section className="card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
         <div>
-          <div className="card-title" style={{ marginBottom: 6 }}>{title}</div>
-          <p style={{ margin: 0, color: "var(--muted)", fontSize: 13.5 }}>{blurb}</p>
+          <div className="card-title" style={{ marginBottom: 4 }}>{title}</div>
         </div>
         <button className="btn btn-primary" onClick={go} disabled={busy}>
           {busy ? "Running…" : action}
@@ -130,11 +129,11 @@ function Panel({
 
       {result && (
         <div style={{ marginTop: 16 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <LiveBadge live={result.live} />
-            <span style={{ color: "var(--muted)", fontSize: 13.5 }}>{result.note}</span>
+            <span style={{ color: "var(--text-muted)", fontSize: 14 }}>{result.note}</span>
           </div>
-          <div style={{ fontWeight: 700, color: "var(--navy)", marginBottom: 8 }}>{result.summary}</div>
+          <div style={{ fontWeight: 700, color: "var(--ink)", marginBottom: 8 }}>{result.summary}</div>
           <table className="table">
             <tbody>
               {result.rows.map((r, i) => (
@@ -184,7 +183,6 @@ export default function Integrations() {
       <div className="page-head">
         <div>
           <h1>Integrations</h1>
-          <p>Bring in the rest of your numbers. Each one previews here, and imports for real once you connect it.</p>
         </div>
       </div>
 

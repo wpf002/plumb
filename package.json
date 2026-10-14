@@ -9,8 +9,9 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "db:generate": "pnpm --filter @plumb/db exec prisma generate",
-    "db:push": "pnpm --filter @plumb/db exec prisma db push",
-    "db:seed": "pnpm --filter @plumb/db exec tsx prisma/seed.ts"
+    "db:seed": "pnpm --filter @plumb/db exec tsx prisma/seed.ts",
+    "db:migrate": "pnpm --filter @plumb/db exec prisma migrate dev",
+    "db:deploy": "pnpm --filter @plumb/db exec prisma migrate deploy"
   },
   "devDependencies": {
     "turbo": "^2.1.0",

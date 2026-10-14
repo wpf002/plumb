@@ -99,19 +99,18 @@ export default function Projects() {
       <div className="page-head">
         <div>
           <h1>Jobs</h1>
-          <p>Every open job: margin against the bid, and the next time it bills.</p>
         </div>
       </div>
 
       {(error || msg) && (
-        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 20 }}>
+        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 16 }}>
           <div className="alert-title">{error ?? msg}</div>
         </div>
       )}
 
       <section className="card">
         {rows.length === 0 ? (
-          <p className="empty">No open jobs. Sync QuickBooks or add a project to get started.</p>
+          <p className="empty">No open jobs.</p>
         ) : (
           <table className="table">
             <thead>
@@ -132,15 +131,15 @@ export default function Projects() {
                     <td className="cell-name">
                       <Link href={`/projects/${project.id}`}>{project.name}</Link>
                       {billing?.totalSlipDays > 0 && (
-                        <div style={{ fontSize: 12, color: C.red, fontWeight: 400 }}>
+                        <div style={{ fontSize: 12, color: C.danger, fontWeight: 400 }}>
                           {billing.totalSlipDays} days of billing slip
                         </div>
                       )}
                     </td>
-                    <td style={{ color: "var(--muted)" }}>
+                    <td style={{ color: "var(--text-muted)" }}>
                       <select
                         className="input"
-                        style={{ height: 34, padding: "4px 26px 4px 8px", fontSize: 13 }}
+                        style={{ height: 34, padding: "4px 26px 4px 8px", fontSize: 14 }}
                         value={project.payerId ?? ""}
                         disabled={busy !== null}
                         onChange={(e) =>
@@ -160,7 +159,7 @@ export default function Projects() {
                         ))}
                       </select>
                       {project.payerDaysLate > 0 && (
-                        <div style={{ fontSize: 12, color: "var(--faint)", marginTop: 3 }}>
+                        <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 4 }}>
                           pays {project.payerDaysLate} days past terms
                         </div>
                       )}
@@ -168,10 +167,10 @@ export default function Projects() {
                     <td className="num">{usd(project.contractValueCents)}</td>
                     <td className="num">
                       {margin.originalMarginPct.toFixed(1)}% →{" "}
-                      <b style={{ color: margin.marginErosionPct > 0 ? C.red : C.green }}>
+                      <b style={{ color: margin.marginErosionPct > 0 ? C.danger : C.good }}>
                         {margin.projectedFinalMarginPct.toFixed(1)}%
                       </b>
-                      <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                         {usd(margin.adjustedContractCents - margin.projectedFinalCostCents)}{" "}
                         projected profit
                       </div>
@@ -180,12 +179,12 @@ export default function Projects() {
                       {billing?.nextMilestone ? (
                         <>
                           {shortDate(billing.nextMilestone.expectedDate)}
-                          <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                             {billing.nextMilestone.name} · {usd(billing.nextMilestone.amountCents)}
                           </div>
                         </>
                       ) : (
-                        <span style={{ color: "var(--faint)" }}>no schedule</span>
+                        <span style={{ color: "var(--text-faint)" }}>no schedule</span>
                       )}
                     </td>
                     <td>
@@ -209,10 +208,6 @@ export default function Projects() {
             {adding ? "Cancel" : "Add Payer"}
           </button>
         </div>
-        <p className="hint" style={{ marginTop: -8, marginBottom: 14 }}>
-          Terms say 30 days. What matters is what each one actually does &mdash; the forecast plans
-          on this, and the worst case puts every payer at their own worst.
-        </p>
 
         {adding && (
           <div className="inline-form">
@@ -253,7 +248,7 @@ export default function Projects() {
                 />
               </div>
             </div>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 className="btn btn-primary"
                 disabled={busy !== null || !newPayer.name}
@@ -266,10 +261,7 @@ export default function Projects() {
         )}
 
         {payers.length === 0 ? (
-          <p className="empty">
-            No payers yet. Add the GCs, districts, and owners who pay you, then assign each job to
-            one.
-          </p>
+          <p className="empty">No payers.</p>
         ) : (
           <table className="table">
             <thead>
@@ -288,17 +280,17 @@ export default function Projects() {
                   <td className="cell-name">
                     {p.name}
                     {p.projects.length > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 400 }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
                         {p.projects.map((j: any) => j.name).join(", ")}
                       </div>
                     )}
                   </td>
-                  <td style={{ color: "var(--muted)" }}>{PAYER_TYPE_LABELS[p.type]}</td>
+                  <td style={{ color: "var(--text-muted)" }}>{PAYER_TYPE_LABELS[p.type]}</td>
                   <td className="num">
-                    <b style={{ color: p.typicalDaysLate >= 30 ? C.red : C.navy }}>
+                    <b style={{ color: p.typicalDaysLate >= 30 ? C.danger : C.ink }}>
                       {p.typicalDaysLate} days
                     </b>
-                    <div style={{ fontSize: 12, color: "var(--faint)" }}>past terms</div>
+                    <div style={{ fontSize: 12, color: "var(--text-faint)" }}>past terms</div>
                   </td>
                   <td>
                     {p.source === "OBSERVED" ? (

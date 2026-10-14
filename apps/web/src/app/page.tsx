@@ -11,7 +11,7 @@ function ScoreRing({ score }: { score: number }) {
   const col = scoreColor(score);
   return (
     <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r={r} fill="none" stroke={C.line} strokeWidth="12" />
+      <circle cx="70" cy="70" r={r} fill="none" stroke={C.border} strokeWidth="12" />
       <circle
         cx="70"
         cy="70"
@@ -62,7 +62,6 @@ export default async function Dashboard() {
       <div className="page-head">
         <div>
           <h1>Dashboard</h1>
-          <p>Your cash, margins, and workload over the next 90 days.</p>
         </div>
       </div>
 
@@ -84,9 +83,7 @@ export default async function Dashboard() {
           </ul>
         )}
         <div className="readout-foot">
-          {analysis.source === "claude"
-            ? "Written from your numbers — every figure above is computed, not estimated."
-            : "Built from your numbers by rule. Connect an AI key for the written read."}
+          {analysis.source === "claude" ? "Written by Denny" : "Rule-based"}
           {analysis.fallbackReason && ` (${analysis.fallbackReason})`}
         </div>
         <ConfidenceStrip health={dataHealth} />
@@ -152,7 +149,7 @@ export default async function Dashboard() {
             <div className="stat-label">If Payers Run Late</div>
             <div
               className="stat-value num"
-              style={{ color: forecast.stress.firstBreachDate ? C.red : undefined }}
+              style={{ color: forecast.stress.firstBreachDate ? C.danger : undefined }}
             >
               {usd(forecast.stress.minBalanceCents)}
             </div>
@@ -176,11 +173,8 @@ export default async function Dashboard() {
       {analysis.collisions?.length > 0 && (
         <section className="card">
           <div className="card-title">Weeks Worth Watching</div>
-          <p style={{ marginTop: -6, marginBottom: 14, color: "var(--muted)", fontSize: 13.5 }}>
-            These weeks work on paper. They don&apos;t if the money you&apos;re owed shows up late.
-          </p>
           {analysis.collisions.map((c: any) => (
-            <div key={c.weekStart} className="alert warning" style={{ marginBottom: 10 }}>
+            <div key={c.weekStart} className="alert warning" style={{ marginBottom: 8 }}>
               <div style={{ width: "100%" }}>
                 <div className="alert-title">
                   {shortDate(c.weekStart)} to {shortDate(c.weekEnd)}: {usd(c.outflowCents)} goes
@@ -252,13 +246,13 @@ export default async function Dashboard() {
                 <td className="cell-name">
                   <Link
                     href={`/projects/${row.project.id}`}
-                    style={{ color: "var(--navy)", textDecoration: "none" }}
+                    style={{ color: "var(--ink)", textDecoration: "none" }}
                   >
                     {row.project.name}
                   </Link>
                 </td>
                 <td className="num">{row.margin.originalMarginPct}%</td>
-                <td className="num" style={{ color: row.margin.atRisk ? C.red : C.green, fontWeight: 600 }}>
+                <td className="num" style={{ color: row.margin.atRisk ? C.danger : C.good, fontWeight: 500 }}>
                   {row.margin.projectedFinalMarginPct}%
                 </td>
                 <td className="num">{row.margin.marginErosionPct} pts</td>
@@ -277,7 +271,7 @@ export default async function Dashboard() {
       {/* WIP */}
       <section className="card">
         <div className="card-title">Work In Progress</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
+        <p style={{ marginTop: -4, marginBottom: 16, color: "var(--text-muted)", fontSize: 14 }}>
           You&apos;ve billed{" "}
           <strong className={wip.netOverUnderCents >= 0 ? "pos" : "neg"}>
             {usdExact(Math.abs(wip.netOverUnderCents))}
@@ -306,7 +300,7 @@ export default async function Dashboard() {
                 <td className="num">{usdExact(r.billedToDateCents)}</td>
                 <td
                   className="num"
-                  style={{ color: r.overUnderBillingCents >= 0 ? C.green : C.amber, fontWeight: 600 }}
+                  style={{ color: r.overUnderBillingCents >= 0 ? C.good : C.warn, fontWeight: 500 }}
                 >
                   {usdExact(r.overUnderBillingCents)}
                 </td>
@@ -322,7 +316,7 @@ export default async function Dashboard() {
       {/* Retainage */}
       <section className="card">
         <div className="card-title">Retainage Held</div>
-        <div className="stats" style={{ marginBottom: 18 }}>
+        <div className="stats" style={{ marginBottom: 16 }}>
           <div className="stat">
             <div className="stat-label">Total Held</div>
             <div className="stat-value num">{usd(retainage.totalHeldCents)}</div>
@@ -330,7 +324,7 @@ export default async function Dashboard() {
           </div>
           <div className="stat">
             <div className="stat-label">Releasing Within 90 Days</div>
-            <div className="stat-value num" style={{ color: C.green }}>
+            <div className="stat-value num" style={{ color: C.good }}>
               {usd(retainage.releasingSoonCents)}
             </div>
             <div className="stat-sub">coming back to you</div>

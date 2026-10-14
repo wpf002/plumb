@@ -22,21 +22,21 @@ export function apiFetch(path: string, init?: RequestInit) {
   return fetch(`${API}${path}`, { ...init, credentials: "include" });
 }
 
-/** Palette values needed in JS (SVG ring, inline bar fills). Mirrors globals.css. */
+/** Palette values needed in JS (SVG ring, chart strokes). Mirrors the tokens in globals.css. */
 export const C = {
-  navy: "#0e2a47",
-  green: "#157a5a",
-  amber: "#b45309",
-  red: "#b42318",
-  orange: "#ea580c",
-  line: "#dde3e9",
+  ink: "#14261f",
+  good: "#1d6e4d",
+  warn: "#985a0b",
+  danger: "#b0261e",
+  accent: "#a14a22",
+  border: "#e2ded6",
 };
 
 /** Score → color bucket for the health ring and component bars. */
 export function scoreColor(score: number): string {
-  if (score >= 80) return C.green;
-  if (score >= 60) return C.amber;
-  return C.red;
+  if (score >= 80) return C.good;
+  if (score >= 60) return C.warn;
+  return C.danger;
 }
 
 /** Business profile vocabulary. Mirrors the Trade / RevenueModel enums in the DB. */

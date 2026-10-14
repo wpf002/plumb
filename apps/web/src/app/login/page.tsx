@@ -42,47 +42,42 @@ export default function Login() {
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <div style={{ textAlign: "center", margin: "20px 0 24px" }}>
-        <h1 style={{ marginBottom: 4 }}>{mode === "login" ? "Sign In to Plumb" : "Create Your Account"}</h1>
-        <p style={{ color: "var(--muted)", marginTop: 0, fontSize: 14 }}>
-          {mode === "login"
-            ? "The financial command center for subcontractors."
-            : "Your company and one login to get started."}
-        </p>
+        <h1 style={{ marginBottom: 4 }}>{mode === "login" ? "Sign In to DNRD" : "Create Your Account"}</h1>
       </div>
 
       <section className="card">
         {mode === "register" && (
           <>
             <label className="label">Your Name</label>
-            <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 14 }} />
+            <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 12 }} />
             <label className="label">Company Name</label>
-            <input className="input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={{ marginBottom: 14 }} placeholder="Acme Electric" />
+            <input className="input" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={{ marginBottom: 12 }} placeholder="Acme Electric" />
             <label className="label">Trade</label>
-            <input className="input" value={trade} onChange={(e) => setTrade(e.target.value)} style={{ marginBottom: 14 }} placeholder="ELECTRICAL" />
+            <input className="input" value={trade} onChange={(e) => setTrade(e.target.value)} style={{ marginBottom: 12 }} placeholder="ELECTRICAL" />
           </>
         )}
         <label className="label">Email</label>
-        <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} style={{ marginBottom: 14 }} type="email" />
+        <input className="input" value={email} onChange={(e) => setEmail(e.target.value)} style={{ marginBottom: 12 }} type="email" />
         <label className="label">Password</label>
         <input className="input" value={password} onChange={(e) => setPassword(e.target.value)} type="password" onKeyDown={(e) => e.key === "Enter" && submit()} />
 
-        <button className="btn btn-primary" onClick={submit} disabled={busy} style={{ width: "100%", marginTop: 20 }}>
+        <button className="btn btn-primary" onClick={submit} disabled={busy} style={{ width: "100%", marginTop: 16 }}>
           {busy ? "…" : mode === "login" ? "Sign In" : "Create Account"}
         </button>
         {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}
         {mode === "login" && (
           <p style={{ textAlign: "center", marginTop: 12, marginBottom: 0 }}>
-            <a href="/reset" style={{ color: "var(--muted)", fontSize: 13, textDecoration: "none" }}>
+            <a href="/reset" style={{ color: "var(--text-muted)", fontSize: 14, textDecoration: "none" }}>
               Forgot password?
             </a>
           </p>
         )}
 
-        <p style={{ textAlign: "center", marginTop: 18, marginBottom: 0, fontSize: 13.5, color: "var(--muted)" }}>
-          {mode === "login" ? "New to Plumb? " : "Already have an account? "}
+        <p style={{ textAlign: "center", marginTop: 16, marginBottom: 0, fontSize: 14, color: "var(--text-muted)" }}>
+          {mode === "login" ? "New to DNRD? " : "Already have an account? "}
           <button
             onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}
-            style={{ background: "none", border: "none", color: C.orange, fontWeight: 600, cursor: "pointer", fontSize: 13.5 }}
+            style={{ background: "none", border: "none", color: C.accent, fontWeight: 500, cursor: "pointer", fontSize: 14 }}
           >
             {mode === "login" ? "Create an account" : "Sign in"}
           </button>

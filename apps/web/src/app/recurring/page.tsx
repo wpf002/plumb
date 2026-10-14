@@ -163,15 +163,11 @@ export default function Recurring() {
       <div className="page-head">
         <div>
           <h1>Recurring</h1>
-          <p>
-            What it costs to open the doors each month &mdash; and when each piece of it actually
-            leaves the bank.
-          </p>
         </div>
       </div>
 
       {(error || msg) && (
-        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 20 }}>
+        <div className={`alert ${error ? "critical" : "good"}`} style={{ marginBottom: 16 }}>
           <div className="alert-title">{error ?? msg}</div>
         </div>
       )}
@@ -288,11 +284,7 @@ export default function Recurring() {
                 />
               </div>
             </div>
-            <p className="hint">
-              The vendor keyword is optional. When a synced QuickBooks bill matches it, that real
-              payment replaces the projection for the month instead of being counted twice.
-            </p>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 className="btn btn-primary"
                 disabled={busy || !form.name || !form.amount}
@@ -305,10 +297,7 @@ export default function Recurring() {
         )}
 
         {data.expenses.length === 0 ? (
-          <p className="empty">
-            Nothing here yet. Add insurance, software, fuel, utilities, rent, and any payroll not
-            tied to a job &mdash; each one becomes a scheduled outflow in the forecast.
-          </p>
+          <p className="empty">No recurring expenses.</p>
         ) : (
           <table className="table">
             <thead>
@@ -335,16 +324,16 @@ export default function Recurring() {
                     <td className="cell-name">
                       {e.name}
                       {e.matchKeyword && (
-                        <div style={{ fontSize: 12, color: "var(--faint)", fontWeight: 400 }}>
+                        <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
                           matches QuickBooks vendor &ldquo;{e.matchKeyword}&rdquo;
                         </div>
                       )}
                     </td>
-                    <td style={{ color: "var(--muted)" }}>
+                    <td style={{ color: "var(--text-muted)" }}>
                       {CATEGORY_LABELS[e.category] ?? e.category}
                     </td>
                     <td className="num">{usd(e.amountCents)}</td>
-                    <td style={{ color: "var(--muted)" }}>{FREQUENCY_LABELS[e.frequency]}</td>
+                    <td style={{ color: "var(--text-muted)" }}>{FREQUENCY_LABELS[e.frequency]}</td>
                     <td className="num">{usd(Math.round(e.amountCents * (perMonth ?? 1)))}</td>
                     <td className="num" style={{ whiteSpace: "nowrap" }}>
                       <button
@@ -394,7 +383,7 @@ export default function Recurring() {
                 className="stat-value num"
                 style={{
                   color:
-                    svc.summary.monthlyRecurringCents >= ob.monthlyFixedCents ? C.green : undefined,
+                    svc.summary.monthlyRecurringCents >= ob.monthlyFixedCents ? C.good : undefined,
                 }}
               >
                 {ob.monthlyFixedCents > 0
@@ -407,7 +396,7 @@ export default function Recurring() {
               <div className="stat-label">Biggest Client</div>
               <div
                 className="stat-value num"
-                style={{ color: svc.summary.largestClientSharePct >= 40 ? C.amber : undefined }}
+                style={{ color: svc.summary.largestClientSharePct >= 40 ? C.warn : undefined }}
               >
                 {svc.summary.largestClientSharePct}%
               </div>
@@ -509,7 +498,7 @@ export default function Recurring() {
                   />
                 </div>
               </div>
-              <div style={{ marginTop: 14 }}>
+              <div style={{ marginTop: 12 }}>
                 <button
                   className="btn btn-primary"
                   disabled={busy || !contract.name || !contract.client || !contract.amount}
@@ -522,11 +511,7 @@ export default function Recurring() {
           )}
 
           {svc.contracts.length === 0 ? (
-            <p className="empty">
-              No recurring contracts yet. Maintenance agreements, monitoring, and service plans go
-              here &mdash; they&rsquo;re the income that shows up whether or not you win the next
-              bid.
-            </p>
+            <p className="empty">No recurring contracts.</p>
           ) : (
             <table className="table">
               <thead>
@@ -552,23 +537,23 @@ export default function Recurring() {
                   return (
                     <tr key={c.id} style={c.status === "ACTIVE" ? undefined : { opacity: 0.5 }}>
                       <td className="cell-name">{c.name}</td>
-                      <td style={{ color: "var(--muted)" }}>
+                      <td style={{ color: "var(--text-muted)" }}>
                         {c.client}
                         {c.payer && (
-                          <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                             pays {c.payer.typicalDaysLate}d past terms
                           </div>
                         )}
                       </td>
                       <td className="num">{usd(c.amountCents)}</td>
-                      <td style={{ color: "var(--muted)" }}>
+                      <td style={{ color: "var(--text-muted)" }}>
                         {FREQUENCY_LABELS[c.billingFrequency]}
                       </td>
                       <td className="num">{usd(Math.round(c.amountCents * (perMonth ?? 1)))}</td>
                       <td>
                         {c.renewalDate ? shortDate(c.renewalDate) : "—"}
                         {c.renewalDate && (
-                          <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                             {c.autoRenew ? "auto-renews" : "must be re-signed"}
                           </div>
                         )}
@@ -602,10 +587,6 @@ export default function Recurring() {
 
       <section className="card">
         <div className="card-title">Leaving the Bank — Next 30 Days</div>
-        <p className="hint" style={{ marginTop: -6, marginBottom: 14 }}>
-          Every scheduled obligation the forecast is counting on. Marking one paid turns it into a
-          real ledger entry and removes the projection for that period.
-        </p>
         {data.upcoming.length === 0 ? (
           <p className="empty">No scheduled obligations in the next 30 days.</p>
         ) : (

@@ -47,25 +47,25 @@ function AcceptInvite() {
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <div style={{ textAlign: "center", margin: "20px 0 24px" }}>
-        <h1 style={{ marginBottom: 4 }}>Join Plumb</h1>
+        <h1 style={{ marginBottom: 4 }}>Join DNRD</h1>
       </div>
       <section className="card">
         {error && !invite && <p className="neg">{error}</p>}
         {invite && (
           <>
-            <p style={{ marginTop: 0, color: "var(--muted)" }}>
-              You&apos;ve been invited to <strong style={{ color: "var(--navy)" }}>{invite.companyName}</strong> as{" "}
+            <p style={{ marginTop: 0, color: "var(--text-muted)" }}>
+              You&apos;ve been invited to <strong style={{ color: "var(--ink)" }}>{invite.companyName}</strong> as{" "}
               <strong>{invite.role}</strong> ({invite.email}).
             </p>
             {invite.needsPassword && (
               <>
                 <label className="label">Your Name</label>
-                <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 14 }} />
+                <input className="input" value={name} onChange={(e) => setName(e.target.value)} style={{ marginBottom: 12 }} />
                 <label className="label">Choose a Password</label>
                 <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               </>
             )}
-            <button className="btn btn-primary" onClick={accept} disabled={busy} style={{ width: "100%", marginTop: 18 }}>
+            <button className="btn btn-primary" onClick={accept} disabled={busy} style={{ width: "100%", marginTop: 16 }}>
               {busy ? "…" : "Accept Invitation"}
             </button>
             {error && <p className="neg" style={{ marginBottom: 0, marginTop: 12 }}>{error}</p>}

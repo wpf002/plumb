@@ -228,7 +228,7 @@ export default function ProjectDetail() {
       <main className="container">
         <div className="card">
           <p className="neg">{error}</p>
-          <Link href="/" className="navlink" style={{ color: "var(--orange)" }}>
+          <Link href="/" className="navlink" style={{ color: "var(--accent)" }}>
             ← Back to dashboard
           </Link>
         </div>
@@ -253,7 +253,7 @@ export default function ProjectDetail() {
       <div className="page-head">
         <div>
           <div style={{ marginBottom: 8 }}>
-            <Link href="/" style={{ color: "var(--orange)", textDecoration: "none", fontSize: 13, fontWeight: 600 }}>
+            <Link href="/" style={{ color: "var(--accent)", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>
               ← Dashboard
             </Link>
           </div>
@@ -282,7 +282,7 @@ export default function ProjectDetail() {
           </div>
           <div className="stat">
             <div className="stat-label">Bid → Projected Margin</div>
-            <div className="stat-value num" style={{ color: margin.atRisk ? C.red : C.green }}>
+            <div className="stat-value num" style={{ color: margin.atRisk ? C.danger : C.good }}>
               {margin.originalMarginPct}% → {margin.projectedFinalMarginPct}%
             </div>
             <div className="stat-sub">{margin.marginErosionPct} pts off your {project.targetMarginPct}% target</div>
@@ -291,7 +291,7 @@ export default function ProjectDetail() {
             <div className="stat-label">Cost Overrun</div>
             <div
               className="stat-value num"
-              style={{ color: margin.costOverrunCents > 0 ? C.red : C.green }}
+              style={{ color: margin.costOverrunCents > 0 ? C.danger : C.good }}
             >
               {usd(margin.costOverrunCents)}
             </div>
@@ -301,9 +301,6 @@ export default function ProjectDetail() {
 
       <section className="card">
         <div className="card-title">Budget vs Actual</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Set a budget per cost code. Anything over budget shows here and flags the job as at risk.
-        </p>
         <table className="table">
           <thead>
             <tr>
@@ -332,7 +329,7 @@ export default function ProjectDetail() {
                     />
                   </td>
                   <td className="num">{usdExact(actual)}</td>
-                  <td className="num" style={{ color: v ? (over ? C.red : C.green) : "var(--faint)", fontWeight: 600 }}>
+                  <td className="num" style={{ color: v ? (over ? C.danger : C.good) : "var(--text-faint)", fontWeight: 500 }}>
                     {v ? usdExact(v.varianceCents) : "—"}
                   </td>
                   <td>
@@ -349,22 +346,19 @@ export default function ProjectDetail() {
             })}
           </tbody>
         </table>
-        <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
           <button className="btn btn-primary" onClick={save} disabled={saving}>
             {saving ? "Saving…" : "Save Budgets"}
           </button>
-          {msg && <span className="pos" style={{ fontSize: 13.5 }}>{msg}</span>}
-          {error && <span className="neg" style={{ fontSize: 13.5 }}>{error}</span>}
+          {msg && <span className="pos" style={{ fontSize: 14 }}>{msg}</span>}
+          {error && <span className="neg" style={{ fontSize: 14 }}>{error}</span>}
         </div>
       </section>
 
       <section className="card">
         <div className="card-title">Phases &amp; Cost Codes</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Break the job into phases (cost codes) to see budget vs actual at the level you estimate.
-        </p>
         {data.phases && data.phases.length > 0 ? (
-          <table className="table" style={{ marginBottom: 18 }}>
+          <table className="table" style={{ marginBottom: 16 }}>
             <thead>
               <tr>
                 <th>Phase</th>
@@ -379,11 +373,11 @@ export default function ProjectDetail() {
               {data.phases.map((ph: any) => (
                 <tr key={ph.id}>
                   <td className="cell-name">{ph.name}</td>
-                  <td className="num" style={{ color: "var(--muted)" }}>{ph.code ?? "—"}</td>
+                  <td className="num" style={{ color: "var(--text-muted)" }}>{ph.code ?? "—"}</td>
                   <td className="num">{usdExact(ph.budgetedCostCents)}</td>
                   <td className="num">{usdExact(ph.actualCostCents)}</td>
                   <td className="num">{ph.laborHours || "—"}</td>
-                  <td className="num" style={{ color: ph.budgetedCostCents === 0 ? "var(--faint)" : ph.varianceCents > 0 ? C.red : C.green, fontWeight: 600 }}>
+                  <td className="num" style={{ color: ph.budgetedCostCents === 0 ? "var(--text-faint)" : ph.varianceCents > 0 ? C.danger : C.good, fontWeight: 500 }}>
                     {ph.budgetedCostCents === 0 ? "no budget" : usdExact(ph.varianceCents)}
                   </td>
                 </tr>
@@ -391,14 +385,14 @@ export default function ProjectDetail() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: "var(--faint)", fontSize: 13.5, marginTop: 0 }}>No phases yet.</p>
+          <p style={{ color: "var(--text-faint)", fontSize: 14, marginTop: 0 }}>No phases yet.</p>
         )}
         {data.unphasedCostCents > 0 && (
-          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: -6, marginBottom: 16 }}>
+          <p style={{ color: "var(--text-muted)", fontSize: 14, marginTop: -4, marginBottom: 16 }}>
             {usdExact(data.unphasedCostCents)} of costs are not yet assigned to a phase.
           </p>
         )}
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--border)", paddingTop: 16 }}>
           <div style={{ flex: 1, minWidth: 160 }}>
             <label className="label">Phase Name</label>
             <input className="input" value={phaseName} onChange={(e) => setPhaseName(e.target.value)} placeholder="Trim-out" />
@@ -415,12 +409,9 @@ export default function ProjectDetail() {
 
       <section className="card">
         <div className="card-title">Change Orders</div>
-        <p style={{ marginTop: -6, marginBottom: 16, color: "var(--muted)", fontSize: 13.5 }}>
-          Only <strong>approved</strong> change orders move the contract and budget. Pending ones don&apos;t count yet.
-        </p>
 
         {data.changeOrders && data.changeOrders.length > 0 ? (
-          <table className="table" style={{ marginBottom: 18 }}>
+          <table className="table" style={{ marginBottom: 16 }}>
             <thead>
               <tr>
                 <th>Reason</th>
@@ -440,7 +431,7 @@ export default function ProjectDetail() {
                     <td className="cell-name">{co.reason ?? "—"}</td>
                     <td className="num">{usdExact(co.contractDeltaCents)}</td>
                     <td className="num">{usdExact(co.costDeltaCents)}</td>
-                    <td className="num" style={{ color: co.marginImpactCents >= 0 ? C.green : C.red, fontWeight: 600 }}>
+                    <td className="num" style={{ color: co.marginImpactCents >= 0 ? C.good : C.danger, fontWeight: 500 }}>
                       {usdExact(co.marginImpactCents)}
                     </td>
                     <td>
@@ -448,11 +439,11 @@ export default function ProjectDetail() {
                     </td>
                     <td>
                       {co.status === "PENDING" && (
-                        <span style={{ display: "flex", gap: 6 }}>
-                          <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 13 }} disabled={coBusy} onClick={() => decideCO(co.id, "approve")}>
+                        <span style={{ display: "flex", gap: 4 }}>
+                          <button className="btn btn-primary" style={{ padding: "5px 12px", fontSize: 14 }} disabled={coBusy} onClick={() => decideCO(co.id, "approve")}>
                             Approve
                           </button>
-                          <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 13 }} disabled={coBusy} onClick={() => decideCO(co.id, "reject")}>
+                          <button className="btn btn-ghost" style={{ padding: "5px 12px", fontSize: 14 }} disabled={coBusy} onClick={() => decideCO(co.id, "reject")}>
                             Reject
                           </button>
                         </span>
@@ -464,10 +455,10 @@ export default function ProjectDetail() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: "var(--faint)", fontSize: 13.5, marginTop: 0 }}>No change orders yet.</p>
+          <p style={{ color: "var(--text-faint)", fontSize: 14, marginTop: 0 }}>No change orders yet.</p>
         )}
 
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end", borderTop: "1px solid var(--border)", paddingTop: 16 }}>
           <div>
             <label className="label">Contract Δ ($)</label>
             <input className="input num" style={{ maxWidth: 130 }} value={coContract} onChange={(e) => setCoContract(e.target.value)} inputMode="decimal" placeholder="60000" />
@@ -582,7 +573,7 @@ export default function ProjectDetail() {
                 />
               </div>
             </div>
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 12 }}>
               <button
                 className="btn btn-primary"
                 disabled={msBusy !== null || !newMs.name || !newMs.amount}
@@ -624,10 +615,7 @@ export default function ProjectDetail() {
         )}
 
         {!ms || ms.milestones.length === 0 ? (
-          <p className="empty">
-            No billing schedule yet. Draft one from the contract value and dates above, then adjust
-            the pieces — this is what drives when this job turns into cash.
-          </p>
+          <p className="empty">No billing schedule.</p>
         ) : (
           <table className="table">
             <thead>
@@ -643,12 +631,12 @@ export default function ProjectDetail() {
             <tbody>
               {ms.milestones.map((m: any) => (
                 <tr key={m.id}>
-                  <td style={{ color: "var(--faint)" }}>{m.sequence}</td>
+                  <td style={{ color: "var(--text-faint)" }}>{m.sequence}</td>
                   <td className="cell-name">{m.name}</td>
                   <td>
                     {shortDate(m.expectedDate)}
                     {m.slipDays !== 0 && (
-                      <div style={{ fontSize: 12, color: m.slipDays > 0 ? C.red : C.green }}>
+                      <div style={{ fontSize: 12, color: m.slipDays > 0 ? C.danger : C.good }}>
                         {m.slipDays > 0 ? `+${m.slipDays}d` : `${m.slipDays}d`} vs original
                       </div>
                     )}
@@ -656,7 +644,7 @@ export default function ProjectDetail() {
                   <td className="num">
                     {usd(m.amountCents)}
                     {m.retainagePct > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--faint)" }}>
+                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
                         {usd(Math.round((m.amountCents * (100 - m.retainagePct)) / 100))} after
                         retainage
                       </div>
@@ -736,12 +724,12 @@ export default function ProjectDetail() {
               </div>
               <pre
                 style={{
-                  marginTop: 10,
+                  marginTop: 8,
                   marginBottom: 0,
                   fontSize: 12,
                   background: "var(--surface)",
-                  border: "1px solid var(--line)",
-                  borderRadius: 8,
+                  border: "1px solid var(--border)",
+                  borderRadius: 6,
                   padding: 12,
                   overflowX: "auto",
                 }}

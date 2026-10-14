@@ -63,7 +63,7 @@ unit-tested — auditable over impressive.
 ## Quickstart
 
 ```bash
-./bootstrap.sh      # toolchain check, .env, local Postgres, install, db push, seed
+./bootstrap.sh      # toolchain check, .env, local Postgres, install, migrate, seed
 # copy the printed company id into NEXT_PUBLIC_COMPANY_ID in .env
 pnpm --filter @plumb/api dev     # :4300
 pnpm --filter @plumb/web dev     # :4200
