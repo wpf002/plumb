@@ -7,6 +7,7 @@ import { assembleForecast } from "./forecast.js";
 import type { Ledger } from "./ledger.js";
 import { capacityHeadroom, completeYears, serviceLines } from "./operations.js";
 import { totalDebtCents, workingCapital } from "./workingcapital.js";
+import { valuation } from "./valuation.js";
 
 /**
  * Scenarios v2. Every scenario starts from the last full year and reports the
@@ -28,6 +29,8 @@ export interface Position {
   debtCents: number;
   workingCapitalCents: number;
   capacityUsedPct: number | null;
+  /** Normalized EBITDA at the midpoint of the EBITDA multiple range. */
+  enterpriseValueCents: number | null;
 }
 
 export interface ScenarioImpact {
@@ -47,7 +50,14 @@ async function baseline(companyId: string, ledger: Ledger) {
   if (!year) throw new Error("Scenarios need a full year of books.");
   const periods = ledger.periods.filter((p) => p.startsWith(String(year)));
   const t = incomeTotals(ledger.accounts, periods);
-  const [wc, debt, head] = await Promise.all([workingCapital(companyId, ledger), totalDebtCents(companyId, ledger), capacityHeadroom(companyId, ledger)]);
+  const [wc, debt, head, val] = await Promise.all([
+    workingCapital(companyId, ledger),
+    totalDebtCents(companyId, ledger),
+    capacityHeadroom(companyId, ledger),
+    valuation(companyId, ledger).catch(() => null),
+  ]);
+  const midMultiple = val ? (val.multiples.ebitda[0] + val.multiples.ebitda[1]) / 2 : null;
+  const normalizedAdj = val ? val.normalizedEbitdaCents - val.reportedEbitdaCents : 0;
   const position: Position = {
     revenueCents: t.revenue,
     grossProfitCents: t.grossProfit,
@@ -57,10 +67,11 @@ async function baseline(companyId: string, ledger: Ledger) {
     debtCents: debt,
     workingCapitalCents: wc.workingCapitalCents,
     capacityUsedPct: head.ceilingCents ? pct(t.revenue, head.ceilingCents) : null,
+    enterpriseValueCents: midMultiple !== null ? Math.round((t.ebitda + normalizedAdj) * midMultiple) : null,
   };
   // Receivables carried per dollar of revenue, for working-capital effects.
   const arPerRevenue = t.revenue ? wc.receivablesCents / t.revenue : 0;
-  return { asOf, year, periods, totals: t, position, ceilingCents: head.ceilingCents, arPerRevenue, grossMarginPct: pct(t.grossProfit, t.revenue) };
+  return { asOf, year, periods, totals: t, position, ceilingCents: head.ceilingCents, arPerRevenue, grossMarginPct: pct(t.grossProfit, t.revenue), midMultiple, normalizedAdj };
 }
 
 type Base = Awaited<ReturnType<typeof baseline>>;
@@ -88,6 +99,7 @@ function impact(
     debtCents: b.position.debtCents + (change.debtCents ?? 0),
     workingCapitalCents: b.position.workingCapitalCents + ebitda + (change.cashOnlyCents ?? 0),
     capacityUsedPct: b.ceilingCents ? pct(b.position.revenueCents + change.revenueCents, b.ceilingCents) : null,
+    enterpriseValueCents: b.midMultiple !== null ? Math.round((b.position.ebitdaCents + ebitda + b.normalizedAdj) * b.midMultiple) : null,
   };
   const delta = Object.fromEntries(
     (Object.keys(after) as (keyof Position)[]).map((k) => [k, after[k] === null || b.position[k] === null ? null : (after[k] as number) - (b.position[k] as number)])

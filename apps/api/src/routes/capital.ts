@@ -4,6 +4,7 @@ import { capitalDefaults, crewExpansionFor, fleet, hireFor, type CrewExpansionSc
 import { loadLedger } from "../analytics/ledger.js";
 import { completeYears, customerRevenue, serviceLines } from "../analytics/operations.js";
 import * as scen from "../analytics/scenarios.js";
+import { exitReadiness, valuation } from "../analytics/valuation.js";
 import { companyAsOf } from "../snapshot.js";
 
 type P = { Params: { companyId: string } };
@@ -125,6 +126,16 @@ const scenarioBody = {
 } as const;
 
 export function registerScenarioV2Routes(app: FastifyInstance) {
+  app.get<P>("/companies/:companyId/valuation", async (req, reply) => {
+    const ledger = await loadLedger(req.params.companyId);
+    try {
+      const [v, r] = await Promise.all([valuation(req.params.companyId, ledger), exitReadiness(req.params.companyId, ledger)]);
+      return { valuation: v, readiness: r };
+    } catch (e: any) {
+      return reply.code(422).send({ error: "Unprocessable", message: e.message });
+    }
+  });
+
   // What the scenario pickers can choose from.
   app.get<P>("/companies/:companyId/what-if/options", async (req) => {
     const id = req.params.companyId;

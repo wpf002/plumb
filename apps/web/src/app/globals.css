@@ -1177,3 +1177,12 @@ button.chip.active {
   background: var(--accent);
   border-color: var(--accent);
 }
+
+/* ---- Action list ---- */
+.action-list {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  font-size: 16px;
+}

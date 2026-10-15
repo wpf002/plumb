@@ -1,0 +1,157 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { apiFetch, getCompanyId, usd } from "../ui";
+
+const range = (r: [number, number]) => `${usd(r[0])} – ${usd(r[1])}`;
+const mult = (m: [number, number]) => `${m[0].toFixed(1)}–${m[1].toFixed(1)}x`;
+
+function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "pos" | "neg" }) {
+  return (
+    <div className="stat">
+      <div className="stat-label">{label}</div>
+      <div className={`stat-value num${tone ? ` ${tone}` : ""}`}>{value}</div>
+      {sub && <div className="stat-sub">{sub}</div>}
+    </div>
+  );
+}
+
+function ScoreRing({ score }: { score: number }) {
+  const r = 34;
+  const c = 2 * Math.PI * r;
+  const tone = score >= 70 ? "var(--good)" : score >= 50 ? "var(--warn)" : "var(--danger)";
+  return (
+    <svg viewBox="0 0 84 84" width="84" height="84" role="img" aria-label={`Exit readiness ${score} of 100`}>
+      <circle cx="42" cy="42" r={r} fill="none" stroke="var(--surface-2)" strokeWidth="8" />
+      <circle cx="42" cy="42" r={r} fill="none" stroke={tone} strokeWidth="8" strokeDasharray={`${(score / 100) * c} ${c}`} transform="rotate(-90 42 42)" strokeLinecap="round" />
+      <text x="42" y="48" textAnchor="middle" className="ring-label" fontSize="22">
+        {score}
+      </text>
+    </svg>
+  );
+}
+
+export function ValueTab() {
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiFetch(`/companies/${getCompanyId()}/valuation`, { cache: "no-store" })
+      .then(async (r) => {
+        const j = await r.json();
+        if (r.ok) setData(j);
+        else setError(j.message);
+      })
+      .catch(() => setError("Could not load."));
+  }, []);
+
+  if (error) return <p className="card empty">{error}</p>;
+  if (!data) return <div className="card">Loading…</div>;
+  const v = data.valuation;
+  const r = data.readiness;
+  const oc = v.ownerComp;
+
+  return (
+    <>
+      <section className="card">
+        <div className="stats">
+          <Stat label="EBITDA Value" value={range(v.ebitdaRange)} sub={`${mult(v.multiples.ebitda)} normalized EBITDA`} />
+          <Stat label="SDE Value" value={range(v.sdeRange)} sub={`${mult(v.multiples.sde)} SDE`} />
+          <Stat label="Owner Equity" value={range(v.equityRange)} sub={`less ${usd(v.operatingDebtCents)} debt, plus ${usd(v.cashCents)} cash`} />
+          {v.realEstate && <Stat label="Real Estate" value={usd(v.realEstate.netEquityCents)} sub={`${usd(v.realEstate.marketValueCents)} less ${usd(v.realEstate.mortgageCents)} mortgage`} />}
+        </div>
+      </section>
+
+      <div className="grid-2">
+        <section className="card">
+          <div className="card-title">{v.year} Earnings</div>
+          <table className="table statement">
+            <tbody>
+              <tr>
+                <td>Revenue</td>
+                <td className="num">{usd(v.revenueCents)}</td>
+              </tr>
+              <tr>
+                <td>Reported EBITDA</td>
+                <td className="num">
+                  {usd(v.reportedEbitdaCents)} <span className="muted">({v.ebitdaMarginPct.toFixed(1)}%)</span>
+                </td>
+              </tr>
+              <tr>
+                <td title={`Owner's overhead pay ${usd(oc.opexUnburdenedCents)} vs ${usd(oc.marketSalaryCents)} market manager salary`}>Owner Pay Above Market</td>
+                <td className="num">{usd(oc.addbackCents)}</td>
+              </tr>
+              {v.oneTimeAddbacksCents > 0 && (
+                <tr>
+                  <td>One-Time Expenses</td>
+                  <td className="num">{usd(v.oneTimeAddbacksCents)}</td>
+                </tr>
+              )}
+              <tr className="statement-subtotal">
+                <td>Normalized EBITDA</td>
+                <td className="num">{usd(v.normalizedEbitdaCents)}</td>
+              </tr>
+              <tr>
+                <td>Owner Pay in Overhead</td>
+                <td className="num">{usd(oc.opexBurdenedCents)}</td>
+              </tr>
+              {oc.perksCents > 0 && (
+                <tr>
+                  <td>Owner Perks</td>
+                  <td className="num">{usd(oc.perksCents)}</td>
+                </tr>
+              )}
+              <tr className="statement-subtotal">
+                <td>SDE</td>
+                <td className="num">{usd(v.sdeCents)}</td>
+              </tr>
+            </tbody>
+          </table>
+          {oc.marketGapCents < 0 && (
+            <p className="muted" style={{ fontSize: 12, marginTop: 8 }} title="Replacing the owner with a hired manager would lower EBITDA by this amount.">
+              Owner pay {usd(-oc.marketGapCents)} below market
+            </p>
+          )}
+        </section>
+
+        <section className="card">
+          <div className="row-between">
+            <div className="card-title" style={{ marginBottom: 0 }}>
+              Exit Readiness
+            </div>
+            <ScoreRing score={r.score} />
+          </div>
+          <table className="table">
+            <tbody>
+              {r.factors.map((f: any) => (
+                <tr key={f.key}>
+                  <td className="cell-name">
+                    {f.name}
+                    <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
+                      {f.detail}
+                    </div>
+                  </td>
+                  <td style={{ width: "40%" }}>
+                    <div className="aging-bar" style={{ margin: 0 }}>
+                      <span style={{ width: `${f.score * 10}%`, background: f.score >= 7 ? "var(--good)" : f.score >= 5 ? "var(--warn)" : "var(--danger)" }} />
+                    </div>
+                  </td>
+                  <td className="num">{f.score}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <section className="card">
+        <div className="card-title">Raise the Value</div>
+        <ol className="action-list">
+          {r.topActions.map((a: string) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ol>
+      </section>
+    </>
+  );
+}

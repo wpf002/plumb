@@ -462,13 +462,19 @@ export const FINDINGS: Finding[] = [
   },
   {
     account: "robert", ref: "scenario 1", phase: "D12",
-    title: "Value ranges and $1.47M real-estate equity",
+    // ANSWER KEY DISAGREES WITH ITS OWN DATA. Its equity value subtracts total
+    // debt of $654,488, which includes the $287,180 mortgage, and then adds real
+    // estate net equity that subtracts the same mortgage again. Valuing the
+    // operating company apart from the real estate, operating debt is $367,308
+    // (vehicle_equipment_debt on the Dec 2025 balance sheet), so operating
+    // equity is $4,144,071 to $5,210,429 and real estate adds $1,472,820.
+    title: "Value ranges and $1.47M real-estate equity (answer key counts the mortgage twice)",
     async run(a) {
       const v = await a.valuation.compute();
       money("SDE", v.sdeCents, 1_332_947);
       range("SDE-basis EV", v.sdeRange, 3_065_779, 4_132_137);
       range("EBITDA-basis EV", v.ebitdaRange, 3_938_012, 5_175_673);
-      range("equity value", v.equityRange, 3_856_891, 4_923_249);
+      range("operating equity value", v.equityRange, 4_144_071, 5_210_429);
       money("real-estate net equity", v.realEstate?.netEquityCents ?? 0, 1_472_820);
     },
   },

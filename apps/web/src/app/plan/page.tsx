@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
+import { ValueTab } from "./value";
 import { WhatIf } from "./what-if";
 
 const pct = (v: number | null | undefined, d = 1) => (v === null || v === undefined ? "—" : `${v.toFixed(d)}%`);
@@ -359,6 +360,7 @@ function CrewTab({ defaults }: { defaults: any }) {
 
 const TABS = [
   { key: "what-if", label: "What If" },
+  { key: "value", label: "Value" },
   { key: "fleet", label: "Fleet" },
   { key: "buy", label: "Buy Equipment" },
   { key: "hire", label: "Hire" },
@@ -401,6 +403,8 @@ export default function Plan() {
       </div>
       {tab === "what-if" ? (
         <WhatIf />
+      ) : tab === "value" ? (
+        <ValueTab />
       ) : !fleet || !defaults ? (
         <div className="card">Loading…</div>
       ) : tab === "fleet" ? (

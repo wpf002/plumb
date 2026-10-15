@@ -73,6 +73,7 @@ const ROWS: { key: string; label: string; pct?: boolean }[] = [
   { key: "debtCents", label: "Debt" },
   { key: "workingCapitalCents", label: "Working Capital" },
   { key: "capacityUsedPct", label: "Crew Capacity Used", pct: true },
+  { key: "enterpriseValueCents", label: "Business Value" },
 ];
 
 function fmt(v: number | null, isPct?: boolean) {

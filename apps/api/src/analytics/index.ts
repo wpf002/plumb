@@ -6,6 +6,7 @@ import * as jobs from "./projects.js";
 import * as ops from "./operations.js";
 import * as capital from "./capital.js";
 import * as scen from "./scenarios.js";
+import * as val from "./valuation.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -55,7 +56,10 @@ export function analyticsFor(companyId: string): Analytics {
     crews: { utilization: () => ops.crewUtilization(companyId) },
     labor: { revenuePerFieldEmployee: async (year) => ops.revenuePerFieldEmployee(companyId, await ledger(), year) },
     fleet: { summary: () => capital.fleet(companyId) },
-    valuation: { compute: pending("D12", "valuation"), exitReadiness: pending("D12", "exit readiness") },
+    valuation: {
+      compute: async () => val.valuation(companyId, await ledger()),
+      exitReadiness: async () => val.exitReadiness(companyId, await ledger()),
+    },
     scenarios: {
       loseCustomerShare: async (c, p, o) => scen.loseCustomerShare(companyId, await ledger(), c, p, o),
       exitServiceLine: async (l, o) => scen.exitServiceLine(companyId, await ledger(), l, o),
