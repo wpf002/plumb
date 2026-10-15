@@ -88,7 +88,14 @@ export default async function Dashboard() {
 
       {/* What needs attention, worst first. */}
       <section className="card">
-        <div className="card-title">Needs Attention</div>
+        <div className="row-between">
+          <div className="card-title" style={{ marginBottom: 0 }}>
+            Needs Attention
+          </div>
+          <Link href="/digest" className="btn btn-ghost btn-xs">
+            Weekly Digest
+          </Link>
+        </div>
         {dash.concerns.length === 0 && attention.length === 0 ? (
           <p className="empty">Nothing flagged.</p>
         ) : (
@@ -177,7 +184,7 @@ export default async function Dashboard() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Recurring Obligations
+            Fixed Obligations
           </div>
           <Link href="/recurring" className="btn btn-ghost btn-xs">
             Manage

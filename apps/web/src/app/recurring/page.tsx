@@ -162,7 +162,7 @@ export default function Recurring() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1>Recurring</h1>
+          <h1>Obligations</h1>
         </div>
       </div>
 

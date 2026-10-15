@@ -311,7 +311,7 @@ h3 {
 }
 .stat {
   flex: 1;
-  min-width: 150px;
+  min-width: 128px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1093,4 +1093,62 @@ select.input {
   font-size: 12px;
   font-weight: 400;
   color: var(--text-faint);
+}
+
+/* ---- Capacity load ---- */
+.load-bar {
+  position: relative;
+  display: flex;
+  height: 12px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.load-bar .load-booked {
+  background: var(--accent);
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+.load-bar .load-pipeline {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.load-bar .load-ceiling {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--ink);
+}
+
+/* ---- Small bar charts ---- */
+.mini-chart {
+  width: 100%;
+  height: auto;
+  margin-top: 16px;
+}
+.mini-chart .bar-a,
+.legend .bar-a {
+  fill: var(--accent);
+  background: var(--accent);
+}
+.mini-chart .bar-b,
+.legend .bar-b {
+  fill: var(--info);
+  background: var(--info);
+}
+.chart-label {
+  fill: var(--text-faint);
+  font-size: 11px;
+}
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
 }

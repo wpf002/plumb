@@ -418,11 +418,19 @@ export const FINDINGS: Finding[] = [
   },
   {
     account: "robert", ref: "insight 9", phase: "D9",
-    title: "Top-5 customers 22.1%, largest 5.5%",
+    // ANSWER KEY DISAGREES WITH ITS OWN DATA. The 22.1% / 5.5% figures come from
+    // 06_customers.csv, whose denominator ($14,004,517) only covers the 245
+    // customers in that file. 20b_maintenance_agreement_detail.csv bills 115
+    // customers, 44 of them missing from 06_customers.csv, worth $1,372,884 of
+    // maintenance revenue that is on the P&L. Counting all of it ($15,377,401),
+    // the top five are 20.1% and Mercy Health is 4.97%. The conclusion (no
+    // dangerous concentration) is the same; the assertion follows the books.
+    title: "Top-5 customers 20.1%, largest 5.0% (answer key omits 44 maintenance customers)",
     async run(a) {
       const c = await a.customers.concentration();
-      pct("top-5 share", c.top5Pct, 22.1);
-      pct("largest share", c.maxPct, 5.5);
+      money("tracked lifetime revenue", c.totalCents, 15_377_401);
+      pct("top-5 share", c.top5Pct, 20.1);
+      pct("largest share", c.maxPct, 4.97);
     },
   },
   {

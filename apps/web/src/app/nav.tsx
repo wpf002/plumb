@@ -24,10 +24,10 @@ const links: { href: string; label: string; show?: (m: string) => boolean }[] = 
   { href: "/statements", label: "Statements" },
   { href: "/working-capital", label: "Working Capital" },
   { href: "/projects", label: "Jobs", show: hasProjects },
+  { href: "/operations", label: "Operations" },
   { href: "/balance-sheet", label: "Assets" },
-  { href: "/recurring", label: "Recurring" },
+  { href: "/recurring", label: "Obligations" },
   { href: "/bid", label: "Bid", show: hasProjects },
-  { href: "/digest", label: "Digest" },
   { href: "/integrations", label: "Integrations" },
   { href: "/settings", label: "Settings" },
 ];

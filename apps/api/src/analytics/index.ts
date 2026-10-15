@@ -3,6 +3,7 @@ import { loadLedger, type Ledger } from "./ledger.js";
 import { annualStatement, cashLow, firstCash, monthPoint, netIncomeVariancePct, worstProfitYear } from "./statements.js";
 import { arAging, locHistory, toArAging, totalDebtCents } from "./workingcapital.js";
 import * as jobs from "./projects.js";
+import * as ops from "./operations.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -33,7 +34,7 @@ export function analyticsFor(companyId: string): Analytics {
       totalCents: async () => totalDebtCents(companyId, await ledger()),
     },
     ar: { aging: async () => toArAging((await arAging(companyId)).aging) },
-    customers: { concentration: pending("D9", "customer concentration") },
+    customers: { concentration: async () => ops.concentration(companyId, await ledger()) },
     projects: {
       marginPerformance: () => jobs.marginPerformance(companyId),
       overruns: (t) => jobs.overruns(companyId, t),
@@ -45,9 +46,12 @@ export function analyticsFor(companyId: string): Analytics {
     },
     backlog: { summary: () => jobs.backlog(companyId) },
     pipeline: { lostByYear: async () => (await jobs.pipeline(companyId)).lostByYear },
-    recurring: { annual: pending("D9", "recurring revenue"), seasonalSwingPct: pending("D9", "seasonality") },
-    crews: { utilization: pending("D9", "crew utilization") },
-    labor: { revenuePerFieldEmployee: pending("D9", "labor productivity") },
+    recurring: {
+      annual: async (year) => ops.recurringAnnual(companyId, await ledger(), year),
+      seasonalSwingPct: async () => ops.seasonalSwingPct(companyId, await ledger()),
+    },
+    crews: { utilization: () => ops.crewUtilization(companyId) },
+    labor: { revenuePerFieldEmployee: async (year) => ops.revenuePerFieldEmployee(companyId, await ledger(), year) },
     fleet: { summary: pending("D10", "fleet") },
     valuation: { compute: pending("D12", "valuation"), exitReadiness: pending("D12", "exit readiness") },
     scenarios: {
@@ -57,7 +61,7 @@ export function analyticsFor(companyId: string): Analytics {
       materialsIncrease: pending("D11", "materials scenario"),
       crewExpansion: pending("D10", "crew expansion"),
       fieldHire: pending("D10", "hiring analysis"),
-      capacityHeadroom: pending("D9", "capacity headroom"),
+      capacityHeadroom: async () => ops.capacityHeadroom(companyId, await ledger()),
       paymentDelay: pending("D11", "payment-delay scenario"),
     },
   };
