@@ -18,3 +18,5 @@ export * from "./scenario.js";
 export * from "./statements.js";
 export * from "./aging.js";
 export * from "./readings.js";
+export * from "./forecast.js";
+export * from "./revenueForecast.js";

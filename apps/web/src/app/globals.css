@@ -1085,3 +1085,9 @@ select.input {
 .tone-neutral {
   color: var(--text-faint);
 }
+
+.th-sub {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-faint);
+}

@@ -11,6 +11,7 @@ import { periodOf } from "../import/csv.js";
 import { companyAsOf, loadSnapshot } from "../snapshot.js";
 import type { Ledger } from "./ledger.js";
 import { arAging, debtDashboard, workingCapital } from "./workingcapital.js";
+import { thirteenWeek } from "./forecast.js";
 
 /**
  * The primary DNRD dashboard: one view of where the business stands, every
@@ -94,8 +95,14 @@ export async function healthDashboard(companyId: string, ledger: Ledger): Promis
   const projYearRevenue = ytdT && t3T ? ytdT.revenue + Math.round((t3T.revenue / t3.length) * monthsLeft) : null;
   const projYearProfit = ytdT && t3T ? ytdT.netIncome + Math.round((t3T.netIncome / t3.length) * monthsLeft) : null;
 
-  const cash30 = snap.cash.base.series[Math.min(30, snap.cash.base.series.length - 1)]?.balanceCents ?? null;
-  const cash90 = snap.cash.base.endingBalanceCents;
+  // With books, the 13-week forecast is the source; otherwise the scheduled model.
+  let cash30 = snap.cash.base.series[Math.min(30, snap.cash.base.series.length - 1)]?.balanceCents ?? null;
+  let cash90: number | null = snap.cash.base.endingBalanceCents;
+  if (hasLedger) {
+    const wk = (await thirteenWeek(companyId)).forecast.buckets;
+    cash30 = wk[3]?.endingCents ?? cash30;
+    cash90 = wk[12]?.endingCents ?? cash90;
+  }
   const monthlyBurn = t3T ? (t3T.cogs + t3T.opex - t3T.depreciation) / t3.length : null;
   const cashMonths = monthlyBurn && monthlyBurn > 0 ? wc.cashCents / monthlyBurn : null;
   const gm = ytdT ? pctOf(ytdT.grossProfit, ytdT.revenue) : null;

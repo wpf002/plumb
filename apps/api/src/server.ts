@@ -39,6 +39,7 @@ import { registerTrustRoutes } from "./routes/trust.js";
 import { registerImportRoutes } from "./routes/imports.js";
 import { registerStatementRoutes } from "./routes/statements.js";
 import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
+import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -121,6 +122,7 @@ export function buildServer() {
   registerImportRoutes(app);
   registerStatementRoutes(app);
   registerWorkingCapitalRoutes(app);
+  registerForecastV2Routes(app);
 
   return app;
 }

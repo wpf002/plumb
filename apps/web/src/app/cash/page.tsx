@@ -3,6 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch, getCompanyId, usd, centsFrom, shortDate, C } from "../ui";
 import { ReconciliationCard } from "../health-ui";
+import { Accuracy, RevenueForecast, ThirteenWeek, TwelveMonth } from "./forecast-views";
+
+const VIEWS = [
+  { key: "13w", label: "13 Weeks" },
+  { key: "12m", label: "12 Months" },
+  { key: "revenue", label: "Revenue" },
+  { key: "daily", label: "Daily" },
+  { key: "whatif", label: "What If" },
+  { key: "accuracy", label: "Accuracy" },
+] as const;
 
 const HORIZONS = [30, 60, 90, 120, 180, 365];
 
@@ -70,6 +80,7 @@ const emptyWhatIf = {
 };
 
 export default function Cash() {
+  const [view, setView] = useState<(typeof VIEWS)[number]["key"]>("13w");
   const [horizon, setHorizon] = useState(90);
   const [forecast, setForecast] = useState<any>(null);
   const [options, setOptions] = useState<any>(null);
@@ -209,12 +220,33 @@ export default function Cash() {
         </div>
       </div>
 
+      <div className="toolbar">
+        <div className="tabs">
+          {VIEWS.map((v) => (
+            <button key={v.key} className={`tab${v.key === view ? " active" : ""}`} onClick={() => setView(v.key)}>
+              {v.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {view === "13w" && (
+        <>
+          <ThirteenWeek />
+          {dataHealth && <ReconciliationCard health={dataHealth} />}
+        </>
+      )}
+      {view === "12m" && <TwelveMonth />}
+      {view === "revenue" && <RevenueForecast />}
+      {view === "accuracy" && <Accuracy />}
+
       {error && (
         <div className="alert critical" style={{ marginBottom: 16 }}>
           <div className="alert-title">{error}</div>
         </div>
       )}
 
+      {view === "daily" && (
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
@@ -298,8 +330,10 @@ export default function Cash() {
         )}
       </section>
 
-      {dataHealth && <ReconciliationCard health={dataHealth} />}
+      )}
 
+      {view === "whatif" && (
+      <>
       {/* What if */}
       <section className="card">
         <div className="card-title">What If</div>
@@ -510,6 +544,8 @@ export default function Cash() {
           </>
         )}
       </section>
+      </>
+      )}
     </main>
   );
 }
