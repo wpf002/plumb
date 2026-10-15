@@ -21,8 +21,9 @@ type Me = { user: { email: string }; companies: Company[]; activeCompanyId: stri
 const links: { href: string; label: string; show?: (m: string) => boolean }[] = [
   { href: "/", label: "Dashboard" },
   { href: "/cash", label: "Cash" },
+  { href: "/statements", label: "Statements" },
   { href: "/projects", label: "Jobs", show: hasProjects },
-  { href: "/balance-sheet", label: "Balance Sheet" },
+  { href: "/balance-sheet", label: "Assets" },
   { href: "/recurring", label: "Recurring" },
   { href: "/bid", label: "Bid", show: hasProjects },
   { href: "/digest", label: "Digest" },

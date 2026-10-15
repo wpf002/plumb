@@ -873,3 +873,91 @@ select.input {
 .confidence-link:hover {
   text-decoration: underline;
 }
+
+/* --- Statements ------------------------------------------------------------- */
+
+.container-wide {
+  max-width: 1180px;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 8px;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.tab {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: var(--accent-fg);
+  background: var(--accent);
+}
+
+.input-sm {
+  height: 36px;
+  padding: 4px 32px 4px 12px;
+  font-size: 14px;
+  width: auto;
+}
+
+.statement-scroll {
+  overflow-x: auto;
+}
+
+.statement td,
+.statement th {
+  white-space: nowrap;
+}
+
+.statement .statement-label {
+  position: sticky;
+  left: 0;
+  background: var(--surface);
+  min-width: 220px;
+}
+
+.statement-section td {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding-top: 16px;
+}
+
+.statement-subtotal td {
+  border-top: 1px solid var(--border-strong);
+  font-weight: 700;
+  color: var(--ink);
+}

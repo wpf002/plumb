@@ -15,3 +15,4 @@ export * from "./services.js";
 export * from "./collisions.js";
 export * from "./confidence.js";
 export * from "./scenario.js";
+export * from "./statements.js";

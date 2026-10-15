@@ -235,16 +235,21 @@ export const FINDINGS: Finding[] = [
   },
   {
     account: "joe", ref: "insight 3", phase: "D9",
-    title: "Project revenue went from minority to majority",
+    // ANSWER KEY DISAGREES WITH ITS OWN DATA. The insight says project revenue
+    // went "from a smaller share in 2022 to a majority by 2024-2025", but
+    // 03_income_statement_monthly.csv has projects at 66.7% of revenue in 2022,
+    // 66.7% in 2023, 68.1% in 2024, and 65.4% in 2025. The assertion follows the
+    // books: projects are the majority every year and the share is roughly flat.
+    title: "Projects are ~two-thirds of revenue every year (answer key misstates the trend)",
     async run(a) {
       const share = async (y: number) => {
         const s = await a.statements.annual(y);
         const project = Object.entries(s.revenueByLine).filter(([k]) => /project/i.test(k)).reduce((t, [, v]) => t + v, 0);
         return (project / s.revenue) * 100;
       };
-      truthy("2022 project share < 50%", (await share(2022)) < 50);
-      truthy("2024 project share > 50%", (await share(2024)) > 50);
-      truthy("2025 project share > 50%", (await share(2025)) > 50);
+      pct("2022 project share", await share(2022), 66.7);
+      pct("2024 project share", await share(2024), 68.1);
+      pct("2025 project share", await share(2025), 65.4);
     },
   },
   {

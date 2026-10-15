@@ -1,4 +1,6 @@
 import { Pending, type Analytics } from "./types.js";
+import { loadLedger, type Ledger } from "./ledger.js";
+import { annualStatement, cashLow, firstCash, monthPoint, netIncomeVariancePct, worstProfitYear } from "./statements.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -9,17 +11,20 @@ export function analyticsFor(companyId: string): Analytics {
   const pending = (phase: string, what: string) => async () => {
     throw new Pending(phase, what);
   };
+  // The ledger is loaded once per analytics instance and shared by every domain.
+  let ledgerP: Promise<Ledger> | null = null;
+  const ledger = () => (ledgerP ??= loadLedger(companyId));
   return {
     companyId,
     statements: {
-      annual: pending("D5", "annual statements"),
-      month: pending("D5", "monthly statements"),
-      cashLow: pending("D5", "cash low point"),
-      firstCash: pending("D5", "starting cash"),
+      annual: async (year) => annualStatement(await ledger(), year),
+      month: async (period) => monthPoint(await ledger(), period),
+      cashLow: async (year) => cashLow(await ledger(), year),
+      firstCash: async () => firstCash(await ledger()),
     },
     budget: {
-      netIncomeVariancePct: pending("D5", "budget vs actual"),
-      worstProfitYear: pending("D5", "budget vs actual"),
+      netIncomeVariancePct: (year) => netIncomeVariancePct(companyId, year),
+      worstProfitYear: () => worstProfitYear(companyId),
     },
     debt: { loc: pending("D6", "line-of-credit history"), totalCents: pending("D6", "debt dashboard") },
     ar: { aging: pending("D6", "AR aging") },
