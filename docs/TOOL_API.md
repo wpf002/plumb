@@ -42,3 +42,20 @@ Every outside system implements one adapter (`apps/api/src/integrations/sources/
 Phase 1 sources: QuickBooks Online (OAuth), Plaid (access token from the link flow, 24 months), Stripe (restricted read key; the company's own payments, refunds, fees, payouts), Gusto (token + company id). Live paths for Stripe and Gusto have not been exercised against real accounts.
 
 Phase 2 sources (`vertical.ts`, built with the `restAdapter` spec factory): Jobber, ServiceTitan, Housecall Pro, Procore, FreshBooks, Xero, QuickBooks Time, busybusy, Deputy, Square. ADP, QuickBooks Payroll, Paychex, ClockShark, Buildertrend, STACK, and Procore Estimating offer partner-only APIs and come in through their CSV exports. Endpoints follow each vendor's public docs; none have been run against a real account.
+
+Phase 3 sources (`phase3.ts`): Samsara, Fleetio, Motive (telematics enrich fleet assets with miles, hours, fuel, upkeep), HubSpot, Salesforce, Jobber quotes (pipeline into opportunities), MX (backup bank feed), PayPal. Ford Pro and Mastercard Open Finance are partner-only. Venmo shows up in bank transactions.
+
+# MCP Server (Claude Connector, ChatGPT App)
+
+`POST /mcp` speaks MCP over Streamable HTTP with JSON responses (no SSE). Authenticate with `Authorization: Bearer plb_...`; the key fixes the company and the scopes. Supports `initialize`, `ping`, `tools/list`, and `tools/call`; write tools are annotated as such and read tools as read-only.
+
+```json
+{ "mcpServers": { "dnrd": { "type": "http", "url": "https://<api-host>/mcp", "headers": { "Authorization": "Bearer plb_..." } } } }
+```
+
+Clients that only support OAuth (claude.ai custom connectors, the ChatGPT app directory) need an OAuth authorization server in front of this endpoint; that isn't built yet.
+
+# Benchmarks and Lender Package
+
+- `GET /companies/:id/operations/benchmarks`: the company against other DNRD companies on this install, anonymized, shown only with three or more peers.
+- `GET /companies/:id/lender-package?format=csv|json`: three years of results, covenant ratios, aging, loans, and backlog.

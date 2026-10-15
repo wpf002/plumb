@@ -8,9 +8,10 @@ import { plaid } from "./plaid.js";
 import { quickbooks } from "./quickbooks.js";
 import { stripe } from "./stripe.js";
 import { PHASE2 } from "./vertical.js";
+import { PHASE3 } from "./phase3.js";
 
 /** Every outside system DNRD reads from, in roadmap order. */
-export const SOURCES: SourceAdapter[] = [quickbooks, plaid, stripe, gusto, ...PHASE2];
+export const SOURCES: SourceAdapter[] = [quickbooks, plaid, stripe, gusto, ...PHASE2, ...PHASE3];
 
 export function sourceFor(key: string) {
   const s = SOURCES.find((x) => x.key === key);

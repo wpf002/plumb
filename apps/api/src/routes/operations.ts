@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { loadLedger } from "../analytics/ledger.js";
 import * as ops from "../analytics/operations.js";
 import { companyAsOf } from "../snapshot.js";
+import { benchmarks } from "../analytics/benchmarks.js";
+import { lenderCsv, lenderPackage } from "../analytics/lender.js";
 
 type P = { Params: { companyId: string } };
 
@@ -22,4 +24,16 @@ export function registerOperationsRoutes(app: FastifyInstance) {
   app.get<P>("/companies/:companyId/operations/capacity", async (req) => ops.capacityPlan(req.params.companyId, await loadLedger(req.params.companyId)));
   app.get<P>("/companies/:companyId/operations/recurring", async (req) => ops.recurringDashboard(req.params.companyId, await loadLedger(req.params.companyId)));
   app.get<P>("/companies/:companyId/operations/service-calls", async (req) => ops.serviceCalls(req.params.companyId));
+}
+
+export function registerBenchmarkRoutes(app: FastifyInstance) {
+  app.get<P>("/companies/:companyId/operations/benchmarks", async (req) => benchmarks(req.params.companyId));
+  app.get<P & { Querystring: { format?: "csv" | "json" } }>("/companies/:companyId/lender-package", async (req, reply) => {
+    const pkg = await lenderPackage(req.params.companyId, await loadLedger(req.params.companyId));
+    if (req.query.format === "csv") {
+      const file = `${pkg.company.replace(/[^A-Za-z0-9]+/g, "-")}-lender-package-${pkg.asOf}.csv`;
+      return reply.header("Content-Type", "text/csv").header("Content-Disposition", `attachment; filename="${file}"`).send(lenderCsv(pkg));
+    }
+    return pkg;
+  });
 }

@@ -45,18 +45,19 @@ import { registerImportRoutes } from "./routes/imports.js";
 import { registerStatementRoutes } from "./routes/statements.js";
 import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
 import { registerJobRoutes } from "./routes/jobs.js";
-import { registerOperationsRoutes } from "./routes/operations.js";
+import { registerBenchmarkRoutes, registerOperationsRoutes } from "./routes/operations.js";
 import { registerCapitalRoutes, registerScenarioV2Routes } from "./routes/capital.js";
 import { registerDennyRoutes } from "./routes/denny.js";
 import { apiKeyFor, registerToolRoutes, type AuthedRequest } from "./routes/tools.js";
 import { registerSourceRoutes } from "./routes/sources.js";
+import { registerMcpRoutes } from "./routes/mcp.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
   const app = Fastify({ logger: true });
   // Credentials so the browser sends the session cookie cross-port (same-site).
-  app.register(cors, { origin: true, credentials: true });
+  app.register(cors, { origin: true, credentials: true, exposedHeaders: ["Content-Disposition"] });
   app.register(cookie);
 
   // Auth gate: everything except /healthz, /auth/*, and the QBO OAuth callback
@@ -69,11 +70,14 @@ export function buildServer() {
     const bearer = req.headers.authorization?.match(/^Bearer (plb_[A-Za-z0-9_-]+)$/)?.[1];
     if (bearer) {
       const tm = path.match(/^\/companies\/([^/]+)\/tools(\/|$)/);
-      const key = tm ? await apiKeyFor(bearer) : null;
-      if (!tm || !key || key.companyId !== tm[1]) return reply.code(401).send({ error: "Unauthorized", message: "Invalid API key for this route." });
+      const isMcp = path === "/mcp";
+      const key = tm || isMcp ? await apiKeyFor(bearer) : null;
+      if (!key || (tm && key.companyId !== tm[1]) || (!tm && !isMcp)) return reply.code(401).send({ error: "Unauthorized", message: "Invalid API key for this route." });
       (req as AuthedRequest).apiKey = { id: key.id, scopes: key.scopes };
+      (req as AuthedRequest & { apiKeyCompanyId?: string }).apiKeyCompanyId = key.companyId;
       return;
     }
+    if (path === "/mcp") return reply.code(401).send({ jsonrpc: "2.0", id: null, error: { code: -32001, message: "A DNRD API key is required." } });
 
     const user = await getSessionUser(req.cookies[SESSION_COOKIE]);
     if (!user) return reply.code(401).send({ error: "Unauthorized", message: "Sign in required." });
@@ -147,11 +151,13 @@ export function buildServer() {
   registerWorkingCapitalRoutes(app);
   registerJobRoutes(app);
   registerOperationsRoutes(app);
+  registerBenchmarkRoutes(app);
   registerCapitalRoutes(app);
   registerScenarioV2Routes(app);
   registerDennyRoutes(app);
   registerToolRoutes(app);
   registerSourceRoutes(app);
+  registerMcpRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

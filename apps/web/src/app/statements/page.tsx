@@ -110,6 +110,19 @@ function StatementTable({ data, tab }: { data: any; tab: Tab }) {
   );
 }
 
+/** Three years of results, covenants, aging, loans, and backlog as one CSV. */
+async function downloadLenderPackage() {
+  const res = await apiFetch(`/companies/${getCompanyId()}/lender-package?format=csv`, { cache: "no-store" });
+  if (!res.ok) return;
+  const name = res.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/)?.[1] ?? "lender-package.csv";
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function Statements() {
   const [tab, setTab] = useState<Tab>("income");
   const [view, setView] = useState<string>("annual");
@@ -144,7 +157,12 @@ export default function Statements() {
         <div>
           <h1>Statements</h1>
         </div>
-        {data?.through && <span className="num muted">Through {data.through}</span>}
+        <div className="toolbar-right" style={{ alignItems: "center" }}>
+          {data?.through && <span className="num muted">Through {data.through}</span>}
+          <button className="btn btn-ghost btn-xs" onClick={downloadLenderPackage}>
+            Lender Package
+          </button>
+        </div>
       </div>
 
       <div className="toolbar">

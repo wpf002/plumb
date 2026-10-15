@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId } from "../ui";
-import { CapacityView, CustomersView, LaborView, RecurringView, ServiceCallsView, ServiceLinesView } from "./ops-views";
+import { BenchmarksView, CapacityView, CustomersView, LaborView, RecurringView, ServiceCallsView, ServiceLinesView } from "./ops-views";
 
 const TABS = [
   { key: "lines", label: "Service Lines", path: "service-lines", View: ServiceLinesView },
@@ -11,6 +11,7 @@ const TABS = [
   { key: "capacity", label: "Capacity", path: "capacity", View: CapacityView },
   { key: "recurring", label: "Recurring", path: "recurring", View: RecurringView },
   { key: "calls", label: "Service Calls", path: "service-calls", View: ServiceCallsView },
+  { key: "benchmarks", label: "Benchmarks", path: "benchmarks", View: BenchmarksView },
 ] as const;
 
 type Key = (typeof TABS)[number]["key"];

@@ -440,3 +440,59 @@ export function ServiceCallsView({ data }: { data: any }) {
     </>
   );
 }
+
+function fmtMetric(v: number | null, unit: string) {
+  if (v === null || v === undefined) return "—";
+  if (unit === "pct") return `${v.toFixed(1)}%`;
+  if (unit === "days") return `${Math.round(v)}`;
+  if (unit === "ratio") return `${v.toFixed(2)}x`;
+  return usd(v);
+}
+
+export function BenchmarksView({ data }: { data: any }) {
+  if (data.peers < data.minPeers) return <Empty what={`Needs ${data.minPeers} peer companies on DNRD; ${data.peers} so far.`} />;
+  return (
+    <section className="card">
+      <div className="row-between">
+        <div className="card-title" style={{ marginBottom: 0 }}>
+          Against {data.peers} Peers
+        </div>
+        <span className="muted" style={{ fontSize: 12 }} title="Other DNRD companies, anonymized. A metric shows only when three or more report it.">
+          DNRD companies, anonymized
+        </span>
+      </div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th className="num">Yours</th>
+            <th className="num">Peer Median</th>
+            <th className="num">Top Quarter</th>
+            <th style={{ width: "28%" }}>Ahead Of</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.metrics.map((m: any) => (
+            <tr key={m.key}>
+              <td className="cell-name">{m.label}</td>
+              <td className="num" style={{ fontWeight: 700 }}>
+                {fmtMetric(m.yours, m.unit)}
+              </td>
+              <td className="num">{fmtMetric(m.median, m.unit)}</td>
+              <td className="num">{fmtMetric(m.topQuartile, m.unit)}</td>
+              <td>
+                {m.rank === null ? (
+                  <span className="muted">—</span>
+                ) : (
+                  <div className="aging-bar" style={{ margin: 0 }} title={`Ahead of ${m.rank}% of peers`}>
+                    <span style={{ width: `${Math.max(m.rank, 3)}%`, background: m.rank >= 50 ? "var(--good)" : "var(--warn)" }} />
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
