@@ -50,7 +50,7 @@ import { registerServiceRoutes } from "./routes/services.js";
 import { registerAnalysisRoutes } from "./routes/analysis.js";
 import { registerTrustRoutes } from "./routes/trust.js";
 import { registerImportRoutes } from "./routes/imports.js";
-import { registerStatementRoutes } from "./routes/statements.js";
+import { registerStatementRoutes, registerTaxRoutes } from "./routes/statements.js";
 import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
 import { registerJobRoutes } from "./routes/jobs.js";
 import { registerBenchmarkRoutes, registerOperationsRoutes } from "./routes/operations.js";
@@ -161,6 +161,7 @@ export function buildServer() {
   registerTrustRoutes(app);
   registerImportRoutes(app);
   registerStatementRoutes(app);
+  registerTaxRoutes(app);
   registerWorkingCapitalRoutes(app);
   registerJobRoutes(app);
   registerOperationsRoutes(app);

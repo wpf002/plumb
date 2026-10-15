@@ -16,6 +16,7 @@ import { loadLedger } from "../analytics/ledger.js";
 import { budgetRows } from "../analytics/statements.js";
 import { companyAsOf } from "../snapshot.js";
 import { periodOf } from "../import/csv.js";
+import { taxCsv, taxPackage } from "../analytics/tax.js";
 
 const VIEWS = ["monthly", "quarterly", "annual", "ytd", "t12"] as const;
 const COMPARE = ["none", "prior_year", "prior_period", "budget"] as const;
@@ -187,6 +188,25 @@ export function registerStatementRoutes(app: FastifyInstance) {
         return { ...v, explanation };
       });
       return { year, years, lines };
+    }
+  );
+}
+
+export function registerTaxRoutes(app: FastifyInstance) {
+  app.get<{ Params: { companyId: string }; Querystring: { year?: number; format?: "csv" | "json" } }>(
+    "/companies/:companyId/tax-package",
+    { schema: { querystring: { type: "object", properties: { year: { type: "integer", minimum: 2000, maximum: 2100 }, format: { type: "string", enum: ["csv", "json"] } } } } },
+    async (req, reply) => {
+      try {
+        const pkg = await taxPackage(req.params.companyId, await loadLedger(req.params.companyId), req.query.year);
+        if (req.query.format === "csv") {
+          const file = `${pkg.company.replace(/[^A-Za-z0-9]+/g, "-")}-tax-package-${pkg.year}.csv`;
+          return reply.header("Content-Type", "text/csv").header("Content-Disposition", `attachment; filename="${file}"`).send(taxCsv(pkg));
+        }
+        return pkg;
+      } catch (e) {
+        return reply.code(422).send({ error: "Unprocessable", message: e instanceof Error ? e.message : String(e) });
+      }
     }
   );
 }

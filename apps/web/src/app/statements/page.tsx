@@ -1,5 +1,6 @@
 "use client";
 
+import { TaxView } from "./tax-view";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
@@ -9,6 +10,7 @@ const TABS = [
   { key: "balance", label: "Balance Sheet" },
   { key: "cash-flow", label: "Cash Flow" },
   { key: "budget", label: "Budget" },
+  { key: "tax", label: "Tax" },
 ] as const;
 
 const VIEWS = [
@@ -110,11 +112,11 @@ function StatementTable({ data, tab }: { data: any; tab: Tab }) {
   );
 }
 
-/** Three years of results, covenants, aging, loans, and backlog as one CSV. */
-async function downloadLenderPackage() {
-  const res = await apiFetch(`/companies/${getCompanyId()}/lender-package?format=csv`, { cache: "no-store" });
+/** Download a CSV the API builds (lender or tax package). */
+async function downloadCsv(path: string) {
+  const res = await apiFetch(`/companies/${getCompanyId()}/${path}`, { cache: "no-store" });
   if (!res.ok) return;
-  const name = res.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/)?.[1] ?? "lender-package.csv";
+  const name = res.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/)?.[1] ?? "export.csv";
   const url = URL.createObjectURL(await res.blob());
   const a = document.createElement("a");
   a.href = url;
@@ -127,6 +129,7 @@ export default function Statements() {
   const [tab, setTab] = useState<Tab>("income");
   const [view, setView] = useState<string>("annual");
   const [compare, setCompare] = useState<string>("none");
+  const [taxYear, setTaxYear] = useState<number | null>(null);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -135,14 +138,16 @@ export default function Statements() {
     if (!id) return;
     setError(null);
     const path =
-      tab === "budget"
+      tab === "tax"
+        ? `/companies/${id}/tax-package${taxYear ? `?year=${taxYear}` : ""}`
+        : tab === "budget"
         ? `/companies/${id}/budget-vs-actual`
         : `/companies/${id}/statements/${tab}?view=${view}&compare=${tab === "income" ? compare : compare === "prior_year" ? "prior_year" : "none"}`;
     const res = await apiFetch(path, { cache: "no-store" });
     const j = await res.json();
     if (!res.ok) setError(j.message ?? `Failed (${res.status})`);
     else setData(j);
-  }, [tab, view, compare]);
+  }, [tab, view, compare, taxYear]);
 
   useEffect(() => {
     setData(null);
@@ -159,7 +164,7 @@ export default function Statements() {
         </div>
         <div className="toolbar-right" style={{ alignItems: "center" }}>
           {data?.through && <span className="num muted">Through {data.through}</span>}
-          <button className="btn btn-ghost btn-xs" onClick={downloadLenderPackage}>
+          <button className="btn btn-ghost btn-xs" onClick={() => downloadCsv("lender-package?format=csv")}>
             Lender Package
           </button>
         </div>
@@ -173,7 +178,21 @@ export default function Statements() {
             </button>
           ))}
         </div>
-        {tab !== "budget" && (
+        {tab === "tax" && data?.summary && (
+          <div className="toolbar-right">
+            <select className="input input-sm" value={data.year} onChange={(e) => setTaxYear(Number(e.target.value))} aria-label="Tax year">
+              {data.years.map((y: number) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+            <button className="btn btn-primary btn-xs" onClick={() => downloadCsv(`tax-package?year=${data.year}&format=csv`)}>
+              Download for CPA
+            </button>
+          </div>
+        )}
+        {tab !== "budget" && tab !== "tax" && (
           <div className="toolbar-right">
             <select className="input input-sm" value={view} onChange={(e) => setView(e.target.value)} aria-label="Period">
               {VIEWS.map((v) => (
@@ -207,6 +226,9 @@ export default function Statements() {
             No ledger data. <Link href="/integrations">Import</Link>
           </p>
         </section>
+      ) : tab === "tax" ? (
+        // The previous tab's data can still be in state for one render.
+        data.summary ? <TaxView data={data} /> : <div className="card">Loading…</div>
       ) : tab === "budget" ? (
         <section className="card">
           <div className="row-between">
