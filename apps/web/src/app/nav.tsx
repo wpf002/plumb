@@ -103,6 +103,11 @@ export function Topbar() {
 
         {me && !onPublic && (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {me.companies.length > 1 && (
+              <Link href="/portfolio" className={`navlink${path.startsWith("/portfolio") ? " active" : ""}`}>
+                Portfolio
+              </Link>
+            )}
             {me.companies.length > 1 ? (
               <select
                 value={me.activeCompanyId ?? ""}

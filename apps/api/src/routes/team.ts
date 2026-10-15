@@ -12,7 +12,7 @@ const inviteSchema = {
   additionalProperties: false,
   properties: {
     email: { type: "string", pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" },
-    role: { type: "string", enum: ["OWNER", "MEMBER"] },
+    role: { type: "string", enum: ["OWNER", "MEMBER", "ACCOUNTANT", "VIEWER"] },
   },
 } as const;
 
@@ -40,7 +40,7 @@ export function registerTeamRoutes(app: FastifyInstance) {
   );
 
   // Invite a teammate (OWNER — enforced by the server preHandler).
-  app.post<{ Params: { companyId: string }; Body: { email: string; role?: "OWNER" | "MEMBER" } }>(
+  app.post<{ Params: { companyId: string }; Body: { email: string; role?: "OWNER" | "MEMBER" | "ACCOUNTANT" | "VIEWER" } }>(
     "/companies/:companyId/team/invite",
     { schema: { body: inviteSchema } },
     async (req) => {

@@ -4,6 +4,8 @@ import { usd, shortDate, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
 import { AskDenny } from "./ask-denny";
+import { DashboardCustomize } from "./dashboard-customize";
+import { Fragment } from "react";
 
 
 const TONE: Record<string, string> = { good: "good", warn: "warn", bad: "bad", neutral: "neutral" };
@@ -21,26 +23,22 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [forecast, digest, brief, dataHealth, dash, analysis] = await Promise.all([
+  const [forecast, digest, brief, dataHealth, dash, analysis, layout] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/digest`),
     apiGet(`/companies/${companyId}/brief`),
     apiGet(`/companies/${companyId}/data-health`),
     apiGet(`/companies/${companyId}/health-dashboard`),
     apiGet(`/companies/${companyId}/collisions`),
+    apiGet(`/companies/${companyId}/dashboard-layout`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
 
-  return (
-    <main className="container">
-      <div className="page-head">
-        <div>
-          <h1>Dashboard</h1>
-        </div>
-      </div>
 
-      {/* The brief: rating, the standing lines, what stands out, what to do. */}
+  const sections: Record<string, React.ReactNode> = {
+    brief: (
+      <>
       <section className={`card readout ${RATING_TONE[brief.rating]}`}>
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
@@ -78,10 +76,15 @@ export default async function Dashboard() {
         )}
         <ConfidenceStrip health={dataHealth} />
       </section>
-
+      </>
+    ),
+    denny: (
+      <>
       <AskDenny />
-
-      {/* Every health metric, each with the reading an owner acts on. */}
+      </>
+    ),
+    health: (
+      <>
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
@@ -106,8 +109,10 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
-
-      {/* What needs attention, worst first. */}
+      </>
+    ),
+    attention: (
+      <>
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
@@ -143,8 +148,10 @@ export default async function Dashboard() {
           </>
         )}
       </section>
-
-      {/* Cash */}
+      </>
+    ),
+    cash: (
+      <>
       <section className="card">
         <div className="card-title">Cash: Expected vs Worst Case</div>
         <div className="stats">
@@ -177,8 +184,9 @@ export default async function Dashboard() {
           </div>
         )}
       </section>
-
-      {analysis.collisions?.length > 0 && (
+      </>
+    ),
+    collisions: analysis.collisions?.length > 0 && (
         <section className="card">
           <div className="card-title">Weeks Worth Watching</div>
           {analysis.collisions.map((c: any) => (
@@ -199,9 +207,9 @@ export default async function Dashboard() {
             </div>
           ))}
         </section>
-      )}
-
-      {/* Fixed obligations — the nut before a single job cost */}
+      ),
+    obligations: (
+      <>
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
@@ -233,7 +241,21 @@ export default async function Dashboard() {
           </div>
         </div>
       </section>
+      </>
+    ),
+  };
 
+  return (
+    <main className="container">
+      <div className="page-head">
+        <div>
+          <h1>Dashboard</h1>
+        </div>
+        <DashboardCustomize widgets={layout.widgets} available={layout.available} />
+      </div>
+      {layout.widgets.map((k: string) => (
+        <Fragment key={k}>{sections[k] ?? null}</Fragment>
+      ))}
     </main>
   );
 }

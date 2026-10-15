@@ -451,7 +451,7 @@ export const TOOLS: Tool[] = [
   },
 ];
 
-export const SCOPES_BY_ROLE: Record<string, Scope[]> = { OWNER: ["read", "analyze", "write"], MEMBER: ["read", "analyze"] };
+export const SCOPES_BY_ROLE: Record<string, Scope[]> = { OWNER: ["read", "analyze", "write"], ACCOUNTANT: ["read", "analyze", "write"], MEMBER: ["read", "analyze"], VIEWER: ["read"] };
 
 export function toolsFor(scopes: Scope[]) {
   return TOOLS.filter((t) => scopes.includes(t.scope));

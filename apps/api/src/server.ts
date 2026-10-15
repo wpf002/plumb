@@ -6,6 +6,14 @@ import { getSessionUser, getMemberRole, SESSION_COOKIE } from "./auth.js";
 
 // Routes only an OWNER may call (company config + team). Everything else a MEMBER
 // can do. The regex is matched against the path (without query string).
+const VIEWER_COMPUTE: RegExp[] = [
+  /^\/companies\/[^/]+\/denny$/,
+  /^\/companies\/[^/]+\/what-if$/,
+  /^\/companies\/[^/]+\/capital\/(purchase|repair-replace|hire|crew)$/,
+  /^\/companies\/[^/]+\/sources\/[^/]+\/preview$/,
+  /^\/companies\/[^/]+\/tools\/[^/]+$/,
+];
+
 const OWNER_ONLY: { method: string; re: RegExp }[] = [
   { method: "PUT", re: /^\/companies\/[^/]+\/settings$/ },
   { method: "POST", re: /^\/companies\/[^/]+\/opening-cash/ },
@@ -51,6 +59,7 @@ import { registerDennyRoutes } from "./routes/denny.js";
 import { apiKeyFor, registerToolRoutes, type AuthedRequest } from "./routes/tools.js";
 import { registerSourceRoutes } from "./routes/sources.js";
 import { registerMcpRoutes } from "./routes/mcp.js";
+import { registerBusinessRoutes } from "./routes/business.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -90,6 +99,10 @@ export function buildServer() {
         return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
       }
       (req as AuthedRequest).memberRole = role;
+      // Viewers read. The only requests they can send are ones that compute without saving.
+      if (role === "VIEWER" && req.method !== "GET" && !VIEWER_COMPUTE.some((re) => re.test(path))) {
+        return reply.code(403).send({ error: "Forbidden", message: "View-only access." });
+      }
       const ownerOnly = OWNER_ONLY.some((r) => r.method === req.method && r.re.test(path));
       if (ownerOnly && role !== "OWNER") {
         return reply.code(403).send({ error: "Forbidden", message: "Owner permission required." });
@@ -158,6 +171,7 @@ export function buildServer() {
   registerToolRoutes(app);
   registerSourceRoutes(app);
   registerMcpRoutes(app);
+  registerBusinessRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

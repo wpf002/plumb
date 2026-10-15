@@ -42,7 +42,7 @@ export async function isMember(userId: string, companyId: string): Promise<boole
   return (await getMemberRole(userId, companyId)) !== null;
 }
 
-export type Role = "OWNER" | "MEMBER";
+export type Role = "OWNER" | "MEMBER" | "ACCOUNTANT" | "VIEWER";
 
 export async function getMemberRole(userId: string, companyId: string): Promise<Role | null> {
   const m = await prisma.membership.findUnique({

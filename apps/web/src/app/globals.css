@@ -1262,3 +1262,23 @@ button.chip.active {
   word-break: break-all;
   user-select: all;
 }
+
+/* ---- Dashboard customize ---- */
+.customize-panel {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  width: 320px;
+  margin: 8px 0 0;
+}
+.page-head {
+  position: relative;
+}
+.customize-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 14px;
+}

@@ -23,6 +23,10 @@ model User {
 enum MemberRole {
   OWNER
   MEMBER
+  /// Outside accountant or bookkeeper: reads everything, edits budgets and notes, exports.
+  ACCOUNTANT
+  /// Read only.
+  VIEWER
 }
 
 model Membership {
@@ -142,6 +146,8 @@ model Company {
   integrations          IntegrationConnection[]
   bankAccounts          BankAccount[]
   bankTransactions      BankTransaction[]
+  groupMemberships      CompanyGroupMember[]
+  dashboardLayouts      DashboardLayout[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }
@@ -1216,4 +1222,52 @@ model BankTransaction {
 
   @@unique([companyId, source, externalId])
   @@index([companyId, date])
+}
+
+/// Companies reported together: a holding company and its operating entities,
+/// or an owner's several businesses.
+model CompanyGroup {
+  id           String               @id @default(cuid())
+  name         String
+  ownerId      String
+  members      CompanyGroupMember[]
+  eliminations GroupElimination[]
+  createdAt    DateTime             @default(now())
+
+  @@index([ownerId])
+}
+
+model CompanyGroupMember {
+  id        String       @id @default(cuid())
+  groupId   String
+  group     CompanyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  companyId String
+  company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, companyId])
+}
+
+/// Sales between companies in a group, removed from consolidated revenue and cost.
+model GroupElimination {
+  id          String       @id @default(cuid())
+  groupId     String
+  group       CompanyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  year        Int
+  label       String
+  amountCents BigInt
+  createdAt   DateTime     @default(now())
+
+  @@index([groupId, year])
+}
+
+/// Which dashboard sections a user sees for a company, in order.
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  widgets   String[]
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, companyId])
 }

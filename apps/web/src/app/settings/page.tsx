@@ -1,5 +1,6 @@
 "use client";
 
+import { DataExport } from "./data-export";
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd, TRADES, TRADE_LABELS, REVENUE_MODELS, REVENUE_MODEL_COPY } from "../ui";
 
@@ -407,6 +408,8 @@ export default function Settings() {
                 <label className="label">Role</label>
                 <select className="input" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} style={{ width: 120, height: 44 }}>
                   <option value="MEMBER">Member</option>
+                  <option value="ACCOUNTANT">Accountant</option>
+                  <option value="VIEWER">Viewer</option>
                   <option value="OWNER">Owner</option>
                 </select>
               </div>
@@ -428,6 +431,7 @@ export default function Settings() {
           <p style={{ color: "var(--text-faint)", fontSize: 14, margin: 0 }}>Only owners can invite or remove teammates.</p>
         )}
       </section>
+      <DataExport />
     </main>
   );
 }
