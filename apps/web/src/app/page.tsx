@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { usd, usdExact, shortDate, C } from "./ui";
+import { usd, shortDate, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
 
@@ -14,22 +14,13 @@ function formatMetric(m: { value: number; unit: string }) {
   return `${m.value.toFixed(1)} mo`;
 }
 
-const wipBadge: Record<string, string> = {
-  OVERBILLED: "good",
-  UNDERBILLED: "warn",
-  ON_TRACK: "neutral",
-};
-
 export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [forecast, projects, wip, digest, retainage, analysis, dataHealth, dash] = await Promise.all([
+  const [forecast, digest, analysis, dataHealth, dash] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
-    apiGet(`/companies/${companyId}/projects`),
-    apiGet(`/companies/${companyId}/wip`),
     apiGet(`/companies/${companyId}/digest`),
-    apiGet(`/companies/${companyId}/retainage`),
     apiGet(`/companies/${companyId}/analysis?horizon=90`),
     apiGet(`/companies/${companyId}/data-health`),
     apiGet(`/companies/${companyId}/health-dashboard`),
@@ -215,139 +206,6 @@ export default async function Dashboard() {
         </div>
       </section>
 
-      {/* Projects */}
-      <section className="card">
-        <div className="card-title">Project Margins</div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th className="num">Bid %</th>
-              <th className="num">Projected %</th>
-              <th className="num">Eroded</th>
-              <th className="num">Overrun</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map((row: any) => (
-              <tr key={row.project.id}>
-                <td className="cell-name">
-                  <Link
-                    href={`/projects/${row.project.id}`}
-                    style={{ color: "var(--ink)", textDecoration: "none" }}
-                  >
-                    {row.project.name}
-                  </Link>
-                </td>
-                <td className="num">{row.margin.originalMarginPct}%</td>
-                <td className="num" style={{ color: row.margin.atRisk ? C.danger : C.good, fontWeight: 500 }}>
-                  {row.margin.projectedFinalMarginPct}%
-                </td>
-                <td className="num">{row.margin.marginErosionPct} pts</td>
-                <td className="num">{usdExact(row.margin.costOverrunCents)}</td>
-                <td>
-                  <span className={`badge ${row.margin.atRisk ? "bad" : "good"}`}>
-                    {row.margin.atRisk ? "At risk" : "On track"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* WIP */}
-      <section className="card">
-        <div className="card-title">Work In Progress</div>
-        <p style={{ marginTop: -4, marginBottom: 16, color: "var(--text-muted)", fontSize: 14 }}>
-          You&apos;ve billed{" "}
-          <strong className={wip.netOverUnderCents >= 0 ? "pos" : "neg"}>
-            {usdExact(Math.abs(wip.netOverUnderCents))}
-          </strong>{" "}
-          {wip.netOverUnderCents >= 0
-            ? "ahead of the work done — clients are funding the job."
-            : "behind the work done — you're funding the job out of pocket."}
-        </p>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th className="num">% Complete</th>
-              <th className="num">Earned</th>
-              <th className="num">Billed</th>
-              <th className="num">Over / Under</th>
-              <th>State</th>
-            </tr>
-          </thead>
-          <tbody>
-            {wip.rows.map((r: any) => (
-              <tr key={r.projectId}>
-                <td className="cell-name">{r.name}</td>
-                <td className="num">{Math.round(r.percentComplete * 100)}%</td>
-                <td className="num">{usdExact(r.earnedRevenueCents)}</td>
-                <td className="num">{usdExact(r.billedToDateCents)}</td>
-                <td
-                  className="num"
-                  style={{ color: r.overUnderBillingCents >= 0 ? C.good : C.warn, fontWeight: 500 }}
-                >
-                  {usdExact(r.overUnderBillingCents)}
-                </td>
-                <td>
-                  <span className={`badge ${wipBadge[r.state]}`}>{r.state.replace("_", " ")}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-
-      {/* Retainage */}
-      <section className="card">
-        <div className="card-title">Retainage Held</div>
-        <div className="stats" style={{ marginBottom: 16 }}>
-          <div className="stat">
-            <div className="stat-label">Total Held</div>
-            <div className="stat-value num">{usd(retainage.totalHeldCents)}</div>
-            <div className="stat-sub">earned</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Releasing Within 90 Days</div>
-            <div className="stat-value num" style={{ color: C.good }}>
-              {usd(retainage.releasingSoonCents)}
-            </div>
-            <div className="stat-sub">coming back to you</div>
-          </div>
-        </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th className="num">Rate</th>
-              <th className="num">Held</th>
-              <th>Projected Release</th>
-            </tr>
-          </thead>
-          <tbody>
-            {retainage.rows.map((r: any) => (
-              <tr key={r.projectId}>
-                <td className="cell-name">{r.projectName}</td>
-                <td className="num">{r.retainagePct}%</td>
-                <td className="num">{usdExact(r.retainageHeldCents)}</td>
-                <td style={{ whiteSpace: "nowrap" }}>
-                  {r.projectedReleaseDate}
-                  <span
-                    className={`badge ${r.releasesWithinHorizon ? "good" : "neutral"}`}
-                    style={{ marginLeft: 16 }}
-                  >
-                    {r.releasesWithinHorizon ? "within 90d" : "later"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </main>
   );
 }

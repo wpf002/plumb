@@ -51,7 +51,7 @@ export function CashTable({ forecast }: { forecast: any }) {
   const ins = categoriesIn(b, "inflows");
   const outs = categoriesIn(b, "outflows");
   const row = (label: string, values: (number | null)[], cls = "") => (
-    <tr className={cls}>
+    <tr key={label} className={cls}>
       <td className="statement-label">{label}</td>
       {values.map((v, i) => (
         <td key={i} className={`num${v !== null && v < 0 ? " neg" : ""}`}>

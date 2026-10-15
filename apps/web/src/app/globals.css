@@ -900,6 +900,8 @@ select.input {
 
 .tabs {
   display: inline-flex;
+  max-width: 100%;
+  overflow-x: auto;
   gap: 4px;
   padding: 4px;
   background: var(--surface);
@@ -916,6 +918,7 @@ select.input {
   border: 0;
   border-radius: var(--radius);
   padding: 8px 12px;
+  white-space: nowrap;
   cursor: pointer;
 }
 

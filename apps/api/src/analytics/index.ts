@@ -2,6 +2,7 @@ import { Pending, type Analytics } from "./types.js";
 import { loadLedger, type Ledger } from "./ledger.js";
 import { annualStatement, cashLow, firstCash, monthPoint, netIncomeVariancePct, worstProfitYear } from "./statements.js";
 import { arAging, locHistory, toArAging, totalDebtCents } from "./workingcapital.js";
+import * as jobs from "./projects.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -34,16 +35,16 @@ export function analyticsFor(companyId: string): Analytics {
     ar: { aging: async () => toArAging((await arAging(companyId)).aging) },
     customers: { concentration: pending("D9", "customer concentration") },
     projects: {
-      marginPerformance: pending("D8", "margin performance"),
-      overruns: pending("D8", "estimate vs actual"),
-      byType: pending("D8", "profitability by job type"),
-      costMix: pending("D8", "cost mix by job type"),
-      marginFade: pending("D8", "WIP margin fade"),
-      standouts: pending("D8", "WIP standouts"),
-      startsByType: pending("D8", "project starts"),
+      marginPerformance: () => jobs.marginPerformance(companyId),
+      overruns: (t) => jobs.overruns(companyId, t),
+      byType: (f) => jobs.byType(companyId, f),
+      costMix: () => jobs.costMix(companyId),
+      marginFade: () => jobs.marginFade(companyId),
+      standouts: () => jobs.standouts(companyId),
+      startsByType: () => jobs.startsByType(companyId),
     },
-    backlog: { summary: pending("D8", "backlog") },
-    pipeline: { lostByYear: pending("D8", "lost opportunities") },
+    backlog: { summary: () => jobs.backlog(companyId) },
+    pipeline: { lostByYear: async () => (await jobs.pipeline(companyId)).lostByYear },
     recurring: { annual: pending("D9", "recurring revenue"), seasonalSwingPct: pending("D9", "seasonality") },
     crews: { utilization: pending("D9", "crew utilization") },
     labor: { revenuePerFieldEmployee: pending("D9", "labor productivity") },
