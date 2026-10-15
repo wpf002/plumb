@@ -13,6 +13,8 @@ const OWNER_ONLY: { method: string; re: RegExp }[] = [
   { method: "POST", re: /^\/companies\/[^/]+\/team\// },
   { method: "DELETE", re: /^\/companies\/[^/]+\/team\// },
   { method: "POST", re: /^\/companies\/[^/]+\/import$/ },
+  { method: "POST", re: /^\/companies\/[^/]+\/api-keys$/ },
+  { method: "DELETE", re: /^\/companies\/[^/]+\/api-keys\// },
 ];
 import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
@@ -43,6 +45,7 @@ import { registerJobRoutes } from "./routes/jobs.js";
 import { registerOperationsRoutes } from "./routes/operations.js";
 import { registerCapitalRoutes, registerScenarioV2Routes } from "./routes/capital.js";
 import { registerDennyRoutes } from "./routes/denny.js";
+import { apiKeyFor, registerToolRoutes, type AuthedRequest } from "./routes/tools.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -58,8 +61,19 @@ export function buildServer() {
     const path = req.url.split("?")[0];
     if (path === "/healthz" || path.startsWith("/auth/") || path.startsWith("/qbo/callback")) return;
 
+    // API keys reach the tool API and nothing else.
+    const bearer = req.headers.authorization?.match(/^Bearer (plb_[A-Za-z0-9_-]+)$/)?.[1];
+    if (bearer) {
+      const tm = path.match(/^\/companies\/([^/]+)\/tools(\/|$)/);
+      const key = tm ? await apiKeyFor(bearer) : null;
+      if (!tm || !key || key.companyId !== tm[1]) return reply.code(401).send({ error: "Unauthorized", message: "Invalid API key for this route." });
+      (req as AuthedRequest).apiKey = { id: key.id, scopes: key.scopes };
+      return;
+    }
+
     const user = await getSessionUser(req.cookies[SESSION_COOKIE]);
     if (!user) return reply.code(401).send({ error: "Unauthorized", message: "Sign in required." });
+    (req as AuthedRequest).userId = user.id;
 
     const m = path.match(/^\/companies\/([^/]+)/);
     if (m) {
@@ -67,7 +81,7 @@ export function buildServer() {
       if (!role) {
         return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
       }
-      (req as { memberRole?: string }).memberRole = role;
+      (req as AuthedRequest).memberRole = role;
       const ownerOnly = OWNER_ONLY.some((r) => r.method === req.method && r.re.test(path));
       if (ownerOnly && role !== "OWNER") {
         return reply.code(403).send({ error: "Forbidden", message: "Owner permission required." });
@@ -132,6 +146,7 @@ export function buildServer() {
   registerCapitalRoutes(app);
   registerScenarioV2Routes(app);
   registerDennyRoutes(app);
+  registerToolRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

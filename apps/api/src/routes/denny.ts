@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { buildBrief } from "../brief.js";
 import { askDenny, EXAMPLE_QUESTIONS } from "../denny.js";
 import { SCOPES_BY_ROLE } from "../tools/index.js";
+import type { AuthedRequest } from "./tools.js";
 
 type P = { Params: { companyId: string } };
 
@@ -18,8 +19,8 @@ export function registerDennyRoutes(app: FastifyInstance) {
     "/companies/:companyId/denny",
     { schema: { body: { type: "object", required: ["question"], additionalProperties: false, properties: { question: { type: "string", minLength: 2, maxLength: 500 } } } } },
     async (req) => {
-      const role = (req as { memberRole?: string }).memberRole ?? "MEMBER";
-      return askDenny(req.params.companyId, req.body.question, SCOPES_BY_ROLE[role] ?? ["read"]);
+      const r = req as AuthedRequest;
+      return askDenny(req.params.companyId, req.body.question, SCOPES_BY_ROLE[r.memberRole ?? "MEMBER"] ?? ["read"], { caller: "denny", userId: r.userId });
     }
   );
 }

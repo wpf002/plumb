@@ -403,6 +403,52 @@ export const TOOLS: Tool[] = [
       return { facts: [], data: null };
     },
   },
+  {
+    name: "list_notes",
+    description: "The owner's most recent notes.",
+    scope: "read",
+    inputSchema: { type: "object", properties: { limit: { type: "integer", minimum: 1, maximum: 50 } }, additionalProperties: false },
+    async run(ctx, i) {
+      const notes = await prisma.note.findMany({ where: { companyId: ctx.companyId }, orderBy: { createdAt: "desc" }, take: i.limit ?? 10 });
+      return { facts: notes.map((x, k) => f(`note.${k}`, x.subject ?? `Note from ${x.createdAt.toISOString().slice(0, 10)}`, x.body)), data: notes };
+    },
+  },
+  {
+    name: "add_note",
+    description: "Save a note for the owner, such as a decision or a follow-up.",
+    scope: "write",
+    inputSchema: {
+      type: "object",
+      required: ["body"],
+      additionalProperties: false,
+      properties: { subject: { type: "string", maxLength: 120 }, body: { type: "string", minLength: 1, maxLength: 4000 } },
+    },
+    async run(ctx, i) {
+      const note = await prisma.note.create({ data: { companyId: ctx.companyId, subject: i.subject ?? null, body: String(i.body), source: "TOOL" } });
+      return { facts: [f("note.saved", "Note saved", note.subject ?? "untitled")], data: { id: note.id } };
+    },
+  },
+  {
+    name: "set_budget",
+    description: "Set a budget line for a year: REVENUE, DIRECT_COST, OPEX, CAPEX, or NET_INCOME, in cents.",
+    scope: "write",
+    inputSchema: {
+      type: "object",
+      required: ["year", "line", "amountCents"],
+      additionalProperties: false,
+      properties: {
+        year: { type: "integer", minimum: 2000, maximum: 2100 },
+        line: { type: "string", enum: ["REVENUE", "DIRECT_COST", "OPEX", "CAPEX", "NET_INCOME"] },
+        amountCents: { type: "integer" },
+      },
+    },
+    async run(ctx, i) {
+      const existing = await prisma.budget.findFirst({ where: { companyId: ctx.companyId, year: i.year, line: i.line } });
+      if (existing) await prisma.budget.update({ where: { id: existing.id }, data: { budget: BigInt(i.amountCents) } });
+      else await prisma.budget.create({ data: { companyId: ctx.companyId, year: i.year, line: i.line, budget: BigInt(i.amountCents) } });
+      return { facts: [f("budget.saved", `${i.year} ${String(i.line).toLowerCase().replace("_", " ")} budget`, usd(i.amountCents))], data: { year: i.year, line: i.line } };
+    },
+  },
 ];
 
 export const SCOPES_BY_ROLE: Record<string, Scope[]> = { OWNER: ["read", "analyze", "write"], MEMBER: ["read", "analyze"] };
@@ -416,9 +462,40 @@ export async function toolContext(companyId: string): Promise<ToolContext> {
   return { companyId, ledger, asOf };
 }
 
-export async function callTool(ctx: ToolContext, name: string, input: Record<string, any>, scopes: Scope[]): Promise<ToolResult> {
+export interface Caller {
+  caller: string;
+  userId?: string | null;
+  apiKeyId?: string | null;
+}
+
+export class ToolError extends Error {
+  constructor(
+    message: string,
+    public status: number
+  ) {
+    super(message);
+  }
+}
+
+/** Run a tool after checking its scope, and log the call. */
+export async function callTool(ctx: ToolContext, name: string, input: Record<string, any>, scopes: Scope[], who: Caller = { caller: "internal" }): Promise<ToolResult> {
   const tool = TOOLS.find((t) => t.name === name);
-  if (!tool) throw new Error(`Unknown tool ${name}.`);
-  if (!scopes.includes(tool.scope)) throw new Error(`${name} needs ${tool.scope} permission.`);
-  return tool.run(ctx, input ?? {});
+  if (!tool) throw new ToolError(`Unknown tool ${name}.`, 404);
+  const started = Date.now();
+  const log = (ok: boolean, error?: string) =>
+    prisma.toolCallLog
+      .create({ data: { companyId: ctx.companyId, tool: name, scope: tool.scope, caller: who.caller, userId: who.userId ?? null, apiKeyId: who.apiKeyId ?? null, ok, error: error?.slice(0, 500) ?? null, durationMs: Date.now() - started } })
+      .catch(() => undefined);
+  if (!scopes.includes(tool.scope)) {
+    await log(false, "permission");
+    throw new ToolError(`${name} needs ${tool.scope} permission.`, 403);
+  }
+  try {
+    const r = await tool.run(ctx, input ?? {});
+    await log(true);
+    return r;
+  } catch (e) {
+    await log(false, e instanceof Error ? e.message : String(e));
+    throw e;
+  }
 }

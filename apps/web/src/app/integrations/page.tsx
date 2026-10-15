@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
 import { DataHealthCard } from "../health-ui";
 import { CsvImport } from "../csv-import";
+import { ApiKeys } from "./api-keys";
 
 const statusBadge: Record<string, { cls: string; label: string }> = {
   connected: { cls: "good", label: "Connected" },
@@ -205,6 +206,8 @@ export default function Integrations() {
       <ImportCard />
 
       <Connections />
+
+      <ApiKeys />
 
       <Panel
         title="Payroll (Gusto / ADP)"

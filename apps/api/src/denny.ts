@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { AI_MODEL, verifyNarration, type Fact } from "./ai.js";
-import { callTool, toolContext, toolsFor, type Scope, type ToolContext } from "./tools/index.js";
+import { callTool, toolContext, toolsFor, type Caller, type Scope, type ToolContext } from "./tools/index.js";
 
 /**
  * Ask Denny: questions answered through the tool layer. The model (or, with no
@@ -148,13 +148,13 @@ export function routeQuestion(q: string): Intent {
   return INTENTS.find((i) => i.re.test(q)) ?? FALLBACK;
 }
 
-async function deterministic(ctx: ToolContext, question: string, scopes: Scope[]): Promise<DennyAnswer> {
+async function deterministic(ctx: ToolContext, question: string, scopes: Scope[], who: Caller): Promise<DennyAnswer> {
   const intent = routeQuestion(question);
   const facts: Fact[] = [];
   const used: string[] = [];
   for (const [name, input] of intent.calls) {
     try {
-      const r = await callTool(ctx, name, input ?? {}, scopes);
+      const r = await callTool(ctx, name, input ?? {}, scopes, who);
       facts.push(...r.facts);
       used.push(name);
     } catch {
@@ -175,9 +175,9 @@ Rules:
 - Be advisory. Say what the numbers show and what they mean; don't issue orders.
 - You cannot move money, pay bills, or change accounts. If asked, say so.`;
 
-export async function askDenny(companyId: string, question: string, scopes: Scope[]): Promise<DennyAnswer> {
+export async function askDenny(companyId: string, question: string, scopes: Scope[], who: Caller = { caller: "denny" }): Promise<DennyAnswer> {
   const ctx = await toolContext(companyId);
-  if (!process.env.ANTHROPIC_API_KEY) return deterministic(ctx, question, scopes);
+  if (!process.env.ANTHROPIC_API_KEY) return deterministic(ctx, question, scopes, who);
 
   const client = new Anthropic();
   const tools = toolsFor(scopes).map((t) => ({ name: t.name, description: t.description, input_schema: t.inputSchema }));
@@ -190,7 +190,7 @@ export async function askDenny(companyId: string, question: string, scopes: Scop
       if (res.stop_reason !== "tool_use") {
         const text = res.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n").trim();
         const bad = verifyNarration(text, facts);
-        if (bad) return { ...(await deterministic(ctx, question, scopes)), fallbackReason: bad };
+        if (bad) return { ...(await deterministic(ctx, question, scopes, who)), fallbackReason: bad };
         return { question, answer: text.split(/\n+/).filter(Boolean), source: "claude", tools: used, facts };
       }
       messages.push({ role: "assistant", content: res.content });
@@ -198,7 +198,7 @@ export async function askDenny(companyId: string, question: string, scopes: Scop
       for (const block of res.content) {
         if (block.type !== "tool_use") continue;
         try {
-          const r = await callTool(ctx, block.name, block.input as Record<string, unknown>, scopes);
+          const r = await callTool(ctx, block.name, block.input as Record<string, unknown>, scopes, who);
           facts.push(...r.facts);
           used.push(block.name);
           results.push({ type: "tool_result", tool_use_id: block.id, content: r.facts.map((f) => `${f.key} | ${f.label} | ${f.value}`).join("\n") || "no data" });
@@ -208,9 +208,9 @@ export async function askDenny(companyId: string, question: string, scopes: Scop
       }
       messages.push({ role: "user", content: results });
     }
-    return { ...(await deterministic(ctx, question, scopes)), fallbackReason: "too many tool calls" };
+    return { ...(await deterministic(ctx, question, scopes, who)), fallbackReason: "too many tool calls" };
   } catch (e) {
-    return { ...(await deterministic(ctx, question, scopes)), fallbackReason: e instanceof Error ? e.message : String(e) };
+    return { ...(await deterministic(ctx, question, scopes, who)), fallbackReason: e instanceof Error ? e.message : String(e) };
   }
 }
 

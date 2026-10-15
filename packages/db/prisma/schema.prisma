@@ -136,6 +136,9 @@ model Company {
   serviceContracts      ServiceContract[]
   memberships           Membership[]
   invitations           Invitation[]
+  apiKeys               ApiKey[]
+  toolCalls             ToolCallLog[]
+  notes                 Note[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }
@@ -1098,4 +1101,56 @@ enum ChangeOrderStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+/// A key for programmatic access to the tool API (AI connectors, scripts).
+/// Only the SHA-256 hash is stored; the key is shown once at creation.
+model ApiKey {
+  id          String    @id @default(cuid())
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  /// First characters of the key, shown so the owner can tell keys apart.
+  prefix      String
+  hash        String    @unique
+  /// Any of read, analyze, write.
+  scopes      String[]
+  createdById String?
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([companyId])
+}
+
+/// Every tool call, from Ask Denny, the API, or a connector.
+model ToolCallLog {
+  id         String   @id @default(cuid())
+  companyId  String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tool       String
+  scope      String
+  /// denny, api, or connector name.
+  caller     String
+  userId     String?
+  apiKeyId   String?
+  ok         Boolean
+  error      String?
+  durationMs Int
+  createdAt  DateTime @default(now())
+
+  @@index([companyId, createdAt])
+}
+
+/// An owner's note, written by hand or through the write-scoped tools.
+model Note {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  subject   String?
+  body      String
+  source    String   @default("USER")
+  createdAt DateTime @default(now())
+
+  @@index([companyId, createdAt])
 }
