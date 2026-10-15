@@ -297,7 +297,11 @@ export async function loadSnapshot(
     monthKey(new Date(asOf.getUTCFullYear(), asOf.getUTCMonth() + m, 1))
   );
   const cap = targets.monthlyLaborHours || 1;
-  const peakUtilization90d = Math.max(0, ...next3.map((m) => (byMonth[m] ?? 0) / cap));
+  // No labor commitments at all means no plan to measure against, not 0% load.
+  const peakUtilization90d =
+    commitments.length === 0 || !targets.monthlyLaborHours
+      ? null
+      : Math.max(0, ...next3.map((m) => (byMonth[m] ?? 0) / cap));
 
   // Receivables aging: inbound cash not yet received.
   const inbound = world.ledger.filter((e) => e.direction === "IN" && e.status !== "RECEIVED");

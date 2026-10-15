@@ -1,5 +1,5 @@
 import { prisma, type Prisma } from "@plumb/db";
-import { addMonths, bool, cents, date, num, periodOf, toRecords, type CsvRecord } from "./csv.js";
+import { addMonths, bool, cents, date, monthEnd, num, periodOf, toRecords, type CsvRecord } from "./csv.js";
 import { classifyBalance, classifyCashFlow, classifyIncome, humanize, type GlLine } from "./glclassify.js";
 
 /**
@@ -617,11 +617,12 @@ export async function importAccount(opts: {
   if (ar) {
     const rows: Prisma.InvoiceCreateManyInput[] = [];
     for (const r of ar.records) {
-      const issue = date(r.invoice_period)!;
+      // Invoices are dated at the end of their month and paid at the end of the
+      // collection month: the convention that reproduces both the source's
+      // month-end AR balances and its as-of aging buckets.
+      const issue = monthEnd(r.invoice_period)!;
       const terms = num(r.terms_days) ?? 30;
-      const collected = date(r.collection_period);
-      // Paid at the start of the collection month, never before issue: this is
-      // the rule that reproduces the source's month-end AR balances.
+      const collected = monthEnd(r.collection_period);
       const paid = collected ? new Date(Math.max(collected.getTime(), issue.getTime())) : null;
       rows.push({
         companyId,
@@ -653,9 +654,9 @@ export async function importAccount(opts: {
   const ap = one("apBills");
   if (ap) {
     const rows: Prisma.BillCreateManyInput[] = ap.records.map((r) => {
-      const billDate = date(r.bill_period)!;
+      const billDate = monthEnd(r.bill_period)!;
       const terms = num(r.terms_days) ?? 30;
-      const paidOn = date(r.payment_period);
+      const paidOn = monthEnd(r.payment_period);
       const paid = paidOn ? new Date(Math.max(paidOn.getTime(), billDate.getTime())) : null;
       return {
         companyId: companyId!,

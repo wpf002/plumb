@@ -51,6 +51,7 @@ export function registerTrustRoutes(app: FastifyInstance) {
       const confidence = assessConfidence({
         openingCashAgeDays: ageDays(snapshot?.asOf, now),
         lastSyncAgeDays: connection ? ageDays(lastOk?.startedAt ?? null, now) : null,
+        ledgerImported: (await prisma.importRun.count({ where: { companyId, status: { in: ["OK", "PARTIAL"] } } })) > 0,
         syncFailing: !!lastAny && lastAny.status !== "OK",
         activeProjectCount: projects.length,
         projectsWithBudget: projects.filter((p) => p.budgetLines.length > 0).length,

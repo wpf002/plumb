@@ -1,6 +1,7 @@
 import { Pending, type Analytics } from "./types.js";
 import { loadLedger, type Ledger } from "./ledger.js";
 import { annualStatement, cashLow, firstCash, monthPoint, netIncomeVariancePct, worstProfitYear } from "./statements.js";
+import { arAging, locHistory, toArAging, totalDebtCents } from "./workingcapital.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -26,8 +27,11 @@ export function analyticsFor(companyId: string): Analytics {
       netIncomeVariancePct: (year) => netIncomeVariancePct(companyId, year),
       worstProfitYear: () => worstProfitYear(companyId),
     },
-    debt: { loc: pending("D6", "line-of-credit history"), totalCents: pending("D6", "debt dashboard") },
-    ar: { aging: pending("D6", "AR aging") },
+    debt: {
+      loc: async () => locHistory(companyId, await ledger()),
+      totalCents: async () => totalDebtCents(companyId, await ledger()),
+    },
+    ar: { aging: async () => toArAging((await arAging(companyId)).aging) },
     customers: { concentration: pending("D9", "customer concentration") },
     projects: {
       marginPerformance: pending("D8", "margin performance"),

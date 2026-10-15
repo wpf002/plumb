@@ -38,6 +38,7 @@ import { registerAnalysisRoutes } from "./routes/analysis.js";
 import { registerTrustRoutes } from "./routes/trust.js";
 import { registerImportRoutes } from "./routes/imports.js";
 import { registerStatementRoutes } from "./routes/statements.js";
+import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -119,6 +120,7 @@ export function buildServer() {
   registerTrustRoutes(app);
   registerImportRoutes(app);
   registerStatementRoutes(app);
+  registerWorkingCapitalRoutes(app);
 
   return app;
 }

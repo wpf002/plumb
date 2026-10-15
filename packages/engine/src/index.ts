@@ -16,3 +16,5 @@ export * from "./collisions.js";
 export * from "./confidence.js";
 export * from "./scenario.js";
 export * from "./statements.js";
+export * from "./aging.js";
+export * from "./readings.js";

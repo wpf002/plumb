@@ -20,7 +20,8 @@ export interface HealthInput {
   margins: MarginResult[];
   portfolioTargetMarginPct: number;
   /** Peak capacity utilization over the next 90 days, 0..>1. */
-  peakUtilization90d: number;
+  /** Peak crew load over the next quarter; null when no labor plan exists. */
+  peakUtilization90d: number | null;
   /** Total A/R past due, and total A/R outstanding. */
   arPastDueCents: Cents;
   arOutstandingCents: Cents;
@@ -63,16 +64,18 @@ export function computeHealth(input: HealthInput): HealthResult {
     );
   }
 
-  // Capacity: penalize both idle and overextension.
+  // Capacity: penalize both idle and overextension. With no labor plan on file
+  // there is nothing to measure, so the score is neutral and nothing is claimed.
   const u = input.peakUtilization90d;
   let capacityScore: number;
-  if (u <= 1) capacityScore = clamp(60 + u * 40);
+  if (u === null) capacityScore = 80;
+  else if (u <= 1) capacityScore = clamp(60 + u * 40);
   else capacityScore = clamp(100 - (u - 1) * 120);
-  if (u > 1)
+  if (u !== null && u > 1)
     alerts.push(
       `Your crew is overbooked next quarter — one month runs at ${Math.round(u * 100)}% of capacity.`
     );
-  if (u < 0.6)
+  if (u !== null && u < 0.6)
     alerts.push(
       `Your crew is light next quarter (peaks at ${Math.round(u * 100)}%). Good time to bid more work.`
     );
@@ -105,7 +108,7 @@ export function computeHealth(input: HealthInput): HealthResult {
       key: "capacity",
       label: "Crew Utilization",
       score: capacityScore,
-      detail: `Peaks at ${Math.round(u * 100)}% next 90 days`,
+      detail: u === null ? "No labor plan on file" : `Peaks at ${Math.round(u * 100)}% next 90 days`,
     },
     {
       key: "receivables",

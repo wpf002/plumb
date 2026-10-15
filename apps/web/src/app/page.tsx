@@ -1,37 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { usd, usdExact, shortDate, scoreColor, C } from "./ui";
+import { usd, usdExact, shortDate, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
 
-function ScoreRing({ score }: { score: number }) {
-  const r = 54;
-  const circ = 2 * Math.PI * r;
-  const off = circ * (1 - Math.max(0, Math.min(100, score)) / 100);
-  const col = scoreColor(score);
-  return (
-    <svg width="140" height="140" viewBox="0 0 140 140">
-      <circle cx="70" cy="70" r={r} fill="none" stroke={C.border} strokeWidth="12" />
-      <circle
-        cx="70"
-        cy="70"
-        r={r}
-        fill="none"
-        stroke={col}
-        strokeWidth="12"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={off}
-        transform="rotate(-90 70 70)"
-      />
-      <text x="70" y="68" textAnchor="middle" className="ring-label" fontSize="38">
-        {score}
-      </text>
-      <text x="70" y="90" textAnchor="middle" className="ring-sub" fontSize="12">
-        of 100
-      </text>
-    </svg>
-  );
+
+const TONE: Record<string, string> = { good: "good", warn: "warn", bad: "bad", neutral: "neutral" };
+
+function formatMetric(m: { value: number; unit: string }) {
+  if (m.unit === "money") return usd(m.value);
+  if (m.unit === "pct") return `${m.value.toFixed(1)}%`;
+  if (m.unit === "ratio") return `${m.value.toFixed(2)}x`;
+  return `${m.value.toFixed(1)} mo`;
 }
 
 const wipBadge: Record<string, string> = {
@@ -44,8 +24,7 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [health, forecast, projects, wip, digest, retainage, analysis, dataHealth] = await Promise.all([
-    apiGet(`/companies/${companyId}/health`),
+  const [forecast, projects, wip, digest, retainage, analysis, dataHealth, dash] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/projects`),
     apiGet(`/companies/${companyId}/wip`),
@@ -53,6 +32,7 @@ export default async function Dashboard() {
     apiGet(`/companies/${companyId}/retainage`),
     apiGet(`/companies/${companyId}/analysis?horizon=90`),
     apiGet(`/companies/${companyId}/data-health`),
+    apiGet(`/companies/${companyId}/health-dashboard`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
@@ -65,14 +45,14 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      {/* The read, in plain English, before any table. */}
+      {/* The read, in plain English, before any number. */}
       <section className="card readout">
         <div className="readout-head">
-          <span className={`readout-dot ${analysis.concerns[0]?.severity ?? "good"}`} />
+          <span className={`readout-dot ${dash.concerns[0]?.severity ?? analysis.concerns[0]?.severity ?? "good"}`} />
           <h2 className="readout-headline">{analysis.headline}</h2>
         </div>
         <p className="readout-summary">{analysis.summary}</p>
-        {analysis.concerns.length > 0 && (
+        {analysis.source === "claude" && analysis.concerns.length > 0 && (
           <ul className="readout-list">
             {analysis.concerns.map((c: any, i: number) => (
               <li key={i} className={`readout-item ${c.severity}`}>
@@ -89,50 +69,59 @@ export default async function Dashboard() {
         <ConfidenceStrip health={dataHealth} />
       </section>
 
-
-      {/* Health hero */}
+      {/* Every health metric, each with the reading an owner acts on. */}
       <section className="card">
-        <div className="hero">
-          <ScoreRing score={health.score} />
-          <div style={{ width: "100%" }}>
-            <div className="card-title" style={{ marginBottom: 12 }}>
-              Business Health
-            </div>
-            <div className="kpis">
-              {health.components.map((c: any) => (
-                <div key={c.key} className="kpi">
-                  <div className="kpi-label">{c.label}</div>
-                  <div className="kpi-value num">{c.score}</div>
-                  <div className="kpi-detail">{c.detail}</div>
-                  <div className="kpi-bar">
-                    <span style={{ width: `${c.score}%`, background: scoreColor(c.score) }} />
-                  </div>
-                </div>
-              ))}
-            </div>
+        <div className="row-between">
+          <div className="card-title" style={{ marginBottom: 0 }}>
+            Financial Health
           </div>
+          <span className={`badge ${TONE[dash.position.tone]}`}>{dash.position.label}</span>
+        </div>
+        <div className="metric-columns">
+          {dash.groups.map((g: any) => (
+            <div key={g.key} className="metric-column">
+              <div className="metric-column-title">{g.label}</div>
+              {g.metrics
+                .filter((m: any) => m.value !== null)
+                .map((m: any) => (
+                  <div key={m.key} className="metric-row" title={m.basis ?? undefined}>
+                    <span className="metric-label">{m.label}</span>
+                    <span className="metric-value num">{formatMetric(m)}</span>
+                    {m.reading && <span className={`metric-reading ${m.reading.tone}`}>{m.reading.label}</span>}
+                  </div>
+                ))}
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Needs attention */}
+      {/* What needs attention, worst first. */}
       <section className="card">
         <div className="card-title">Needs Attention</div>
-        {attention.length === 0 ? (
-          <div className="alert good">
-            <div>
-              <div className="alert-title">Nothing needs your attention this week</div>
-              <div className="alert-detail">Cash, margins, crew load, and receivables are all in range.</div>
-            </div>
-          </div>
+        {dash.concerns.length === 0 && attention.length === 0 ? (
+          <p className="empty">Nothing flagged.</p>
         ) : (
-          attention.map((item: any, i: number) => (
-            <div key={i} className={`alert ${item.severity}`}>
-              <div>
-                <div className="alert-title">{item.title}</div>
-                {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}
+          <>
+            {dash.concerns.map((c: any, i: number) => (
+              <div key={`c${i}`} className={`alert ${c.severity}`}>
+                <div>
+                  <div className="alert-title">{c.title}</div>
+                  <div className="alert-detail">{c.detail}</div>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+            {attention
+              .filter((item: any) => !dash.concerns.some((c: any) => item.title.includes(c.title.split(" ")[0])))
+              .filter((item: any) => /billing|renew|recurring|under-billed/i.test(item.title))
+              .map((item: any, i: number) => (
+                <div key={`d${i}`} className={`alert ${item.severity}`}>
+                  <div>
+                    <div className="alert-title">{item.title}</div>
+                    {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}
+                  </div>
+                </div>
+              ))}
+          </>
         )}
       </section>
 

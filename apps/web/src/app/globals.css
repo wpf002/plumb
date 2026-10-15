@@ -961,3 +961,127 @@ select.input {
   font-weight: 700;
   color: var(--ink);
 }
+
+/* --- Health metrics --------------------------------------------------------- */
+
+.metric-columns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.metric-column {
+  padding: 16px 16px 0;
+  border-left: 1px solid var(--border);
+}
+
+.metric-column:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.metric-column-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.metric-row:last-child {
+  border-bottom: 0;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+}
+
+.metric-reading {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.metric-reading.good {
+  color: var(--good);
+}
+
+.metric-reading.warn {
+  color: var(--warn);
+}
+
+.metric-reading.bad {
+  color: var(--danger);
+}
+
+.metric-reading.neutral {
+  color: var(--text-faint);
+}
+
+@media (max-width: 900px) {
+  .metric-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metric-column:nth-child(3) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .metric-columns {
+    grid-template-columns: 1fr;
+  }
+  .metric-column {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+.aging-bar {
+  display: flex;
+  height: 12px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+  margin: 0 0 16px;
+}
+
+.aging-bar span {
+  display: block;
+  height: 100%;
+}
+
+.tone-good {
+  color: var(--good);
+}
+
+.tone-warn {
+  color: var(--warn);
+}
+
+.tone-bad {
+  color: var(--danger);
+}
+
+.tone-neutral {
+  color: var(--text-faint);
+}

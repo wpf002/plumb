@@ -47,9 +47,9 @@ export interface ArAging {
   totalCents: number;
   /** More than 30 days past the invoice's terms. */
   pastDue30Cents: number;
-  largest: { customer: string; cents: number } | null;
+  largest: { customer: string; externalId: string | null; cents: number } | null;
   /** Customer with the most past-due (> 30 days) balance. */
-  largestPastDue: { customer: string; pastDueCents: number; totalCents: number } | null;
+  largestPastDue: { customer: string; externalId: string | null; pastDueCents: number; totalCents: number } | null;
 }
 
 export interface Concentration {

@@ -99,3 +99,10 @@ export function addMonths(d: Date, n: number): Date {
 export function periodOf(d: Date): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
+
+/** Last day of a YYYY-MM period, UTC midnight. Source invoices and bills are dated at month end. */
+export function monthEnd(period: string | undefined): Date | null {
+  const m = (period ?? "").trim().match(/^(\d{4})-(\d{2})$/);
+  if (!m) return null;
+  return new Date(Date.UTC(+m[1], +m[2], 0));
+}

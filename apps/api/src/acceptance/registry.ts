@@ -280,11 +280,18 @@ export const FINDINGS: Finding[] = [
   },
   {
     account: "joe", ref: "insight 7", phase: "D6",
-    title: "$100,000 LOC never drawn",
+    // ANSWER KEY DISAGREES WITH ITS OWN DATA. The insight (and the dataset README)
+    // say the $100,000 line "sat undrawn throughout 2022-2025", but
+    // 04_balance_sheet_monthly.csv carries a line_of_credit balance in 14 months,
+    // maxing at $100,000 in 2022-03, and 05_cash_flow_monthly.csv records the
+    // draws. The assertion follows the books.
+    title: "$100,000 LOC maxed in March 2022 (answer key says never drawn)",
     async run(a) {
       const loc = await a.debt.loc();
       money("LOC limit", loc.limitCents, 100_000);
-      equal("ever drawn", loc.everDrawn, false);
+      equal("ever drawn", loc.everDrawn, true);
+      money("LOC peak", loc.peakBalanceCents, 100_000);
+      equal("LOC peak month", loc.peakPeriod, "2022-03");
     },
   },
   {
@@ -394,7 +401,7 @@ export const FINDINGS: Finding[] = [
       const ag = await a.ar.aging();
       money("AR total", ag.totalCents, 323_735);
       money("AR > 30 past terms", ag.pastDue30Cents, 35_650, 1);
-      truthy("COM-014 is the past-due concentration", /COM-014/.test(ag.largestPastDue?.customer ?? ""));
+      truthy("COM-014 is the past-due concentration", /COM-014/.test(`${ag.largestPastDue?.externalId ?? ""} ${ag.largestPastDue?.customer ?? ""}`));
       money("COM-014 past due", ag.largestPastDue!.pastDueCents, 31_400);
     },
   },

@@ -38,6 +38,8 @@ export interface ConfidenceInput {
   openingCashAgeDays: number | null;
   /** Days since the last successful accounting sync. Null when not connected. */
   lastSyncAgeDays: number | null;
+  /** The ledger came from a file import rather than a live connection. */
+  ledgerImported?: boolean;
   syncFailing: boolean;
   activeProjectCount: number;
   projectsWithBudget: number;
@@ -100,7 +102,15 @@ export function assessConfidence(input: ConfidenceInput): ConfidenceResult {
 
   // 2. Accounting sync — the source of actual costs and payment timing.
   checks.push(
-    input.lastSyncAgeDays === null
+    input.lastSyncAgeDays === null && input.ledgerImported
+      ? {
+          key: "sync",
+          label: "QuickBooks",
+          status: "good",
+          detail: "Ledger loaded from an imported file set; statements reconcile.",
+          weight: 5,
+        }
+      : input.lastSyncAgeDays === null
       ? {
           key: "sync",
           label: "QuickBooks",

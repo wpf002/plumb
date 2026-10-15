@@ -46,6 +46,7 @@ export default function BalanceSheet() {
   const [assets, setAssets] = useState<any[]>([]);
   const [liabilities, setLiabilities] = useState<any[]>([]);
   const [monthlyDebtService, setMonthlyDebtService] = useState(0);
+  const [debt, setDebt] = useState<any>(null);
   const [addingAsset, setAddingAsset] = useState(false);
   const [addingLiability, setAddingLiability] = useState(false);
   const [assetForm, setAssetForm] = useState({ ...emptyAsset });
@@ -57,11 +58,13 @@ export default function BalanceSheet() {
   const load = useCallback(async () => {
     const id = getCompanyId();
     if (!id) return;
-    const [s, a, l] = await Promise.all([
+    const [s, a, l, d] = await Promise.all([
       apiFetch(`/companies/${id}/balance-sheet`, { cache: "no-store" }).then((r) => r.json()),
       apiFetch(`/companies/${id}/assets`, { cache: "no-store" }).then((r) => r.json()),
       apiFetch(`/companies/${id}/liabilities`, { cache: "no-store" }).then((r) => r.json()),
+      apiFetch(`/companies/${id}/debt`, { cache: "no-store" }).then((r) => r.json()),
     ]);
+    setDebt(d);
     setSheet(s);
     setAssets(a.assets ?? []);
     setLiabilities(l.liabilities ?? []);
@@ -359,6 +362,43 @@ export default function BalanceSheet() {
           </table>
         )}
       </section>
+
+      {debt && (
+        <section className="card">
+          <div className="card-title">Debt</div>
+          <div className="stats">
+            <div className="stat">
+              <div className="stat-label">Total Debt</div>
+              <div className="stat-value num">{usd(debt.totalDebtCents)}</div>
+              <div className={`stat-sub tone-${debt.readings.debtToEquity.tone}`}>
+                {debt.debtToEquity === null ? debt.readings.debtToEquity.label : `${debt.debtToEquity}x equity · ${debt.readings.debtToEquity.label}`}
+              </div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Annual Debt Service</div>
+              <div className="stat-value num">{usd(debt.annualDebtServiceCents)}</div>
+              <div className="stat-sub">{usd(debt.monthlyDebtBurdenCents)}/mo</div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Debt Coverage</div>
+              <div className="stat-value num">{debt.dscr === null ? "—" : `${debt.dscr}x`}</div>
+              <div className={`stat-sub tone-${debt.readings.dscr.tone}`}>{debt.readings.dscr.label}</div>
+            </div>
+            {debt.loc.limitCents > 0 && (
+              <div className="stat">
+                <div className="stat-label">Line of Credit</div>
+                <div className="stat-value num">
+                  {usd(debt.loc.balanceCents)} / {usd(debt.loc.limitCents)}
+                </div>
+                <div className={`stat-sub tone-${debt.readings.loc.tone}`}>
+                  {debt.readings.loc.label}
+                  {debt.loc.everDrawn && debt.loc.peakPeriod ? ` · peak ${usd(debt.loc.peakBalanceCents)} in ${debt.loc.peakPeriod}` : ""}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Liabilities */}
       <section className="card">
