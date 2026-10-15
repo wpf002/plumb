@@ -165,9 +165,9 @@ export interface Analytics {
     exitReadiness(): Promise<{ score: number; factors: { name: string; score: number }[]; topActions: string[] }>;
   };
   scenarios: {
-    loseCustomerShare(customer: string, pct: number): Promise<{ revenueLossCents: number; ebitdaDeltaCents: number }>;
-    exitServiceLine(line: string): Promise<{ revenueCents: number; contributionLossCents: number }>;
-    growServiceLine(line: string, pct: number): Promise<{ addedRevenueCents: number; newRevenueCents: number }>;
+    loseCustomerShare(customer: string, pct: number, opts?: { contributionMarginPct?: number }): Promise<{ revenueLossCents: number; ebitdaDeltaCents: number }>;
+    exitServiceLine(line: string, opts?: { contributionMarginPct?: number }): Promise<{ revenueCents: number; contributionLossCents: number }>;
+    growServiceLine(line: string, pct: number, opts?: { contributionMarginPct?: number }): Promise<{ addedRevenueCents: number; newRevenueCents: number }>;
     materialsIncrease(pct: number): Promise<{ addedCostCents: number; ebitdaCents: number; ebitdaImpactPct: number }>;
     /** Owner's what-if inputs; capacity and margin default to the company's own history. */
     crewExpansion(input: CrewExpansionScenario): Promise<{ breakevenRevenueCents: number; breakevenPctOfCapacity: number; year1ContributionCents: number }>;

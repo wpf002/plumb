@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
+import { WhatIf } from "./what-if";
 
 const pct = (v: number | null | undefined, d = 1) => (v === null || v === undefined ? "—" : `${v.toFixed(d)}%`);
 const money = (v: number | null | undefined) => (v === null || v === undefined ? "—" : usd(v));
@@ -357,14 +358,15 @@ function CrewTab({ defaults }: { defaults: any }) {
 }
 
 const TABS = [
+  { key: "what-if", label: "What If" },
   { key: "fleet", label: "Fleet" },
   { key: "buy", label: "Buy Equipment" },
   { key: "hire", label: "Hire" },
   { key: "crew", label: "Add Crew" },
 ] as const;
 
-export default function Capital() {
-  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("fleet");
+export default function Plan() {
+  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("what-if");
   const [fleet, setFleet] = useState<any>(null);
   const [assets, setAssets] = useState<any[]>([]);
   const [defaults, setDefaults] = useState<any>(null);
@@ -384,7 +386,7 @@ export default function Capital() {
     <main className="container container-wide">
       <div className="page-head">
         <div>
-          <h1>Capital</h1>
+          <h1>Plan</h1>
         </div>
         {fleet?.asOf && <span className="num muted">As of {fleet.asOf}</span>}
       </div>
@@ -397,7 +399,9 @@ export default function Capital() {
           ))}
         </div>
       </div>
-      {!fleet || !defaults ? (
+      {tab === "what-if" ? (
+        <WhatIf />
+      ) : !fleet || !defaults ? (
         <div className="card">Loading…</div>
       ) : tab === "fleet" ? (
         <FleetTab

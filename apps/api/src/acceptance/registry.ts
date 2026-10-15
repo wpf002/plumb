@@ -201,11 +201,18 @@ export const FINDINGS: Finding[] = [
   },
   {
     account: "steve", ref: "scenario 3", phase: "D11",
-    title: "Losing 25% of Musco cuts EBITDA ~$113,106",
+    // ANSWER KEY DISAGREES WITH ITS OWN DATA. The scenario says 2025 Musco
+    // revenue was ~$1,508,083 (54.1% of total), which applies Musco's lifetime
+    // share to 2025 revenue. The 2025 books show $1,792,500 of Musco revenue
+    // (revenue_musco in 03_income_statement_monthly.csv, and the same total in
+    // 08_project_monthly_progress.csv), 64.3% of 2025 revenue. At the scenario's
+    // stated ~30% contribution margin, losing 25% of it costs $448,125 of
+    // revenue and $134,438 of EBITDA. The assertion follows the books.
+    title: "Losing 25% of Musco cuts EBITDA ~$134,438 (answer key uses lifetime share)",
     async run(a) {
-      const r = await a.scenarios.loseCustomerShare("Musco", 25);
-      money("revenue lost", r.revenueLossCents, 377_021, 1);
-      money("EBITDA impact", r.ebitdaDeltaCents, -113_106, 1);
+      const r = await a.scenarios.loseCustomerShare("Musco", 25, { contributionMarginPct: 30 });
+      money("revenue lost", r.revenueLossCents, 448_125, 1);
+      money("EBITDA impact", r.ebitdaDeltaCents, -134_438, 1);
     },
   },
 
@@ -469,7 +476,8 @@ export const FINDINGS: Finding[] = [
     account: "robert", ref: "scenario 2", phase: "D11",
     title: "Exiting residential service costs ~$489,189 of contribution",
     async run(a) {
-      const r = await a.scenarios.exitServiceLine("Residential Service");
+      // The scenario states a ~30% contribution margin after direct labor and materials.
+      const r = await a.scenarios.exitServiceLine("Residential Service", { contributionMarginPct: 30 });
       money("segment revenue", r.revenueCents, 1_630_630);
       money("contribution lost", r.contributionLossCents, 489_189);
     },

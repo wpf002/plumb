@@ -5,6 +5,7 @@ import { arAging, locHistory, toArAging, totalDebtCents } from "./workingcapital
 import * as jobs from "./projects.js";
 import * as ops from "./operations.js";
 import * as capital from "./capital.js";
+import * as scen from "./scenarios.js";
 
 /**
  * Build the analytics surface for one company. Each domain is filled in by the
@@ -56,17 +57,17 @@ export function analyticsFor(companyId: string): Analytics {
     fleet: { summary: () => capital.fleet(companyId) },
     valuation: { compute: pending("D12", "valuation"), exitReadiness: pending("D12", "exit readiness") },
     scenarios: {
-      loseCustomerShare: pending("D11", "lose-customer scenario"),
-      exitServiceLine: pending("D11", "exit-service-line scenario"),
-      growServiceLine: pending("D11", "grow-service-line scenario"),
-      materialsIncrease: pending("D11", "materials scenario"),
+      loseCustomerShare: async (c, p, o) => scen.loseCustomerShare(companyId, await ledger(), c, p, o),
+      exitServiceLine: async (l, o) => scen.exitServiceLine(companyId, await ledger(), l, o),
+      growServiceLine: async (l, p, o) => scen.growServiceLine(companyId, await ledger(), l, p, o),
+      materialsIncrease: async (p) => scen.materialsIncrease(companyId, await ledger(), p),
       crewExpansion: async (input) => capital.crewExpansionFor(companyId, await ledger(), input),
       fieldHire: async (count) => {
         const h = await capital.hireFor(companyId, await ledger(), { count });
         return { addedCapacityCents: h.addedCapacityCents ?? 0 };
       },
       capacityHeadroom: async () => ops.capacityHeadroom(companyId, await ledger()),
-      paymentDelay: pending("D11", "payment-delay scenario"),
+      paymentDelay: (amt, days) => scen.paymentDelay(companyId, amt, days),
     },
   };
 }

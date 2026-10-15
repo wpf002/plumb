@@ -2,6 +2,9 @@ import type { FastifyInstance } from "fastify";
 import { purchaseAnalysis, repairVsReplace, type PurchaseInput, type RepairReplaceInput } from "@plumb/engine";
 import { capitalDefaults, crewExpansionFor, fleet, hireFor, type CrewExpansionScenario, type HireScenario } from "../analytics/capital.js";
 import { loadLedger } from "../analytics/ledger.js";
+import { completeYears, customerRevenue, serviceLines } from "../analytics/operations.js";
+import * as scen from "../analytics/scenarios.js";
+import { companyAsOf } from "../snapshot.js";
 
 type P = { Params: { companyId: string } };
 
@@ -95,4 +98,81 @@ export function registerCapitalRoutes(app: FastifyInstance) {
   app.post<P & { Body: CrewExpansionScenario }>("/companies/:companyId/capital/crew", { schema: { body: crewBody } }, async (req) =>
     crewExpansionFor(req.params.companyId, await loadLedger(req.params.companyId), req.body)
   );
+}
+
+const scenarioBody = {
+  type: "object",
+  required: ["kind"],
+  properties: {
+    kind: { type: "string", enum: ["lose_customer", "exit_line", "grow_line", "materials", "add_pm", "add_location", "payment_delay"] },
+    customer: { type: "string", maxLength: 200 },
+    line: { type: "string", maxLength: 200 },
+    pct: { type: "number", minimum: 0, maximum: 500 },
+    contributionMarginPct: rate,
+    amountCents: money,
+    days: { type: "integer", minimum: 1, maximum: 365 },
+    annualSalaryCents: money,
+    burdenPct: rate,
+    revenueLiftPct: rate,
+    annualFixedCostCents: money,
+    startupCostCents: money,
+    financedPct: rate,
+    ratePct: rate,
+    termMonths: { type: "integer", minimum: 1, maximum: 360 },
+    year1RevenueCents: money,
+    grossMarginPct: rate,
+  },
+} as const;
+
+export function registerScenarioV2Routes(app: FastifyInstance) {
+  // What the scenario pickers can choose from.
+  app.get<P>("/companies/:companyId/what-if/options", async (req) => {
+    const id = req.params.companyId;
+    const ledger = await loadLedger(id);
+    const asOf = await companyAsOf(id);
+    const years = completeYears(ledger, asOf);
+    const [customers, d] = await Promise.all([customerRevenue(id, ledger), capitalDefaults(id, ledger)]);
+    const sl = serviceLines(ledger, years.slice(-1));
+    return {
+      year: years.at(-1) ?? null,
+      customers: customers.slice(0, 15).map((c) => ({ name: c.name, sharePct: c.sharePct })),
+      lines: sl.lines.map((l) => l.line),
+      grossMarginPct: d.grossMarginPct,
+    };
+  });
+
+  app.post<P & { Body: Record<string, any> }>("/companies/:companyId/what-if", { schema: { body: scenarioBody } }, async (req, reply) => {
+    const id = req.params.companyId;
+    const b = req.body;
+    const ledger = await loadLedger(id);
+    const cm = b.contributionMarginPct !== undefined ? { contributionMarginPct: b.contributionMarginPct } : {};
+    try {
+      switch (b.kind) {
+        case "lose_customer":
+          return await scen.loseCustomerShare(id, ledger, b.customer ?? "", b.pct ?? 100, cm);
+        case "exit_line":
+          return await scen.exitServiceLine(id, ledger, b.line ?? "", cm);
+        case "grow_line":
+          return await scen.growServiceLine(id, ledger, b.line ?? "", b.pct ?? 10, cm);
+        case "materials":
+          return await scen.materialsIncrease(id, ledger, b.pct ?? 10);
+        case "add_pm":
+          return await scen.addPM(id, ledger, { annualSalaryCents: b.annualSalaryCents ?? 0, burdenPct: b.burdenPct, revenueLiftPct: b.revenueLiftPct });
+        case "add_location":
+          return await scen.addLocation(id, ledger, {
+            annualFixedCostCents: b.annualFixedCostCents ?? 0,
+            startupCostCents: b.startupCostCents ?? 0,
+            financedPct: b.financedPct ?? 0,
+            ratePct: b.ratePct ?? 0,
+            termMonths: b.termMonths ?? 60,
+            year1RevenueCents: b.year1RevenueCents ?? 0,
+            grossMarginPct: b.grossMarginPct,
+          });
+        case "payment_delay":
+          return await scen.paymentDelay(id, b.amountCents ?? 0, b.days ?? 30);
+      }
+    } catch (e: any) {
+      return reply.code(422).send({ error: "Unprocessable", message: e.message });
+    }
+  });
 }

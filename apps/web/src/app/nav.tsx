@@ -25,7 +25,7 @@ const links: { href: string; label: string; show?: (m: string) => boolean }[] = 
   { href: "/working-capital", label: "Working Capital" },
   { href: "/projects", label: "Jobs", show: hasProjects },
   { href: "/operations", label: "Operations" },
-  { href: "/capital", label: "Capital" },
+  { href: "/plan", label: "Plan" },
   { href: "/balance-sheet", label: "Assets" },
   { href: "/recurring", label: "Obligations" },
   { href: "/integrations", label: "Integrations" },
