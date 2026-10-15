@@ -42,7 +42,9 @@ class LivePlaid implements PlaidClient {
     const r = await this.call<{ link_token: string }>("/link/token/create", {
       user: { client_user_id: userId },
       client_name: "DNRD",
-      products: ["auth"],
+      // Transactions with the full 24 months of history, for recurring detection.
+      products: ["transactions"],
+      transactions: { days_requested: 730 },
       country_codes: ["US"],
       language: "en",
     });

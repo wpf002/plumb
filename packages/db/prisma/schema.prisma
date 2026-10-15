@@ -139,6 +139,9 @@ model Company {
   apiKeys               ApiKey[]
   toolCalls             ToolCallLog[]
   notes                 Note[]
+  integrations          IntegrationConnection[]
+  bankAccounts          BankAccount[]
+  bankTransactions      BankTransaction[]
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 }
@@ -1153,4 +1156,64 @@ model Note {
   createdAt DateTime @default(now())
 
   @@index([companyId, createdAt])
+}
+
+/// A company's link to an outside system (Plaid, Stripe, Gusto, Jobber...).
+/// Credentials are encrypted at rest with PLUMB_SECRET_KEY.
+model IntegrationConnection {
+  id                String    @id @default(cuid())
+  companyId         String
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  source            String
+  status            String    @default("CONNECTED")
+  externalAccountId String?
+  credentials       String?
+  lastSyncAt        DateTime?
+  lastError         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([companyId, source])
+}
+
+/// A bank, card, or processor account read from a feed.
+model BankAccount {
+  id           String            @id @default(cuid())
+  companyId    String
+  company      Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  source       String
+  externalId   String
+  name         String
+  /// checking, savings, credit, loan, processor
+  type         String
+  mask         String?
+  balance      BigInt            @default(0)
+  balanceAsOf  DateTime?
+  transactions BankTransaction[]
+
+  @@unique([companyId, source, externalId])
+}
+
+/// One transaction from a bank, card, or payment processor feed. Positive is
+/// money in, negative is money out.
+model BankTransaction {
+  id          String      @id @default(cuid())
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  accountId   String?
+  account     BankAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  source      String
+  externalId  String
+  date        DateTime
+  amount      BigInt
+  description String
+  merchant    String?
+  category    String?
+  /// CHARGE, REFUND, FEE, PAYOUT, TRANSFER, or null for ordinary bank lines.
+  kind        String?
+  pending     Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+
+  @@unique([companyId, source, externalId])
+  @@index([companyId, date])
 }

@@ -48,13 +48,6 @@ export function registerConnectionRoutes(app: FastifyInstance) {
             action: "settings",
           },
           {
-            key: "payroll",
-            name: "Payroll (Gusto / ADP)",
-            status: has("GUSTO_API_TOKEN") ? "configured" : "demo",
-            detail: has("GUSTO_API_TOKEN") ? "Live import enabled" : "Preview only — set GUSTO_API_TOKEN",
-            action: "integrations",
-          },
-          {
             key: "freshbooks",
             name: "FreshBooks",
             status: has("FRESHBOOKS_TOKEN") ? "configured" : "demo",

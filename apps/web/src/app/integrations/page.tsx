@@ -5,6 +5,7 @@ import { apiFetch, getCompanyId, usd } from "../ui";
 import { DataHealthCard } from "../health-ui";
 import { CsvImport } from "../csv-import";
 import { ApiKeys } from "./api-keys";
+import { DataSources } from "./sources";
 
 const statusBadge: Record<string, { cls: string; label: string }> = {
   connected: { cls: "good", label: "Connected" },
@@ -207,22 +208,9 @@ export default function Integrations() {
 
       <Connections />
 
-      <ApiKeys />
+      <DataSources />
 
-      <Panel
-        title="Payroll (Gusto / ADP)"
-        blurb="True labor cost and hours per job — the biggest, messiest cost line for a sub."
-        action="Preview Import"
-        run={async () => {
-          const d = await post("/integrations/payroll/import");
-          return {
-            live: d.live,
-            note: d.note,
-            summary: `${d.totalHours} hrs · ${usd(d.totalCents)} labor`,
-            rows: d.preview.map((e: any) => ({ left: e.employee, mid: `${e.hours} h`, right: usd(e.amountCents) })),
-          };
-        }}
-      />
+      <ApiKeys />
 
       <Panel
         title="FreshBooks"

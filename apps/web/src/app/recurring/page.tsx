@@ -1,5 +1,6 @@
 "use client";
 
+import { DetectedRecurring } from "./detected";
 import { useCallback, useEffect, useState } from "react";
 import {
   apiFetch,
@@ -205,6 +206,8 @@ export default function Recurring() {
           </div>
         )}
       </section>
+
+      <DetectedRecurring onAdded={load} />
 
       <section className="card">
         <div className="row-between">

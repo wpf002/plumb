@@ -15,6 +15,9 @@ const OWNER_ONLY: { method: string; re: RegExp }[] = [
   { method: "POST", re: /^\/companies\/[^/]+\/import$/ },
   { method: "POST", re: /^\/companies\/[^/]+\/api-keys$/ },
   { method: "DELETE", re: /^\/companies\/[^/]+\/api-keys\// },
+  { method: "POST", re: /^\/companies\/[^/]+\/sources\/[^/]+\/sync$/ },
+  { method: "PUT", re: /^\/companies\/[^/]+\/sources\/[^/]+\/connection$/ },
+  { method: "DELETE", re: /^\/companies\/[^/]+\/sources\/[^/]+\/connection$/ },
 ];
 import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
@@ -46,6 +49,7 @@ import { registerOperationsRoutes } from "./routes/operations.js";
 import { registerCapitalRoutes, registerScenarioV2Routes } from "./routes/capital.js";
 import { registerDennyRoutes } from "./routes/denny.js";
 import { apiKeyFor, registerToolRoutes, type AuthedRequest } from "./routes/tools.js";
+import { registerSourceRoutes } from "./routes/sources.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -147,6 +151,7 @@ export function buildServer() {
   registerScenarioV2Routes(app);
   registerDennyRoutes(app);
   registerToolRoutes(app);
+  registerSourceRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

@@ -2,6 +2,8 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
 import { n } from "../map.js";
 import { getPlaid } from "../plaid.js";
+import { connectSource } from "../integrations/sources/index.js";
+import { canStoreSecrets } from "../integrations/sources/secrets.js";
 
 export const TRADES = [
   "ELECTRICAL",
@@ -153,6 +155,8 @@ export function registerSettingsRoutes(app: FastifyInstance) {
       let accessToken = "access-sandbox-dry-run";
       if (plaid.live && req.body.publicToken) {
         accessToken = (await plaid.exchangePublicToken(req.body.publicToken)).accessToken;
+        // Keep the token (encrypted) so the transaction feed can sync later.
+        if (canStoreSecrets()) await connectSource(req.params.companyId, "plaid", { accessToken });
       }
       const balanceCents = await plaid.getBalanceCents(accessToken);
       const source = plaid.live ? "PLAID" : "PLAID_SANDBOX";

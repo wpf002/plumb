@@ -21,3 +21,4 @@ export * from "./readings.js";
 export * from "./forecast.js";
 export * from "./revenueForecast.js";
 export * from "./fleet.js";
+export * from "./recurringDetect.js";
