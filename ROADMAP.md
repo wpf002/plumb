@@ -117,7 +117,7 @@ Doc section: *Most Important Data Architecture Decision.* All 27 objects, mapped
 
 Also: `GlAccount` with account type (Asset/Liability/Equity/Revenue/COGS/Opex) and a `serviceLine` tag so revenue can roll up by service line (§17).
 
-**Done when:** every row above exists as a migration, existing features run on the new models, and the Foley seed still loads.
+**Done when:** every row above exists as a migration, existing features run on the new models.
 
 ### D3 — CSV / Excel import
 
@@ -129,7 +129,7 @@ Phase 1 of the doc's integration roadmap and the only way the test accounts get 
 - **Derived fields** where an account omits them. Jerry's line items come from percentage splits; Robert's totals import without line items and are flagged as such.
 - Idempotent re-import by source id. Import report: rows read, created, updated, skipped, and why.
 - Manual transaction import (CSV of bank or card lines).
-- Load all four test accounts as demo companies alongside Foley.
+- Load all four test accounts as the demo companies.
 
 **Done when:** all four accounts import with zero unmapped required columns, and imported monthly revenue, COGS, net income, cash, AR, and AP match the source statements to the cent for all 48 months.
 
@@ -316,7 +316,7 @@ D5–D10 can run in any order once the harness exists. D7 before D11 because sce
 | Pricing | Competitive analysis: $99–149 / $249–299 / $399+ by employee count. DNRD: $39–79 / $99–199 / $249–499+ by feature. | DNRD tiers |
 | Forecast horizon | Plumb: daily 30–365. DNRD: 13-week weekly + 12-month monthly. | Ship DNRD's, keep daily as a drill-down |
 | Product name | Repo and packages are `plumb`. | Rename the UI only (D1) |
-| Foley seed | Synthetic seed vs four richer test accounts | Keep Foley as the minimal fixture; test accounts become the demo data |
+| Demo data | Synthetic seed vs four richer test accounts | Foley seed retired; the four test accounts are the demo data under demo@dnrd.test |
 
 ---
 

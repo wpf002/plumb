@@ -6,7 +6,7 @@ import { importAccount } from "./importer.js";
 /**
  * Import one or more account folders from disk.
  *
- *   tsx src/import/cli.ts <folder> [<folder>...] [--owner owner@foley.test]
+ *   tsx src/import/cli.ts <folder> [<folder>...] [--owner demo@dnrd.test]
  *
  * Each folder becomes its own company. With --owner, that user is made OWNER of
  * every imported company so it shows up in their company switcher. Re-running

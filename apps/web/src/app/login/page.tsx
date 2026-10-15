@@ -7,8 +7,8 @@ import { apiFetch, C } from "../ui";
 export default function Login() {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
-  const [email, setEmail] = useState("owner@foley.test");
-  const [password, setPassword] = useState("plumb1234");
+  const [email, setEmail] = useState("demo@dnrd.test");
+  const [password, setPassword] = useState("demo1234");
   const [name, setName] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [trade, setTrade] = useState("");
