@@ -453,45 +453,27 @@ h3 {
 }
 
 /* ---- Badges ---- */
+/* Status as plain colored text: no pills. */
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 4px 8px;
-  border-radius: 999px;
-  line-height: 1.4;
+  display: inline;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
-}
-.badge::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
 }
 .badge.good {
   color: var(--good);
-  background: var(--good-soft);
 }
 .badge.warn {
   color: var(--warn);
-  background: var(--warn-soft);
 }
 .badge.bad {
   color: var(--danger);
-  background: var(--danger-soft);
 }
 .badge.info {
   color: var(--info);
-  background: var(--info-soft);
 }
 .badge.neutral {
   color: var(--text-muted);
-  background: var(--surface-2);
 }
 
 .pos {

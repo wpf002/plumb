@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usd, shortDate, C } from "./ui";
 import { apiGet, apiGetOptional, activeCompanyId } from "./server";
-import { ConfidenceStrip } from "./health-ui";
 import { AskDenny } from "./ask-denny";
 import { DashboardCustomize } from "./dashboard-customize";
 import { Fragment } from "react";
@@ -23,11 +22,10 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [forecast, digest, brief, dataHealth, dash, analysis, layout] = await Promise.all([
+  const [forecast, digest, brief, dash, analysis, layout] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/digest`),
     apiGetOptional(`/companies/${companyId}/brief`),
-    apiGet(`/companies/${companyId}/data-health`),
     apiGet(`/companies/${companyId}/health-dashboard`),
     apiGet(`/companies/${companyId}/collisions`),
     apiGet(`/companies/${companyId}/dashboard-layout`),
@@ -74,7 +72,6 @@ export default async function Dashboard() {
             </ol>
           </>
         )}
-        <ConfidenceStrip health={dataHealth} />
       </section>
       </>
     ),
@@ -90,7 +87,6 @@ export default async function Dashboard() {
           <div className="card-title" style={{ marginBottom: 0 }}>
             Financial Health
           </div>
-          <span className={`badge ${TONE[dash.position.tone]}`}>{dash.position.label}</span>
         </div>
         <div className="metric-columns">
           {dash.groups.map((g: any) => (
