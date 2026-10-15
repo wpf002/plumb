@@ -225,7 +225,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: Math.min(10, Math.round((Math.min(monthsOfBooks, 36) / 36) * 8) + (hasBalance ? 2 : 0)),
       weight: 1,
       detail: `${monthsOfBooks} months of books`,
-      action: "Close the books monthly with a full balance sheet",
+      action: "Close the books monthly",
     },
     {
       key: "owner",
@@ -233,7 +233,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: Math.max(1, (v.keyPersonRisk ? 4 : 8) - (ownerField >= 0.2 ? 1 : 0)),
       weight: 1.5,
       detail: ownerField > 0 ? `owner does ${Math.round(ownerField * 100)}% field work` : v.keyPersonRisk ? "no second-in-command" : "manager in place",
-      action: "Document a successor for estimating and key accounts",
+      action: "Name a successor for estimating and key accounts",
     },
     {
       key: "concentration",
@@ -241,7 +241,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: conc ? band(-conc.maxPct, [[-5, 10], [-10, 8], [-20, 6], [-35, 4], [-50, 2]], 1) : 5,
       weight: 1.5,
       detail: conc?.top ? `${conc.top.name} ${conc.maxPct}%` : "no customer detail",
-      action: conc?.top ? `Cut ${conc.top.name} below 25% of revenue (${round1(conc.maxPct)}% now)` : "Track revenue by customer",
+      action: conc?.top ? `Reduce reliance on ${conc.top.name}` : "Track revenue by customer",
     },
     {
       key: "recurring",
@@ -249,7 +249,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: band(rec.sharePct, [[30, 10], [20, 8], [10, 6], [5, 4]], 2),
       weight: 1.5,
       detail: `${rec.sharePct}% of revenue`,
-      action: rec.sharePct > 0 ? `Grow recurring revenue toward 20%+ of revenue (${round1(recFirst.sharePct)}% in ${first}, ${round1(rec.sharePct)}% in ${last})` : "Add maintenance agreements to build recurring revenue",
+      action: rec.sharePct > 0 ? "Grow recurring revenue past 20%" : "Add maintenance agreements",
     },
     {
       key: "management",
@@ -257,7 +257,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: band(managers, [[3, 9], [2, 7], [1, 5]], 2),
       weight: 1,
       detail: `${managers} salaried managers`,
-      action: "Add a second-in-command who runs operations day to day",
+      action: "Hire a second-in-command",
     },
     {
       key: "ebitda",
@@ -267,8 +267,8 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       detail: `${marginLast}% margin (${marginFirst}% in ${first})`,
       action:
         marginLast < marginFirst
-          ? `Reverse the EBITDA margin decline (${marginFirst}% in ${first} to ${marginLast}% in ${last}) and document why`
-          : `Lift EBITDA margin above 15% (${marginLast}% in ${last})`,
+          ? "Reverse the EBITDA margin decline"
+          : "Lift EBITDA margin above 15%",
     },
     {
       key: "backlog",
@@ -276,7 +276,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: bl.monthsOfCoverage === null ? 5 : band(bl.monthsOfCoverage, [[6, 10], [3, 7], [1, 4]], 2),
       weight: 0.75,
       detail: bl.monthsOfCoverage === null ? "no backlog detail" : `${bl.monthsOfCoverage} months signed`,
-      action: `Build signed backlog past three months of work${bl.monthsOfCoverage !== null ? ` (${bl.monthsOfCoverage} now)` : ""}`,
+      action: "Build backlog past three months",
     },
     {
       key: "process",
@@ -284,7 +284,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: over.total ? band(-(over.count / over.total) * 100, [[-10, 9], [-20, 7], [-35, 5]], 3) : 5,
       weight: 1,
       detail: over.total ? `${Math.round((over.count / over.total) * 100)}% of jobs ran 4%+ over` : "no job costing",
-      action: over.total ? `Tighten estimating: ${over.count} of ${over.total} jobs ran 4%+ over` : "Track job costs against estimates",
+      action: over.total ? "Tighten estimating" : "Track job costs against estimates",
     },
     {
       key: "debt",
@@ -292,7 +292,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: band(-leverage, [[-1, 10], [-2, 8], [-3, 6], [-4, 4]], 2),
       weight: 0.75,
       detail: `${round1(leverage)}x EBITDA`,
-      action: `Pay operating debt below 2x EBITDA (${round1(leverage)}x now)`,
+      action: "Pay debt below 2x EBITDA",
     },
     {
       key: "growth",
@@ -300,7 +300,7 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
       score: band(cagr, [[10, 10], [5, 8], [0, 6], [-5, 4]], 2),
       weight: 1,
       detail: `${round1(cagr)}% a year`,
-      action: `Restore revenue growth (${round1(cagr)}% a year since ${first})`,
+      action: "Restore revenue growth",
     },
   ];
   const weight = factors.reduce((s, f) => s + f.weight, 0);

@@ -9,6 +9,7 @@ import { Fragment } from "react";
 
 
 const TONE: Record<string, string> = { good: "good", warn: "warn", bad: "bad", neutral: "neutral" };
+const POSITION: Record<string, string> = { good: "Strong", warn: "Tight", bad: "At Risk", neutral: "Stable" };
 const RATING_BADGE: Record<string, string> = { Strong: "good", Stable: "info", Watch: "warn", "At Risk": "bad" };
 const RATING_TONE: Record<string, string> = { Strong: "", Stable: "", Watch: "warning", "At Risk": "critical" };
 
@@ -90,7 +91,9 @@ export default async function Dashboard() {
           <div className="card-title" style={{ marginBottom: 0 }}>
             Financial Health
           </div>
-          <span className={`badge ${TONE[dash.position.tone]}`}>{dash.position.label}</span>
+          <span className={`badge ${TONE[dash.position.tone]}`} title={dash.position.label}>
+            {POSITION[dash.position.tone] ?? dash.position.label}
+          </span>
         </div>
         <div className="metric-columns">
           {dash.groups.map((g: any) => (
@@ -101,8 +104,8 @@ export default async function Dashboard() {
                 .map((m: any) => (
                   <div key={m.key} className="metric-row" title={m.basis ?? undefined}>
                     <span className="metric-label">{m.label}</span>
-                    <span className="metric-value num">{formatMetric(m)}</span>
-                    {m.reading && <span className={`metric-reading ${m.reading.tone}`}>{m.reading.label}</span>}
+                    <span className={`metric-value num${m.reading && m.reading.tone !== "good" && m.reading.tone !== "neutral" ? ` tone-${m.reading.tone}` : ""}`} title={m.reading?.label}>{formatMetric(m)}</span>
+
                   </div>
                 ))}
             </div>
@@ -116,7 +119,7 @@ export default async function Dashboard() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Needs Attention
+            Alerts
           </div>
           <Link href="/digest" className="btn btn-ghost btn-xs">
             Weekly Digest
@@ -130,7 +133,6 @@ export default async function Dashboard() {
               <div key={`c${i}`} className={`alert ${c.severity}`}>
                 <div>
                   <div className="alert-title">{c.title}</div>
-                  <div className="alert-detail">{c.detail}</div>
                 </div>
               </div>
             ))}
@@ -141,7 +143,6 @@ export default async function Dashboard() {
                 <div key={`d${i}`} className={`alert ${item.severity}`}>
                   <div>
                     <div className="alert-title">{item.title}</div>
-                    {item.detail !== item.title && <div className="alert-detail">{item.detail}</div>}
                   </div>
                 </div>
               ))}
@@ -153,12 +154,11 @@ export default async function Dashboard() {
     cash: (
       <>
       <section className="card">
-        <div className="card-title">Cash: Expected vs Worst Case</div>
+        <div className="card-title">Cash Outlook</div>
         <div className="stats">
           <div className="stat">
             <div className="stat-label">Expected Low</div>
             <div className="stat-value num">{usd(forecast.base.minBalanceCents)}</div>
-            <div className="stat-sub">on {forecast.base.minBalanceDate}</div>
           </div>
           <div className="stat">
             <div className="stat-label">If Payers Run Late</div>
@@ -168,12 +168,10 @@ export default async function Dashboard() {
             >
               {usd(forecast.stress.minBalanceCents)}
             </div>
-            <div className="stat-sub">on {forecast.stress.minBalanceDate}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Safety Floor</div>
             <div className="stat-value num">{usd(forecast.safetyThresholdCents)}</div>
-            <div className="stat-sub">don&apos;t drop below</div>
           </div>
         </div>
         {forecast.stress.firstBreachDate && (
@@ -188,7 +186,7 @@ export default async function Dashboard() {
     ),
     collisions: analysis.collisions?.length > 0 && (
         <section className="card">
-          <div className="card-title">Weeks Worth Watching</div>
+          <div className="card-title">Tight Weeks</div>
           {analysis.collisions.map((c: any) => (
             <div key={c.weekStart} className="alert warning" style={{ marginBottom: 8 }}>
               <div style={{ width: "100%" }}>
@@ -213,7 +211,7 @@ export default async function Dashboard() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Fixed Obligations
+            Fixed Costs
           </div>
           <Link href="/recurring" className="btn btn-ghost btn-xs">
             Manage
@@ -223,20 +221,15 @@ export default async function Dashboard() {
           <div className="stat">
             <div className="stat-label">Every Month, No Matter What</div>
             <div className="stat-value num">{usd(forecast.obligations.monthlyFixedCents)}</div>
-            <div className="stat-sub">overhead + debt service</div>
           </div>
           <div className="stat">
             <div className="stat-label">Overhead</div>
             <div className="stat-value num">{usd(forecast.obligations.monthlyOverheadCents)}</div>
-            <div className="stat-sub">insurance, fuel, rent, software</div>
           </div>
           <div className="stat">
             <div className="stat-label">Debt Service</div>
             <div className="stat-value num">
               {usd(forecast.obligations.monthlyDebtServiceCents)}
-            </div>
-            <div className="stat-sub">
-              <Link href="/balance-sheet">loans, cards, leases</Link>
             </div>
           </div>
         </div>

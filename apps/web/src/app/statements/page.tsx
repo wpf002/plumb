@@ -6,10 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
 
 const TABS = [
-  { key: "income", label: "Income" },
+  { key: "income", label: "Profit & Loss" },
   { key: "balance", label: "Balance Sheet" },
   { key: "cash-flow", label: "Cash Flow" },
-  { key: "budget", label: "Budget" },
+  { key: "budget", label: "Budget vs Actual" },
   { key: "tax", label: "Tax" },
 ] as const;
 
@@ -163,7 +163,7 @@ export default function Statements() {
           <h1>Statements</h1>
         </div>
         <div className="toolbar-right" style={{ alignItems: "center" }}>
-          {data?.through && <span className="num muted">Through {data.through}</span>}
+
           <button className="btn btn-ghost btn-xs" onClick={() => downloadCsv("lender-package?format=csv")}>
             Lender Package
           </button>
@@ -233,7 +233,7 @@ export default function Statements() {
         <section className="card">
           <div className="row-between">
             <div className="card-title" style={{ marginBottom: 0 }}>
-              Budget Vs Actual
+              Budget vs Actual
             </div>
             {data.years?.length > 0 && (
               <span className="num muted">{data.year}</span>
@@ -298,7 +298,7 @@ export default function Statements() {
 
           {tab === "cash-flow" && data.profitVsCash?.length > 0 && (
             <section className="card">
-              <div className="card-title">Profit Vs Cash</div>
+              <div className="card-title">Profit vs Cash</div>
               <table className="table">
                 <thead>
                   <tr>

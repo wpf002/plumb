@@ -278,14 +278,12 @@ export default function ProjectDetail() {
           <div className="stat">
             <div className="stat-label">Projected Final Cost</div>
             <div className="stat-value num">{usd(margin.projectedFinalCostCents)}</div>
-            <div className="stat-sub">{Math.round(margin.percentComplete * 100)}% complete</div>
           </div>
           <div className="stat">
             <div className="stat-label">Bid → Projected Margin</div>
             <div className="stat-value num" style={{ color: margin.atRisk ? C.danger : C.good }}>
               {margin.originalMarginPct}% → {margin.projectedFinalMarginPct}%
             </div>
-            <div className="stat-sub">{margin.marginErosionPct} pts off your {project.targetMarginPct}% target</div>
           </div>
           <div className="stat">
             <div className="stat-label">Cost Overrun</div>
@@ -512,31 +510,19 @@ export default function ProjectDetail() {
             <div className="stat">
               <div className="stat-label">Scheduled</div>
               <div className="stat-value num">{usd(ms.summary.scheduledCents)}</div>
-              <div className="stat-sub">
-                {ms.summary.unscheduledCents === 0
-                  ? "covers the full contract"
-                  : `${usd(ms.summary.unscheduledCents)} of contract unscheduled`}
-              </div>
             </div>
             <div className="stat">
               <div className="stat-label">Still To Bill</div>
               <div className="stat-value num">{usd(ms.summary.unbilledCents)}</div>
-              <div className="stat-sub">{ms.summary.count} milestones</div>
             </div>
             <div className="stat">
               <div className="stat-label">Retainage Held Back</div>
               <div className="stat-value num">{usd(ms.summary.retainageHeldCents)}</div>
-              <div className="stat-sub">released at completion</div>
             </div>
             <div className="stat">
               <div className="stat-label">Slip</div>
               <div className={`stat-value num ${ms.summary.totalSlipDays > 0 ? "neg" : ""}`}>
                 {ms.summary.totalSlipDays > 0 ? `+${ms.summary.totalSlipDays}d` : "None"}
-              </div>
-              <div className="stat-sub">
-                {ms.summary.slippedCount > 0
-                  ? `${ms.summary.slippedCount} milestone(s) moved`
-                  : "on the original dates"}
               </div>
             </div>
           </div>
@@ -643,12 +629,7 @@ export default function ProjectDetail() {
                   </td>
                   <td className="num">
                     {usd(m.amountCents)}
-                    {m.retainagePct > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                        {usd(Math.round((m.amountCents * (100 - m.retainagePct)) / 100))} after
-                        retainage
-                      </div>
-                    )}
+                    
                   </td>
                   <td>
                     <span

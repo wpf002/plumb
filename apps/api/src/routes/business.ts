@@ -34,6 +34,8 @@ async function groupFor(userId: string, groupId: string) {
 const forbidden = (reply: FastifyReply) => reply.code(404).send({ error: "Not Found", message: "No such group." });
 
 export const WIDGETS = ["brief", "denny", "health", "attention", "cash", "collisions", "obligations"] as const;
+/** A short default; the cash sections also live on the Cash page and can be added back. */
+const DEFAULT_WIDGETS = ["brief", "denny", "health", "attention"];
 
 const EXPORT_TABLES = {
   gl: async (companyId: string) =>
@@ -160,7 +162,7 @@ export function registerBusinessRoutes(app: FastifyInstance) {
   app.get<{ Params: { companyId: string } }>("/companies/:companyId/dashboard-layout", async (req) => {
     const userId = (req as AuthedRequest).userId!;
     const l = await prisma.dashboardLayout.findUnique({ where: { userId_companyId: { userId, companyId: req.params.companyId } } });
-    return { widgets: l?.widgets ?? [...WIDGETS], available: WIDGETS };
+    return { widgets: l?.widgets ?? DEFAULT_WIDGETS, available: WIDGETS };
   });
   app.put<{ Params: { companyId: string }; Body: { widgets: string[] } }>(
     "/companies/:companyId/dashboard-layout",

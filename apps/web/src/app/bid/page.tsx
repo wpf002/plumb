@@ -79,12 +79,12 @@ export default function BidPage() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1>Should You Bid This Job?</h1>
+          <h1>New Bid</h1>
         </div>
       </div>
 
       <section className="card">
-        <div className="card-title">The Job</div>
+        <div className="card-title">Job</div>
         <div className="field-grid">
           <div>
             <label className="label">Contract Value ($)</label>
@@ -153,7 +153,7 @@ export default function BidPage() {
           </div>
 
           <div className="divider" />
-          <div className="card-title">Crew Load If You Win</div>
+          <div className="card-title">Crew Load</div>
           <table className="table">
             <thead>
               <tr>
@@ -182,7 +182,7 @@ export default function BidPage() {
           </table>
 
           <div className="divider" />
-          <div className="card-title">Why</div>
+          <div className="card-title">Reasons</div>
           <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7, color: "var(--text)" }}>
             {result.reasons.map((r: string, i: number) => (
               <li key={i}>{r}</li>

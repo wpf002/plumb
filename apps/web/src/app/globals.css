@@ -75,27 +75,30 @@ h3 {
 }
 
 .num {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
 /* ---- Layout ---- */
 .container {
-  max-width: 1080px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 24px 64px;
+  padding: 32px 32px 80px;
+}
+/* One vertical rhythm: every block on a page sits 24px below the last. */
+.container > * + * {
+  margin-top: 24px;
 }
 
 .page-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  min-height: 40px;
 }
 .page-head h1 {
-  font-size: 32px;
-  margin: 0 0 0;
+  font-size: 28px;
+  margin: 0;
 }
 .page-head p {
   margin: 0;
@@ -107,19 +110,17 @@ h3 {
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 30;
   background: var(--ink);
-  border-bottom: 2px solid var(--accent);
-  box-shadow: none;
 }
 .topbar-inner {
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
-  height: 62px;
+  padding: 0 32px;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 }
 .brand {
   display: flex;
@@ -127,75 +128,147 @@ h3 {
   gap: 8px;
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: 0.2px;
   color: #fff;
   font-size: 16px;
-  margin-right: 24px;
   text-decoration: none;
+  flex: none;
 }
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius);
   background: var(--accent);
-  box-shadow: none;
+}
+.topnav {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.topnav::-webkit-scrollbar {
+  display: none;
 }
 .navlink {
-  color: #b9c6d4;
+  color: #b7c4bd;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   padding: 8px 12px;
   border-radius: var(--radius);
-  transition: color 0.15s, background 0.15s;
-}
-@media (max-width: 1180px) {
-  .topbar-tag {
-    display: none;
-  }
-  .topbar-inner {
-    overflow-x: auto;
-    gap: 0;
-  }
-  .navlink {
-    padding: 8px 8px;
-  }
 }
 .navlink:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.06);
 }
 .navlink.active {
   color: #fff;
-  background: rgba(161, 74, 34, 0.28);
-  box-shadow: inset 0 0 0 1px var(--accent);
+  background: rgba(255, 255, 255, 0.1);
 }
-.topbar-spacer {
-  flex: 1;
+.subnav {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
-.topbar-tag {
-  color: #8ea3b8;
-  font-size: 12px;
+.subnav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+}
+.sublink {
+  font-size: 14px;
   font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
-@media (max-width: 640px) {
-  .topbar-inner {
-    overflow-x: auto;
-    gap: 0;
+.sublink:hover {
+  color: var(--ink);
+}
+.sublink.active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+.account {
+  position: relative;
+  flex: none;
+}
+.account-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 240px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(20, 38, 31, 0.12);
+  padding: 8px;
+}
+.account-label {
+  font-size: 12px;
+  color: var(--text-faint);
+  padding: 8px 8px 4px;
+}
+.account-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 8px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+.account-item:hover {
+  background: var(--surface-2);
+}
+.account-item.current {
+  font-weight: 700;
+  color: var(--ink);
+}
+.account-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+@media (max-width: 760px) {
+  .topbar-inner,
+  .subnav-inner {
     padding: 0 16px;
+    gap: 12px;
   }
-  .brand {
-    margin-right: 8px;
-  }
-  .navlink {
-    padding: 8px 8px;
-    white-space: nowrap;
-  }
-  .topbar-tag {
-    display: none;
+  .account-button {
+    max-width: 140px;
   }
   .container {
     padding: 24px 16px 64px;
@@ -210,11 +283,8 @@ h3 {
   padding: 24px;
   box-shadow: var(--shadow);
 }
-.card + .card {
-  margin-top: 16px;
-}
 .card-title {
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 0;
   color: var(--ink);
   font-weight: 700;
@@ -224,7 +294,11 @@ h3 {
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 24px;
+  align-items: start;
+}
+.grid-2 > div > * + * {
+  margin-top: 24px;
 }
 @media (max-width: 760px) {
   .grid-2 {
@@ -304,35 +378,42 @@ h3 {
 }
 
 /* ---- Stat blocks ---- */
+/* Flat figures in a row, separated by rules: no boxes inside boxes. */
 .stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px 0;
 }
 .stat {
-  flex: 1;
-  min-width: 128px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 0 24px;
+  border-left: 1px solid var(--border);
+  min-width: 0;
+}
+.stat:first-child {
+  padding-left: 0;
+  border-left: 0;
 }
 .stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .stat-value {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 500;
   color: var(--ink);
   margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
 }
 .stat-sub {
   font-size: 12px;
   color: var(--text-faint);
-  margin-top: 0;
+  margin-top: 4px;
 }
 
 /* ---- Tables ---- */
@@ -812,9 +893,9 @@ select.input {
 .readout-item {
   display: grid;
   gap: 4px;
-  padding: 12px 12px;
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  padding: 4px 12px;
+  border-radius: 0;
+  background: none;
   border-left: 3px solid var(--border-strong);
   font-size: 14px;
   line-height: 1.55;
@@ -834,7 +915,7 @@ select.input {
 
 .readout-item b {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .readout-item span {
@@ -877,7 +958,7 @@ select.input {
 /* --- Statements ------------------------------------------------------------- */
 
 .container-wide {
-  max-width: 1180px;
+  max-width: 1200px;
 }
 
 .muted {
@@ -890,7 +971,6 @@ select.input {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
 }
 
 .toolbar-right {
@@ -1345,4 +1425,78 @@ button.chip.active {
   color: var(--text-muted);
   display: grid;
   gap: 2px;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  font-size: 13px;
+}
+.pager-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+.table a {
+  text-decoration: none;
+  color: var(--ink);
+}
+.table a:hover {
+  text-decoration: underline;
+}
+
+/* Wide period tables (13 weeks, 12 months) fit the page at desktop width. */
+.table.statement thead th,
+.table.statement tbody td {
+  padding: 10px 8px;
+  font-size: 13px;
+}
+.table.statement tbody td:first-child,
+.table.statement thead th:first-child {
+  padding-left: 0;
+  white-space: nowrap;
+}
+
+/* ---- Phone ---- */
+.mobile-menu {
+  display: none;
+  position: relative;
+}
+.card {
+  overflow-x: auto;
+}
+@media (max-width: 760px) {
+  .topnav {
+    display: none;
+  }
+  .mobile-menu {
+    display: block;
+    flex: 1;
+  }
+  .card {
+    padding: 16px;
+  }
+  .stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .stat,
+  .stat:first-child {
+    padding: 0;
+    border-left: 0;
+  }
+  .stat-value {
+    font-size: 22px;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .page-head h1 {
+    font-size: 24px;
+  }
 }

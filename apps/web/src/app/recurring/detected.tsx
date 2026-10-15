@@ -33,7 +33,7 @@ export function DetectedRecurring({ onAdded }: { onAdded: () => void }) {
     <section className="card">
       <div className="row-between">
         <div className="card-title" style={{ marginBottom: 0 }}>
-          Found in Bank Feed
+          Detected Charges
         </div>
         <span className="num muted">{usd(data.monthlyOutCents)} / month</span>
       </div>

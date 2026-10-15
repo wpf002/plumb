@@ -1,7 +1,9 @@
 "use client";
 
+import { Stat } from "../stat";
 import Link from "next/link";
 import { shortDate, usd } from "../ui";
+import { usePaged } from "../pager";
 
 const pct = (v: number | null | undefined, d = 1) => (v === null || v === undefined ? "—" : `${v.toFixed(d)}%`);
 const money = (v: number | null | undefined) => (v === null || v === undefined ? "—" : usd(v));
@@ -16,32 +18,24 @@ const FLAG: Record<string, { cls: string; label: string }> = {
 
 const STATUS: Record<string, string> = { ACTIVE: "Active", AWARDED: "Awarded", CLOSED: "Closed", BIDDING: "Bidding" };
 
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "pos" | "neg" }) {
-  return (
-    <div className="stat">
-      <div className="stat-label">{label}</div>
-      <div className={`stat-value num${tone ? ` ${tone}` : ""}`}>{value}</div>
-      {sub && <div className="stat-sub">{sub}</div>}
-    </div>
-  );
-}
 
 export function ProfitabilityView({ data }: { data: any }) {
   const names = new Map<string, string>(data.jobs.map((j: any) => [j.externalId ?? j.id, j.name]));
   const p = data.performance;
+  const { rows: jobs, pager } = usePaged<any>(data.jobs, 20);
   return (
     <>
       <section className="card">
         <div className="stats">
           <Stat label="Jobs Scored" value={String(p.count)} />
-          <Stat label="Under Target" value={String(p.under.count)} sub={p.under.count ? `avg ${pct(p.under.avgActualMarginPct)} margin` : undefined} tone={p.under.count ? "neg" : undefined} />
+          <Stat label="Under Target" value={String(p.under.count)} tone={p.under.count ? "neg" : undefined} />
           <Stat label="Beat Target" value={String(p.over.count)} />
           <Stat label="Worst Miss" value={p.under.count ? `${p.under.maxGapPts.toFixed(1)} pts` : "—"} />
         </div>
       </section>
 
       <section className="card">
-        <div className="card-title">By Job Type</div>
+        <div className="card-title">Job Types</div>
         <table className="table">
           <thead>
             <tr>
@@ -75,7 +69,7 @@ export function ProfitabilityView({ data }: { data: any }) {
         <div className={data.fade.length > 0 && data.standouts.length > 0 ? "grid-2" : undefined}>
           {data.fade.length > 0 && (
             <section className="card">
-              <div className="card-title">Margin Fade</div>
+              <div className="card-title">Fading Margins</div>
               <table className="table">
                 <thead>
                   <tr>
@@ -98,7 +92,7 @@ export function ProfitabilityView({ data }: { data: any }) {
           )}
           {data.standouts.length > 0 && (
             <section className="card">
-              <div className="card-title">Standouts</div>
+              <div className="card-title">Top Performers</div>
               <table className="table">
                 <thead>
                   <tr>
@@ -123,7 +117,7 @@ export function ProfitabilityView({ data }: { data: any }) {
       )}
 
       <section className="card">
-        <div className="card-title">All Jobs</div>
+        <div className="card-title">Jobs</div>
         {data.jobs.length === 0 ? (
           <p className="empty">No jobs.</p>
         ) : (
@@ -133,7 +127,7 @@ export function ProfitabilityView({ data }: { data: any }) {
                 <tr>
                   <th>Job</th>
                   <th>Customer</th>
-                  <th>Status</th>
+                  <th>Progress</th>
                   <th className="num">Contract</th>
                   <th className="num">Gross Profit</th>
                   <th className="num">Target</th>
@@ -142,18 +136,17 @@ export function ProfitabilityView({ data }: { data: any }) {
                 </tr>
               </thead>
               <tbody>
-                {data.jobs.slice(0, 100).map((j: any) => {
+                {jobs.map((j: any) => {
                   const f = FLAG[j.flag];
                   return (
                     <tr key={j.id}>
                       <td className="cell-name" style={{ minWidth: 220 }}>
                         <Link href={`/projects/${j.id}`}>{j.name}</Link>
-                        {j.type && <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>{j.type}</div>}
+                        
                       </td>
                       <td>{j.customer}</td>
-                      <td className="muted">
-                        {STATUS[j.status] ?? j.status}
-                        {j.status !== "CLOSED" && ` · ${Math.round(j.percentComplete * 100)}%`}
+                      <td className="muted nowrap">
+                        {j.status === "CLOSED" ? "Closed" : `${Math.round(j.percentComplete * 100)}%`}
                       </td>
                       <td className="num">{usd(j.revisedContractCents)}</td>
                       <td className={`num${j.projectedGrossProfitCents < 0 ? " neg" : ""}`}>{usd(j.projectedGrossProfitCents)}</td>
@@ -161,12 +154,13 @@ export function ProfitabilityView({ data }: { data: any }) {
                       <td className="num" style={{ fontWeight: 700 }}>
                         {pct(j.projectedMarginPct)}
                       </td>
-                      <td>{f && <span className={`badge ${f.cls}`}>{f.label}</span>}</td>
+                      <td>{f && j.flag !== "on_track" && <span className={`badge ${f.cls}`}>{f.label}</span>}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+            {pager}
           </div>
         )}
       </section>
@@ -184,14 +178,14 @@ export function EstimatesView({ data }: { data: any }) {
       <section className="card">
         <div className="stats">
           <Stat label="Finished Jobs" value={String(data.jobs)} />
-          <Stat label="Ran 4%+ Over" value={`${data.overruns.count} of ${data.overruns.total}`} tone={data.overruns.count ? "neg" : undefined} />
+          <Stat label="Over Estimate" value={`${data.overruns.count} of ${data.overruns.total}`} tone={data.overruns.count ? "neg" : undefined} />
           <Stat label="Excess Cost" value={usd(data.overruns.grossProfitErodedCents)} />
-          <Stat label="Profit vs Bid" value={usd(gpGap)} tone={gpGap < 0 ? "neg" : "pos"} sub={`${usd(data.estimatedGrossProfitCents)} bid → ${usd(data.actualGrossProfitCents)}`} />
+          <Stat label="Profit vs Bid" value={usd(gpGap)} tone={gpGap < 0 ? "neg" : "pos"} />
         </div>
       </section>
 
       <section className="card">
-        <div className="card-title">By Cost Line</div>
+        <div className="card-title">Cost Lines</div>
         <table className="table">
           <thead>
             <tr>
@@ -215,7 +209,7 @@ export function EstimatesView({ data }: { data: any }) {
       </section>
 
       <section className="card">
-        <div className="card-title">By Job Type</div>
+        <div className="card-title">Job Types</div>
         <table className="table">
           <thead>
             <tr>
@@ -254,7 +248,7 @@ export function WipView({ data }: { data: any }) {
           <Stat label="Contract" value={usd(t.contract)} />
           <Stat label="Earned" value={usd(t.earned)} />
           {data.billingKnown && <Stat label="Billed" value={usd(t.billed)} />}
-          {data.billingKnown && <Stat label="Underbilled" value={usd(t.underbilled)} tone={t.underbilled > t.overbilled ? "neg" : undefined} sub={`${usd(t.overbilled)} overbilled`} />}
+          {data.billingKnown && <Stat label="Underbilled" value={usd(t.underbilled)} tone={t.underbilled > t.overbilled ? "neg" : undefined} />}
           {t.retainage > 0 && <Stat label="Retainage" value={usd(t.retainage)} />}
         </div>
       </section>
@@ -284,9 +278,9 @@ export function WipView({ data }: { data: any }) {
                     <td className="cell-name" style={{ minWidth: 220 }}>
                       <Link href={`/projects/${r.id}`}>{r.name}</Link>
                       {r.flags.length > 0 && (
-                        <div className="neg" style={{ fontSize: 12, fontWeight: 400 }}>
-                          {r.flags.join(" · ")}
-                        </div>
+                        <span className="badge warn" style={{ marginLeft: 8 }} title={r.flags.join(", ")}>
+                          {r.flags.length === 1 ? "1 Flag" : `${r.flags.length} Flags`}
+                        </span>
                       )}
                     </td>
                     <td className="num">{usd(r.revisedContractCents)}</td>
@@ -299,11 +293,7 @@ export function WipView({ data }: { data: any }) {
                     <td className={`num${r.overUnderCents < 0 ? " neg" : r.overUnderCents > 0 ? " pos" : ""}`}>{money(r.overUnderCents)}</td>
                     <td className="num">
                       {pct(r.projectedMarginPct)}
-                      {r.originalMarginPct - r.projectedMarginPct >= 1 && (
-                        <div className="muted" style={{ fontSize: 12 }}>
-                          bid {pct(r.originalMarginPct)}
-                        </div>
-                      )}
+                      
                     </td>
                   </tr>
                 ))}
@@ -319,6 +309,7 @@ export function WipView({ data }: { data: any }) {
 const CO_STATUS: Record<string, string> = { APPROVED: "Approved", PENDING: "Pending", REQUESTED: "Requested", REJECTED: "Rejected" };
 
 export function ChangeOrdersView({ data }: { data: any }) {
+  const { rows: recent, pager } = usePaged<any>(data.recent, 10);
   const statuses = Object.entries(data.byStatus) as [string, any][];
   const showMargin = data.recent.some((c: any) => c.marginPct !== null);
   if (statuses.length === 0) return <p className="card empty">No change orders.</p>;
@@ -327,7 +318,7 @@ export function ChangeOrdersView({ data }: { data: any }) {
       <section className="card">
         <div className="stats">
           {statuses.map(([s, v]) => (
-            <Stat key={s} label={CO_STATUS[s] ?? s} value={usd(v.valueCents)} sub={`${v.count} change orders`} />
+            <Stat key={s} label={CO_STATUS[s] ?? s} value={usd(v.valueCents)} />
           ))}
           {data.totals.timeImpactDays > 0 && <Stat label="Schedule Impact" value={`${data.totals.timeImpactDays} days`} />}
         </div>
@@ -335,7 +326,7 @@ export function ChangeOrdersView({ data }: { data: any }) {
 
       {(data.unapprovedWork.length > 0 || data.lowMargin.length > 0 || data.scopeCreep.length > 0) && (
         <section className="card">
-          <div className="card-title">Watch</div>
+          <div className="card-title">Flags</div>
           <table className="table">
             <thead>
               <tr>
@@ -372,7 +363,7 @@ export function ChangeOrdersView({ data }: { data: any }) {
       )}
 
       <section className="card">
-        <div className="card-title">Recent</div>
+        <div className="card-title">Change Orders</div>
         <table className="table">
           <thead>
             <tr>
@@ -384,11 +375,11 @@ export function ChangeOrdersView({ data }: { data: any }) {
             </tr>
           </thead>
           <tbody>
-            {data.recent.map((c: any) => (
+            {recent.map((c: any) => (
               <tr key={c.id}>
                 <td className="cell-name">
                   {c.project}
-                  {c.reason && !c.reason.startsWith("Imported") && <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>{c.reason}</div>}
+                  
                 </td>
                 <td className="muted">{shortDate(c.date)}</td>
                 <td>{CO_STATUS[c.status] ?? c.status}</td>
@@ -398,6 +389,7 @@ export function ChangeOrdersView({ data }: { data: any }) {
             ))}
           </tbody>
         </table>
+        {pager}
       </section>
     </>
   );
@@ -436,13 +428,15 @@ export function RetainageView({ data }: { data: any }) {
 }
 
 export function BacklogView({ data }: { data: any }) {
+  const { rows, pager } = usePaged<any>(data.rows, 15);
   return (
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="Signed Backlog" value={usd(data.signedCents)} sub={data.monthsOfCoverage !== null ? `${data.monthsOfCoverage} months of work` : undefined} />
+          <Stat label="Signed Backlog" value={usd(data.signedCents)} />
           <Stat label="Weighted Pipeline" value={usd(data.weightedPipelineCents)} />
-          <Stat label="Coverage" value={pct(data.coverageOfLastYearRevenuePct)} sub="of last 12 months revenue" />
+          {data.monthsOfCoverage !== null && <Stat label="Months Booked" value={String(data.monthsOfCoverage)} />}
+          <Stat label="Coverage of Last Year" value={pct(data.coverageOfLastYearRevenuePct)} />
           {data.capacityMonthsBooked !== null && <Stat label="Crew Booked" value={`${data.capacityMonthsBooked} mo`} />}
         </div>
       </section>
@@ -450,6 +444,7 @@ export function BacklogView({ data }: { data: any }) {
         {data.rows.length === 0 ? (
           <p className="empty">No signed work.</p>
         ) : (
+          <>
           <table className="table">
             <thead>
               <tr>
@@ -463,7 +458,7 @@ export function BacklogView({ data }: { data: any }) {
               </tr>
             </thead>
             <tbody>
-              {data.rows.map((r: any) => (
+              {rows.map((r: any) => (
                 <tr key={r.id}>
                   <td className="cell-name">
                     <Link href={`/projects/${r.id}`}>{r.name}</Link>
@@ -478,6 +473,8 @@ export function BacklogView({ data }: { data: any }) {
               ))}
             </tbody>
           </table>
+          {pager}
+          </>
         )}
       </section>
     </>
@@ -485,21 +482,23 @@ export function BacklogView({ data }: { data: any }) {
 }
 
 export function PipelineView({ data }: { data: any }) {
+  const { rows: open, pager } = usePaged<any>(data.open, 15);
   const lost = Object.entries(data.lostByYear) as [string, number][];
   const reasons = (Object.entries(data.lostReasons) as [string, number][]).sort((a, b) => b[1] - a[1]);
   return (
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="Pipeline" value={usd(data.totals.pipelineCents)} sub={`${data.open.length} open`} />
+          <Stat label="Pipeline" value={usd(data.totals.pipelineCents)} />
           <Stat label="Weighted" value={usd(data.totals.weightedCents)} />
-          <Stat label="Expected Profit" value={usd(data.totals.expectedGrossProfitCents)} sub={`at ${pct(data.totals.historicalMarginPct)} historical margin`} />
+          <Stat label="Expected Profit" value={usd(data.totals.expectedGrossProfitCents)} />
         </div>
       </section>
       <section className="card">
         {data.open.length === 0 ? (
           <p className="empty">No open opportunities.</p>
         ) : (
+          <>
           <table className="table">
             <thead>
               <tr>
@@ -512,7 +511,7 @@ export function PipelineView({ data }: { data: any }) {
               </tr>
             </thead>
             <tbody>
-              {data.open.map((o: any) => (
+              {open.map((o: any) => (
                 <tr key={o.id}>
                   <td className="cell-name">{o.opportunity}</td>
                   <td>{o.customer ?? "—"}</td>
@@ -524,11 +523,13 @@ export function PipelineView({ data }: { data: any }) {
               ))}
             </tbody>
           </table>
+          {pager}
+          </>
         )}
       </section>
       {lost.length > 0 && (
         <section className="card">
-          <div className="card-title">Lost Work</div>
+          <div className="card-title">Lost Bids</div>
           <div className="stats">
             {lost.map(([year, cents]) => (
               <Stat key={year} label={year} value={usd(cents)} />

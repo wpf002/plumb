@@ -185,7 +185,6 @@ export function WhatIf() {
             <div className="stat">
               <div className="stat-label">13-Week Low</div>
               <div className={`stat-value num${result.minCashCents < result.reserveTargetCents ? " neg" : ""}`}>{usd(result.minCashCents)}</div>
-              <div className="stat-sub">{usd(result.baseLowCents)} on time</div>
             </div>
             <div className="stat">
               <div className="stat-label">Reserve</div>
@@ -194,7 +193,6 @@ export function WhatIf() {
             <div className="stat">
               <div className="stat-label">Credit Line</div>
               <div className={`stat-value num${result.locDrawRequired ? " neg" : " pos"}`}>{result.locDrawRequired ? `Draw ${usd(result.peakLocCents)}` : "Not Needed"}</div>
-              <div className="stat-sub">{usd(result.locLimitCents)} limit</div>
             </div>
           </div>
         </section>
@@ -204,7 +202,7 @@ export function WhatIf() {
         <section className="card">
           <div className="row-between">
             <div className="card-title" style={{ marginBottom: 0 }}>
-              {result.year} Restated
+              Impact on {result.year}
             </div>
             {result.notes?.length > 0 && (
               <span className="badge neutral" title={result.notes.join(" ")}>

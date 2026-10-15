@@ -16,17 +16,14 @@ export function TaxView({ data }: { data: any }) {
           <div className="stat">
             <div className="stat-label">Net Income</div>
             <div className={`stat-value num${s.netIncomeCents < 0 ? " neg" : ""}`}>{usd(s.netIncomeCents)}</div>
-            <div className="stat-sub">book</div>
           </div>
           <div className="stat">
             <div className="stat-label">Payroll</div>
             <div className="stat-value num">{usd(s.payrollCents)}</div>
-            <div className="stat-sub">{data.payroll.length} people</div>
           </div>
           <div className="stat">
             <div className="stat-label">Contractors</div>
             <div className="stat-value num">{usd(s.contractorCents)}</div>
-            <div className="stat-sub">{data.contractors.filter((c: any) => c.form1099).length} need a 1099-NEC</div>
           </div>
           <div className="stat">
             <div className="stat-label">Owner Distributions</div>

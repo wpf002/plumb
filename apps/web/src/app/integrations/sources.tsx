@@ -81,7 +81,7 @@ export function DataSources() {
 
   return (
     <section className="card">
-      <div className="card-title">Data Sources</div>
+      <div className="card-title">Sources</div>
       {msg && <p className="muted">{msg}</p>}
       <table className="table">
         <thead>
@@ -105,20 +105,13 @@ export function DataSources() {
                       <tr>
                         <td className="cell-name">
                           {s.name}
-                          <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
-                            {CATEGORY[s.category] ?? s.category}
-                          </div>
                         </td>
                         <td className="muted" style={{ fontSize: 14 }}>
                           {s.provides.map((k: string) => KIND[k] ?? k).join(", ")}
                         </td>
                         <td>
                           {s.live ? <span className="badge good">Live</span> : s.csvOnly ? <span className="badge info" title="No open API; import its CSV export above">CSV Import</span> : <span className="badge neutral">Preview</span>}
-                          {s.lastSync && (
-                            <div className="muted" style={{ fontSize: 12 }}>
-                              {s.lastSync.status === "OK" ? "Synced" : "Failed"} {shortDate(s.lastSync.at)}
-                            </div>
-                          )}
+                          
                         </td>
                         <td className="num" style={{ whiteSpace: "nowrap" }}>
                           <button className="btn btn-ghost btn-xs" disabled={busy !== null} onClick={() => (open === s.key ? setOpen(null) : run(s.key, "preview"))}>

@@ -6,9 +6,9 @@ import { askDenny, EXAMPLE_QUESTIONS } from "../denny.js";
 /** What each account's brief must mention: its top findings from 19_ai_insights.md. */
 const BRIEF_MUST_CITE: Record<"steve" | "joe" | "robert" | "jerry", string[]> = {
   steve: ["Musco", "54.1%"],
-  joe: ["project crew is the bottleneck", "$453,395", "$693,274"],
+  joe: ["Project crew peaked", "$453,395", "$693,274"],
   robert: ["14.7% in 2022", "13.7% in 2025", "$35,650"],
-  jerry: ["lost money in 2024", "3.0% in 2025"],
+  jerry: ["Lost money in 2024", "3.0% in 2025"],
 };
 
 /**

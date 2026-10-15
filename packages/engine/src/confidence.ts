@@ -244,6 +244,19 @@ export function assessConfidence(input: ConfidenceInput): ConfidenceResult {
     weight: 2,
   });
 
+  // With imported books the forecast runs on the ledger: overhead and debt come
+  // from the P&L and collection timing from invoice history, so the manual
+  // schedules these checks look for aren't inputs to it.
+  if (input.ledgerImported) {
+    for (const c of checks) {
+      if (c.key === "billing" || c.key === "payers" || c.key === "fixedCosts" || c.key === "costCodes") {
+        c.status = "good";
+        c.detail = "Drawn from the imported books.";
+        c.fix = undefined;
+      }
+    }
+  }
+
   const totalWeight = checks.reduce((s, c) => s + c.weight, 0);
   const earned = checks.reduce((s, c) => s + c.weight * STATUS_VALUE[c.status], 0);
   const score = Math.round((earned / totalWeight) * 100);

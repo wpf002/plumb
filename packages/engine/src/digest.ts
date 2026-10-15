@@ -1,4 +1,7 @@
-import { formatUsd } from "@plumb/shared";
+import { formatUsd as formatCents } from "@plumb/shared";
+
+/** Whole dollars: owners read "$196,800", not "$196,800.00". */
+const formatUsd = (cents: number) => formatCents(Math.round(cents / 100) * 100).replace(/\.00$/, "");
 import type { HealthResult } from "./health.js";
 import type { CashFlowResult } from "./cashflow.js";
 import type { WipReport } from "./wip.js";

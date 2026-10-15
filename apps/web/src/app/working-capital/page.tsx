@@ -103,7 +103,6 @@ export default function WorkingCapital() {
         <div>
           <h1>Working Capital</h1>
         </div>
-        <span className="num muted">As of {wc.asOf}</span>
       </div>
 
       <section className="card">
@@ -111,19 +110,14 @@ export default function WorkingCapital() {
           <div className="stat">
             <div className="stat-label">Working Capital</div>
             <div className={`stat-value num${wc.workingCapitalCents < 0 ? " neg" : ""}`}>{usd(wc.workingCapitalCents)}</div>
-            <div className="stat-sub">
-              {usd(wc.currentAssetsCents)} − {usd(wc.currentLiabilitiesCents)}
-            </div>
           </div>
           <div className="stat">
             <div className="stat-label">Current Ratio</div>
             <div className="stat-value num">{wc.currentRatio === null ? "—" : `${wc.currentRatio.toFixed(2)}x`}</div>
-            <div className={`stat-sub tone-${wc.readings.currentRatio.tone}`}>{wc.readings.currentRatio.label}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Quick Ratio</div>
             <div className="stat-value num">{wc.quickRatio === null ? "—" : `${wc.quickRatio.toFixed(2)}x`}</div>
-            <div className={`stat-sub tone-${wc.readings.quickRatio.tone}`}>{wc.readings.quickRatio.label}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Cash</div>
@@ -135,11 +129,8 @@ export default function WorkingCapital() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Receivables
+            Accounts Receivable
           </div>
-          <span className="num muted">
-            {usd(ar.totalCents)} · {usd(ar.pastDue30Cents)} over 30 days late
-          </span>
         </div>
         <AgingBar buckets={ar.buckets} total={ar.totalCents} />
         <AgingTable aging={ar} partyLabel="Customer" />
@@ -147,7 +138,7 @@ export default function WorkingCapital() {
 
       {data.collections.length > 0 && (
         <section className="card">
-          <div className="card-title">Collect First</div>
+          <div className="card-title">Collection Priority</div>
           <table className="table">
             <thead>
               <tr>
@@ -176,7 +167,7 @@ export default function WorkingCapital() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Payables
+            Accounts Payable
           </div>
           <span className="num muted">{usd(data.payables.totalCents)}</span>
         </div>

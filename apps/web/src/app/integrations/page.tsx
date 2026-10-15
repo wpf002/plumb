@@ -44,7 +44,7 @@ function Connections() {
   if (!conns) return null;
   return (
     <section className="card">
-      <div className="card-title">Connections</div>
+      <div className="card-title">QuickBooks & Bank</div>
       <table className="table">
         <tbody>
           {conns.map((c) => {
@@ -195,7 +195,7 @@ function ImportCard() {
 
 export default function Integrations() {
   return (
-    <main className="container" style={{ maxWidth: 860 }}>
+    <main className="container">
       <div className="page-head">
         <div>
           <h1>Integrations</h1>

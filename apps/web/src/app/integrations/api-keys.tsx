@@ -116,7 +116,7 @@ export function ApiKeys() {
       {calls.length > 0 && (
         <>
           <div className="card-title" style={{ marginTop: 16 }}>
-            Recent Tool Calls
+            API Log
           </div>
           <table className="table">
             <thead>

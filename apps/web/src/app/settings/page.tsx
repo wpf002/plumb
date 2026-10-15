@@ -143,7 +143,7 @@ export default function Settings() {
   const oc = data.openingCash;
 
   return (
-    <main className="container" style={{ maxWidth: 820 }}>
+    <main className="container">
       <div className="page-head">
         <div>
           <h1>Settings</h1>
@@ -168,9 +168,6 @@ export default function Settings() {
           <div className="stat">
             <div className="stat-label">Current</div>
             <div className="stat-value num">{oc ? usd(oc.balanceCents) : "—"}</div>
-            <div className="stat-sub">
-              {oc ? `${sourceLabel[oc.source] ?? oc.source} · ${String(oc.asOf).slice(0, 10)}` : "not set"}
-            </div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
@@ -266,7 +263,6 @@ export default function Settings() {
               onClick={() => isOwner && setForm((f) => ({ ...f, revenueModel: m }))}
             >
               <span className="choice-title">{REVENUE_MODEL_COPY[m].title}</span>
-              <span className="choice-sub">{REVENUE_MODEL_COPY[m].sub}</span>
             </button>
           ))}
         </div>

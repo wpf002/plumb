@@ -8,9 +8,9 @@ import { BenchmarksView, CapacityView, CustomersView, LaborView, RecurringView, 
 const TABS = [
   { key: "lines", label: "Service Lines", path: "service-lines", View: ServiceLinesView },
   { key: "customers", label: "Customers", path: "customers", View: CustomersView },
-  { key: "labor", label: "Labor", path: "labor", View: LaborView },
+  { key: "labor", label: "Crews & Labor", path: "labor", View: LaborView },
   { key: "capacity", label: "Capacity", path: "capacity", View: CapacityView },
-  { key: "recurring", label: "Recurring", path: "recurring", View: RecurringView },
+  { key: "recurring", label: "Recurring Revenue", path: "recurring", View: RecurringView },
   { key: "calls", label: "Service Calls", path: "service-calls", View: ServiceCallsView },
   { key: "benchmarks", label: "Benchmarks", path: "benchmarks", View: BenchmarksView },
 ] as const;

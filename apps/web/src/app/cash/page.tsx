@@ -6,12 +6,12 @@ import { ReconciliationCard } from "../health-ui";
 import { Accuracy, RevenueForecast, ThirteenWeek, TwelveMonth } from "./forecast-views";
 
 const VIEWS = [
-  { key: "13w", label: "13 Weeks" },
-  { key: "12m", label: "12 Months" },
+  { key: "13w", label: "13-Week" },
+  { key: "12m", label: "12-Month" },
   { key: "revenue", label: "Revenue" },
   { key: "daily", label: "Daily" },
-  { key: "whatif", label: "What If" },
-  { key: "accuracy", label: "Accuracy" },
+  { key: "whatif", label: "Cash Scenarios" },
+  { key: "accuracy", label: "Forecast vs Actual" },
 ] as const;
 
 const HORIZONS = [30, 60, 90, 120, 180, 365];
@@ -269,24 +269,20 @@ export default function Cash() {
           <div className="stat">
             <div className="stat-label">Starting Cash</div>
             <div className="stat-value num">{usd(forecast.openingCashCents)}</div>
-            <div className="stat-sub">latest bank balance</div>
           </div>
           <div className="stat">
             <div className="stat-label">Expected Low</div>
             <div className="stat-value num">{usd(forecast.base.minBalanceCents)}</div>
-            <div className="stat-sub">on {shortDate(forecast.base.minBalanceDate)}</div>
           </div>
           <div className="stat">
             <div className="stat-label">If Payers Run Late</div>
             <div className="stat-value num" style={{ color: forecast.stress.firstBreachDate ? C.danger : undefined }}>
               {usd(forecast.stress.minBalanceCents)}
             </div>
-            <div className="stat-sub">on {shortDate(forecast.stress.minBalanceDate)}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Ends At</div>
             <div className="stat-value num">{usd(forecast.base.endingBalanceCents)}</div>
-            <div className="stat-sub">after every obligation</div>
           </div>
         </div>
 
@@ -336,7 +332,7 @@ export default function Cash() {
       <>
       {/* What if */}
       <section className="card">
-        <div className="card-title">What If</div>
+        <div className="card-title">Cash Scenarios</div>
 
         <div className="field-grid">
           <div>
@@ -471,7 +467,7 @@ export default function Cash() {
 
       {/* Buy now or wait */}
       <section className="card">
-        <div className="card-title">Buy Now Or Wait?</div>
+        <div className="card-title">Purchase Timing</div>
         <div className="field-grid">
           <div>
             <label className="label">Price ($)</label>
@@ -524,9 +520,6 @@ export default function Cash() {
                     <td>{shortDate(o.purchaseDate)}</td>
                     <td className="num">
                       {usd(o.minBalanceCents)}
-                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                        on {shortDate(o.minBalanceDate)}
-                      </div>
                     </td>
                     <td>
                       {o.breachDate ? (

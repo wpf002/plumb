@@ -10,11 +10,12 @@ export function ConfidenceStrip({ health }: { health: any }) {
   const c = health.confidence;
   return (
     <div className="confidence-strip">
-      <span className={`badge ${LEVEL_CLASS[c.level]}`}>{c.level} confidence</span>
-      <span className="confidence-text">{c.headline}</span>
+      <span className={`badge ${LEVEL_CLASS[c.level]}`} title={c.headline}>
+        {c.level} confidence
+      </span>
       {c.topGaps.length > 0 && (
         <Link href="/integrations" className="confidence-link">
-          {c.topGaps.length} thing{c.topGaps.length === 1 ? "" : "s"} would raise it →
+          Improve
         </Link>
       )}
     </div>
@@ -32,7 +33,6 @@ export function DataHealthCard({ health }: { health: any }) {
         <div className="stat">
           <div className="stat-label">Forecast Confidence</div>
           <div className="stat-value num">{c.score}%</div>
-          <div className="stat-sub">{c.headline}</div>
         </div>
         <div className="stat">
           <div className="stat-label">Accounting Sync</div>
@@ -44,13 +44,6 @@ export function DataHealthCard({ health }: { health: any }) {
                   ? "Today"
                   : `${sync.ageDays}d ago`
                 : "Failing"}
-          </div>
-          <div className="stat-sub">
-            {sync.lastError
-              ? sync.lastError.slice(0, 80)
-              : sync.lastSuccessAt
-                ? `last success ${shortDate(sync.lastSuccessAt)}`
-                : "no successful sync yet"}
           </div>
         </div>
       </div>
@@ -76,9 +69,7 @@ export function DataHealthCard({ health }: { health: any }) {
               </td>
               <td style={{ color: "var(--text-muted)" }}>
                 {ck.detail}
-                {ck.fix && (
-                  <div style={{ color: "var(--accent)", marginTop: 4, fontSize: 12 }}>{ck.fix}</div>
-                )}
+                
               </td>
             </tr>
           ))}
@@ -98,9 +89,6 @@ export function ReconciliationCard({ health }: { health: any }) {
         <div className="stat">
           <div className="stat-label">Starting Balance</div>
           <div className="stat-value num">{usd(r.bankBalanceCents)}</div>
-          <div className="stat-sub">
-            {r.asOf ? `${shortDate(r.asOf)} · ${r.source.toLowerCase()}` : "never set — using a placeholder"}
-          </div>
         </div>
         <div className="stat">
           <div className="stat-label">Settled Since Then</div>
@@ -108,7 +96,6 @@ export function ReconciliationCard({ health }: { health: any }) {
             {r.settledNetCents >= 0 ? "+" : "−"}
             {usd(Math.abs(r.settledNetCents))}
           </div>
-          <div className="stat-sub">{r.settledSinceCount} transaction(s)</div>
         </div>
         <div className="stat">
           <div className="stat-label">Expected Bank Balance</div>

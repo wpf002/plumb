@@ -1,5 +1,6 @@
 "use client";
 
+import { Stat } from "../stat";
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, readGated, usd } from "../ui";
 import { Locked } from "../plan-ui";
@@ -7,15 +8,6 @@ import { Locked } from "../plan-ui";
 const range = (r: [number, number]) => `${usd(r[0])} – ${usd(r[1])}`;
 const mult = (m: [number, number]) => `${m[0].toFixed(1)}–${m[1].toFixed(1)}x`;
 
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "pos" | "neg" }) {
-  return (
-    <div className="stat">
-      <div className="stat-label">{label}</div>
-      <div className={`stat-value num${tone ? ` ${tone}` : ""}`}>{value}</div>
-      {sub && <div className="stat-sub">{sub}</div>}
-    </div>
-  );
-}
 
 function ScoreRing({ score }: { score: number }) {
   const r = 34;
@@ -54,10 +46,10 @@ export function ValueTab() {
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="EBITDA Value" value={range(v.ebitdaRange)} sub={`${mult(v.multiples.ebitda)} normalized EBITDA`} />
-          <Stat label="SDE Value" value={range(v.sdeRange)} sub={`${mult(v.multiples.sde)} SDE`} />
-          <Stat label="Owner Equity" value={range(v.equityRange)} sub={`less ${usd(v.operatingDebtCents)} debt, plus ${usd(v.cashCents)} cash`} />
-          {v.realEstate && <Stat label="Real Estate" value={usd(v.realEstate.netEquityCents)} sub={`${usd(v.realEstate.marketValueCents)} less ${usd(v.realEstate.mortgageCents)} mortgage`} />}
+          <Stat label="EBITDA Value" value={range(v.ebitdaRange)} />
+          <Stat label="SDE Value" value={range(v.sdeRange)} />
+          <Stat label="Owner Equity" value={range(v.equityRange)} />
+          {v.realEstate && <Stat label="Real Estate" value={usd(v.realEstate.netEquityCents)} />}
         </div>
       </section>
 
@@ -106,11 +98,7 @@ export function ValueTab() {
               </tr>
             </tbody>
           </table>
-          {oc.marketGapCents < 0 && (
-            <p className="muted" style={{ fontSize: 12, marginTop: 8 }} title="Replacing the owner with a hired manager would lower EBITDA by this amount.">
-              Owner pay {usd(-oc.marketGapCents)} below market
-            </p>
-          )}
+          
         </section>
 
         <section className="card">
@@ -126,9 +114,6 @@ export function ValueTab() {
                 <tr key={f.key}>
                   <td className="cell-name">
                     {f.name}
-                    <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
-                      {f.detail}
-                    </div>
                   </td>
                   <td style={{ width: "40%" }}>
                     <div className="aging-bar" style={{ margin: 0 }}>
@@ -144,7 +129,7 @@ export function ValueTab() {
       </div>
 
       <section className="card">
-        <div className="card-title">Raise the Value</div>
+        <div className="card-title">Value Drivers</div>
         <ol className="action-list">
           {r.topActions.map((a: string) => (
             <li key={a}>{a}</li>

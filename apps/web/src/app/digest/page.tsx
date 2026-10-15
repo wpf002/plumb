@@ -9,10 +9,10 @@ export default async function DigestPreview() {
   const { digest } = await apiGet(`/companies/${companyId}/digest`);
 
   return (
-    <main className="container" style={{ maxWidth: 760 }}>
+    <main className="container">
       <div className="page-head">
         <div>
-          <h1>Weekly Digest</h1>
+          <h1>Digest</h1>
         </div>
       </div>
 

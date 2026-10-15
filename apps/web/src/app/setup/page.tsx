@@ -135,7 +135,7 @@ export default function Setup() {
       <section className="card">
         {step === 0 && (
           <>
-            <div className="card-title">Your Business</div>
+            <div className="card-title">Business</div>
             <div className="field-grid">
               <div>
                 <label className="label">Business Name</label>
@@ -175,7 +175,6 @@ export default function Setup() {
                   onClick={() => set("revenueModel", m)}
                 >
                   <span className="choice-title">{REVENUE_MODEL_COPY[m].title}</span>
-                  <span className="choice-sub">{REVENUE_MODEL_COPY[m].sub}</span>
                 </button>
               ))}
             </div>

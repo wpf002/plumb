@@ -163,7 +163,7 @@ export default function BalanceSheet() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1>Balance Sheet</h1>
+          <h1>Assets & Debt</h1>
         </div>
       </div>
 
@@ -179,25 +179,18 @@ export default function BalanceSheet() {
           <div className="stat">
             <div className="stat-label">Net Worth</div>
             <div className={`stat-value num ${net >= 0 ? "pos" : "neg"}`}>{usd(net)}</div>
-            <div className="stat-sub">assets + cash &minus; debt</div>
           </div>
           <div className="stat">
             <div className="stat-label">Cash</div>
             <div className="stat-value num">{usd(sheet.cashCents)}</div>
-            <div className="stat-sub">latest bank balance</div>
           </div>
           <div className="stat">
             <div className="stat-label">Equipment &amp; Property</div>
             <div className="stat-value num">{usd(sheet.assetValueCents)}</div>
-            <div className="stat-sub">
-              {usd(sheet.totalPurchaseCostCents)} cost &middot; {usd(sheet.monthlyDepreciationCents)}/mo
-              depreciation
-            </div>
           </div>
           <div className="stat">
             <div className="stat-label">Debt Outstanding</div>
             <div className="stat-value num">{usd(sheet.totalLiabilitiesCents)}</div>
-            <div className="stat-sub">{usd(monthlyDebtService)}/mo debt service</div>
           </div>
         </div>
       </section>
@@ -320,22 +313,13 @@ export default function BalanceSheet() {
                 <tr key={a.id}>
                   <td className="cell-name">
                     {a.name}
-                    {a.financedBy?.length > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
-                        financed by {a.financedBy.map((f: any) => f.name).join(", ")}
-                      </div>
-                    )}
+                    
                   </td>
                   <td style={{ color: "var(--text-muted)" }}>{ASSET_CATEGORY_LABELS[a.category]}</td>
                   <td style={{ color: "var(--text-muted)" }}>{shortDate(a.purchaseDate)}</td>
                   <td className="num">{usd(a.purchaseCostCents)}</td>
                   <td className="num">
                     {usd(a.valuation?.currentValueCents ?? 0)}
-                    {a.valuation?.ownerAnchored && (
-                      <span className="badge neutral" style={{ marginLeft: 8 }}>
-                        Your value
-                      </span>
-                    )}
                   </td>
                   <td className="num" style={{ color: "var(--text-muted)" }}>
                     {a.valuation?.monthlyDepreciationCents
@@ -370,29 +354,20 @@ export default function BalanceSheet() {
             <div className="stat">
               <div className="stat-label">Total Debt</div>
               <div className="stat-value num">{usd(debt.totalDebtCents)}</div>
-              <div className={`stat-sub tone-${debt.readings.debtToEquity.tone}`}>
-                {debt.debtToEquity === null ? debt.readings.debtToEquity.label : `${debt.debtToEquity}x equity · ${debt.readings.debtToEquity.label}`}
-              </div>
             </div>
             <div className="stat">
               <div className="stat-label">Annual Debt Service</div>
               <div className="stat-value num">{usd(debt.annualDebtServiceCents)}</div>
-              <div className="stat-sub">{usd(debt.monthlyDebtBurdenCents)}/mo</div>
             </div>
             <div className="stat">
               <div className="stat-label">Debt Coverage</div>
               <div className="stat-value num">{debt.dscr === null ? "—" : `${debt.dscr}x`}</div>
-              <div className={`stat-sub tone-${debt.readings.dscr.tone}`}>{debt.readings.dscr.label}</div>
             </div>
             {debt.loc.limitCents > 0 && (
               <div className="stat">
                 <div className="stat-label">Line of Credit</div>
                 <div className="stat-value num">
                   {usd(debt.loc.balanceCents)} / {usd(debt.loc.limitCents)}
-                </div>
-                <div className={`stat-sub tone-${debt.readings.loc.tone}`}>
-                  {debt.readings.loc.label}
-                  {debt.loc.everDrawn && debt.loc.peakPeriod ? ` · peak ${usd(debt.loc.peakBalanceCents)} in ${debt.loc.peakPeriod}` : ""}
                 </div>
               </div>
             )}
@@ -563,27 +538,15 @@ export default function BalanceSheet() {
                 <tr key={l.id} style={l.active ? undefined : { opacity: 0.5 }}>
                   <td className="cell-name">
                     {l.name}
-                    {l.asset && (
-                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
-                        on {l.asset.name}
-                      </div>
-                    )}
+                    
                   </td>
                   <td style={{ color: "var(--text-muted)" }}>{LIABILITY_KIND_LABELS[l.kind]}</td>
                   <td className="num">
                     {usd(l.currentBalanceCents)}
-                    {l.summary?.creditUtilizationPct !== null &&
-                      l.summary?.creditUtilizationPct !== undefined && (
-                        <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                          {l.summary.creditUtilizationPct}% of limit
-                        </div>
-                      )}
+                    
                   </td>
                   <td className="num">
                     {usd(l.paymentAmountCents)}
-                    <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                      {FREQUENCY_LABELS[l.paymentFrequency]}
-                    </div>
                   </td>
                   <td className="num">{Number(l.interestRatePct.toFixed(3))}%</td>
                   <td>
@@ -621,7 +584,7 @@ export default function BalanceSheet() {
         <section className="card">
           <div className="row-between">
             <div className="card-title" style={{ marginBottom: 0 }}>
-              Payment Schedule — {schedule.name}
+              {schedule.name}
             </div>
             <button className="btn btn-ghost" onClick={() => setSchedule(null)}>
               Close

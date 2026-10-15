@@ -8,10 +8,10 @@ const LABEL: Record<string, string> = {
   brief: "Weekly Brief",
   denny: "Ask Denny",
   health: "Financial Health",
-  attention: "Needs Attention",
-  cash: "Cash",
-  collisions: "Weeks Worth Watching",
-  obligations: "Fixed Obligations",
+  attention: "Alerts",
+  cash: "Cash Outlook",
+  collisions: "Tight Weeks",
+  obligations: "Fixed Costs",
 };
 
 /** Pick and order the dashboard's sections; saved per person. */

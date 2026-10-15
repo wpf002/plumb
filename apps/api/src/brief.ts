@@ -28,6 +28,8 @@ export interface Finding extends BriefLine {
 
 const monthName = (period: string) => new Date(`${period}-01T00:00:00Z`).toLocaleDateString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
 const pctOf = (v: number, base: number) => (base ? (v / base) * 100 : 0);
+/** End with one period, even when a name already ends in "Inc." */
+const sentence = (t: string) => (t.endsWith(".") ? t : `${t}.`);
 
 export async function buildBrief(companyId: string, period: "week" | "month" = "week") {
   const ctx = await toolContext(companyId);
@@ -53,7 +55,7 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     if (rev && rev.actual !== null && rev.budget) {
       const v = ((rev.actual - rev.budget) / Math.abs(rev.budget)) * 100;
       const s = fact("plan.revenue", `${last} revenue vs plan`, pctStr(Math.abs(v)));
-      lines.push({ key: "plan", text: `${last} revenue finished ${s} ${v >= 0 ? "ahead of" : "behind"} plan.`, tone: v >= 0 ? "good" : "warn" });
+      lines.push({ key: "plan", text: `Revenue finished ${s} ${v >= 0 ? "ahead of" : "behind"} plan.`, tone: v >= 0 ? "good" : "warn" });
     }
   }
   const upto = ctx.ledger.periods.filter((p) => p <= monthKeyOf(ctx.asOf));
@@ -67,7 +69,7 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     const moved = Math.abs(mb - ma) >= 1;
     lines.push({
       key: "margin",
-      text: moved ? `Gross margin ${mb < ma ? "declined" : "improved"} from ${from} to ${to} over the last three months.` : `Gross margin held at ${to} over the last three months.`,
+      text: moved ? `Gross margin ${mb < ma ? "fell" : "rose"} from ${from} to ${to} in three months.` : `Gross margin held at ${to}.`,
       tone: mb < ma - 1 ? "warn" : "good",
     });
   }
@@ -77,11 +79,11 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     const breach = base.buckets.find((x) => x.belowReserve);
     if (breach) {
       const when = fact("cash.breach", "First month under the cash reserve", monthName(breach.label));
-      lines.push({ key: "cash", text: `Cash drops under the reserve in ${when}.`, tone: "bad" });
-      add({ key: "cash", text: `Cash drops under the reserve in ${when}.`, tone: "bad", weight: 95 });
+      lines.push({ key: "cash", text: `Cash falls below the reserve in ${when}.`, tone: "bad" });
+      add({ key: "cash", text: `Cash falls below the reserve in ${when}.`, tone: "bad", weight: 95 });
     } else {
       const through = fact("cash.through", "Cash stays above the reserve through", monthName(base.buckets.at(-1)!.label));
-      lines.push({ key: "cash", text: `Cash stays above the reserve through ${through}.`, tone: "good" });
+      lines.push({ key: "cash", text: `Cash remains healthy through ${through}.`, tone: "good" });
     }
   }
   const { aging } = await arAging(companyId);
@@ -90,13 +92,13 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
   fact("ar.threshold", "Past-due threshold", "30 days");
   if (late > 0) {
     const s = fact("ar.late", "Receivables more than 30 days past due", usd(late));
-    lines.push({ key: "ar", text: `${s} of receivables are more than 30 days past due.`, tone: "warn" });
+    lines.push({ key: "ar", text: `${s} of receivables are more than 30 days overdue.`, tone: "warn" });
     if (lateParty) {
       const who = fact("ar.lateParty", "Customer with the most past due", lateParty.party);
-      actions.push({ key: "collect", text: `Collect from ${who}.`, tone: "warn" });
+      actions.push({ key: "collect", text: sentence(`Collect from ${who}`), tone: "warn" });
     }
-    add({ key: "ar", text: `${s} of receivables are more than 30 days past due.`, tone: "warn", weight: 40 + Math.min(30, pctOf(late, aging.totalCents)) });
-  } else lines.push({ key: "ar", text: "No receivables are more than 30 days past due.", tone: "good" });
+    add({ key: "ar", text: `${s} of receivables are more than 30 days overdue.`, tone: "warn", weight: 40 + Math.min(30, pctOf(late, aging.totalCents)) });
+  } else lines.push({ key: "ar", text: "No receivables are more than 30 days overdue.", tone: "good" });
 
   const jobs = (await loadJobs(companyId)).filter((j) => j.status !== "CLOSED" && j.costKnown && j.targetMarginPct);
   const under = jobs.filter((j) => j.projectedMarginPct < j.targetMarginPct - 2).sort((a, b) => a.projectedMarginPct - a.targetMarginPct - (b.projectedMarginPct - b.targetMarginPct));
@@ -105,7 +107,7 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     lines.push({ key: "jobs", text: under.length ? `${n} active job${under.length === 1 ? " is" : "s are"} below target margin.` : "Every active job is at or above target margin.", tone: under.length ? "warn" : "good" });
     if (under[0]) {
       const name = fact("jobs.worst", "Job furthest under target", under[0].name);
-      actions.push({ key: "job", text: `Review costs on ${name}.`, tone: "warn" });
+      actions.push({ key: "job", text: sentence(`Review costs on ${name}`), tone: "warn" });
       add({ key: "jobs", text: `${n} active job${under.length === 1 ? " is" : "s are"} below target margin.`, tone: "warn", weight: 35 + under.length * 5 });
     }
   }
@@ -114,15 +116,15 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     const u = fact("crew.project", "Project crew utilization, last 24 months", pctStr(util.project.trailing24AvgPct));
     const peak = fact("crew.peak", "Project crew peak-year utilization", pctStr(util.project.peakYearAvgPct));
     const peakYear = fact("crew.peakYear", "Project crew peak year", String(util.project.peakYear));
-    lines.push({ key: "crew", text: `Project crews are running at ${u} of capacity.`, tone: util.project.trailing24AvgPct >= 90 ? "warn" : "neutral" });
-    if (util.project.trailing24AvgPct >= 80) add({ key: "crew.bottleneck", text: `The project crew is the bottleneck: ${u} utilized, peaking at ${peak} in ${peakYear}.`, tone: "warn", weight: 60 });
+    lines.push({ key: "crew", text: `Project crews are at ${u} capacity.`, tone: util.project.trailing24AvgPct >= 90 ? "warn" : "neutral" });
+    if (util.project.trailing24AvgPct >= 80) add({ key: "crew.bottleneck", text: `Project crew peaked at ${peak} capacity in ${peakYear}.`, tone: "warn", weight: 60 });
     if (util.maintenance) {
       const mu = fact("crew.maint", "Maintenance crew utilization, last 12 months", pctStr(util.maintenance.trailing12AvgPct));
-      lines.push({ key: "crew.maint", text: `Maintenance crews are at ${mu}.`, tone: "neutral" });
+      lines.push({ key: "crew.maint", text: `Maintenance crews are at ${mu} capacity.`, tone: "neutral" });
     }
   } else if (plan.months[0]?.bookedPct != null) {
     const b = fact("crew.booked", `${monthName(plan.months[0].period)} crew capacity booked`, pctStr(plan.months[0].bookedPct));
-    lines.push({ key: "crew", text: `Field crews are ${b} booked for ${monthName(plan.months[0].period)}.`, tone: plan.months[0].bookedPct > 95 ? "warn" : "neutral" });
+    lines.push({ key: "crew", text: `Field crews are ${b} booked for ${monthName(plan.months[0].period).split(" ")[0]}.`, tone: plan.months[0].bookedPct > 95 ? "warn" : "neutral" });
   }
 
   // ---- structural findings ----
@@ -139,18 +141,18 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     const losses = years.filter((y) => tot(y).netIncome < 0);
     if (losses.length) {
       const yrs = fact("loss.years", "Years with a net loss", losses.join(", "));
-      add({ key: "loss", text: `The business lost money in ${yrs}.`, tone: "bad", weight: 65 });
+      add({ key: "loss", text: `Lost money in ${yrs}.`, tone: "bad", weight: 65 });
     }
     const growth = pctOf(b.revenue - a.revenue, a.revenue);
     const g = fact("growth", `Revenue change ${first} to ${last}`, pctStr(Math.abs(growth)));
-    if (Math.abs(growth) >= 10) add({ key: "growth", text: `Revenue ${growth > 0 ? "grew" : "fell"} ${g} from ${first} to ${last}.`, tone: growth > 0 ? "good" : "bad", weight: 30 });
+    if (Math.abs(growth) >= 10) add({ key: "growth", text: `Revenue ${growth > 0 ? "grew" : "fell"} ${g} since ${first}.`, tone: growth > 0 ? "good" : "bad", weight: 30 });
     const ra = await recurringAnnual(companyId, ctx.ledger, first);
     const rb = await recurringAnnual(companyId, ctx.ledger, last);
     if (rb.cents > 0 && rb.cents > ra.cents) {
       const from = fact("recurring.first", `${first} recurring revenue`, usd(ra.cents));
       const to = fact("recurring.last", `${last} recurring revenue`, usd(rb.cents));
       const share = fact("recurring.share", `${last} recurring share of revenue`, pctStr(rb.sharePct));
-      add({ key: "recurring", text: `Recurring revenue grew from ${from} to ${to}, now ${share} of revenue.`, tone: "good", weight: 45 });
+      add({ key: "recurring", text: `Recurring revenue grew from ${from} to ${to} (${share} of revenue).`, tone: "good", weight: 45 });
     }
   }
   const conc = await concentration(companyId, ctx.ledger).catch(() => null);
@@ -163,12 +165,12 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
   if (bl.monthsOfCoverage !== null && bl.monthsOfCoverage < 3) {
     const s = fact("backlog.signed", "Signed backlog", usd(bl.signedCents));
     const m = fact("backlog.months", "Months of work signed", `${bl.monthsOfCoverage} months`);
-    add({ key: "backlog", text: `Signed backlog of ${s} covers ${m} of work.`, tone: "warn", weight: 50 });
+    add({ key: "backlog", text: `${s} of signed backlog covers ${m}.`, tone: "warn", weight: 50 });
   }
   const readiness = last ? await exitReadiness(companyId, ctx.ledger).catch(() => null) : null;
   if (readiness?.topActions[0]) {
     const a = fact("value.action", "Top value lever", readiness.topActions[0]);
-    actions.push({ key: "value", text: `${a}.`, tone: "neutral" });
+    actions.push({ key: "value", text: sentence(a), tone: "neutral" });
   }
 
   findings.sort((a, b) => b.weight - a.weight);

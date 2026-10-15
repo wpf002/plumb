@@ -115,7 +115,7 @@ export function ThirteenWeek() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            13-Week Cash
+            13-Week Forecast
           </div>
           <div className="tabs">
             {["base", "upside", "downside"].map((k) => (
@@ -129,24 +129,20 @@ export function ThirteenWeek() {
           <div className="stat">
             <div className="stat-label">Starting Cash</div>
             <div className="stat-value num">{usd(f.buckets[0]?.beginningCents ?? 0)}</div>
-            <div className="stat-sub">as of {shortDate(data.asOf)}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Lowest Point</div>
             <div className="stat-value num" style={{ color: f.lowest.cents < f.reserveTargetCents ? C.danger : undefined }}>
               {usd(f.lowest.cents)}
             </div>
-            <div className="stat-sub">{f.lowest.label}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Reserve Target</div>
             <div className="stat-value num">{usd(f.reserveTargetCents)}</div>
-            <div className="stat-sub">{data.basis.reserveSource === "setting" ? "your setting" : "one month of costs"}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Credit Line Peak</div>
             <div className="stat-value num">{f.locLimitCents > 0 ? usd(f.peakLocCents) : "—"}</div>
-            <div className="stat-sub">{f.locLimitCents > 0 ? `of ${usd(f.locLimitCents)}` : "no line"}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Ends At</div>
@@ -185,7 +181,7 @@ export function TwelveMonth() {
   return (
     <>
       <section className="card">
-        <div className="card-title">12-Month Cash</div>
+        <div className="card-title">12-Month Forecast</div>
         <div className="stats" style={{ marginBottom: 16 }}>
           {[
             ["Base", base],
@@ -195,9 +191,6 @@ export function TwelveMonth() {
             <div className="stat" key={label}>
               <div className="stat-label">{label} Ending Cash</div>
               <div className="stat-value num">{usd(c.endingCents)}</div>
-              <div className="stat-sub">
-                low {usd(c.lowest.cents)} in {c.lowest.label}
-              </div>
             </div>
           ))}
         </div>
@@ -227,7 +220,7 @@ export function TwelveMonth() {
         </div>
       </section>
       <section className="card">
-        <div className="card-title">Base Case By Month</div>
+        <div className="card-title">By Month</div>
         <CashTable forecast={base} />
       </section>
     </>
@@ -246,12 +239,10 @@ export function RevenueForecast() {
         <div className="stat">
           <div className="stat-label">Signed</div>
           <div className="stat-value num">{usd(t.signed)}</div>
-          <div className="stat-sub">backlog, next 12 months</div>
         </div>
         <div className="stat">
           <div className="stat-label">Likely</div>
           <div className="stat-value num">{usd(t.likely)}</div>
-          <div className="stat-sub">signed + expected new work + recurring</div>
         </div>
         <div className="stat">
           <div className="stat-label">Weighted Pipeline</div>
@@ -260,7 +251,6 @@ export function RevenueForecast() {
         <div className="stat">
           <div className="stat-label">Recurring</div>
           <div className="stat-value num">{usd(t.recurring)}</div>
-          <div className="stat-sub">{data.growth.recurringYoYPct !== null ? `${data.growth.recurringYoYPct}% YoY` : ""}</div>
         </div>
       </div>
       <div className="statement-scroll">
@@ -326,26 +316,19 @@ export function Accuracy() {
   const bt = data.backtest;
   return (
     <section className="card">
-      <div className="card-title">Forecast Vs Actual</div>
+      <div className="card-title">Forecast vs Actual</div>
       <div className="stats" style={{ marginBottom: 16 }}>
         <div className="stat">
           <div className="stat-label">Revenue Error</div>
           <div className="stat-value num">{bt.revenue.mapePct}%</div>
-          <div className="stat-sub">
-            {bt.revenue.biasPct >= 0 ? "over" : "under"} by {Math.abs(bt.revenue.biasPct)}% overall
-          </div>
         </div>
         <div className="stat">
           <div className="stat-label">Month-End Cash Error</div>
           <div className="stat-value num">{bt.cash.mapePct}%</div>
-          <div className="stat-sub">
-            {bt.cash.biasPct >= 0 ? "over" : "under"} by {Math.abs(bt.cash.biasPct)}% overall
-          </div>
         </div>
         <div className="stat">
           <div className="stat-label">Forecast Made</div>
           <div className="stat-value num">{shortDate(bt.asOf)}</div>
-          <div className="stat-sub">using only what was known then</div>
         </div>
       </div>
       <table className="table">

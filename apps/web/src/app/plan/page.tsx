@@ -1,5 +1,6 @@
 "use client";
 
+import { Stat } from "../stat";
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, readGated, usd } from "../ui";
 import { Locked } from "../plan-ui";
@@ -12,15 +13,6 @@ const dollars = (cents: number | null | undefined) => (cents === null || cents =
 const toCents = (s: string) => Math.round((Number(s.replace(/[$,]/g, "")) || 0) * 100);
 const age = (months: number) => (months >= 24 ? `${(months / 12).toFixed(1)} yrs` : `${months} mo`);
 
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "pos" | "neg" }) {
-  return (
-    <div className="stat">
-      <div className="stat-label">{label}</div>
-      <div className={`stat-value num${tone ? ` ${tone}` : ""}`}>{value}</div>
-      {sub && <div className="stat-sub">{sub}</div>}
-    </div>
-  );
-}
 
 type Field = { key: string; label: string; unit: "$" | "%" | "mo" | "#" | "days" };
 
@@ -118,8 +110,8 @@ function RepairReplace({ asset }: { asset: any }) {
         <div className="stats" style={{ marginTop: 16 }}>
           <Stat label="Keep / Year" value={usd(r.keepAnnualCents)} />
           <Stat label="Replace / Year" value={usd(r.replaceAnnualCents)} />
-          <Stat label="Verdict" value={r.recommendation === "replace" ? "Replace" : "Keep"} tone={r.recommendation === "replace" ? "neg" : "pos"} sub={`${usd(Math.abs(r.annualDifferenceCents))} a year ${r.recommendation === "replace" ? "saved" : "cheaper to keep"}`} />
-          <Stat label="Replace Above" value={usd(r.breakEvenRepairCents)} sub="repairs per year" />
+          <Stat label="Verdict" value={r.recommendation === "replace" ? "Replace" : "Keep"} tone={r.recommendation === "replace" ? "neg" : "pos"} />
+          <Stat label="Replace Above" value={usd(r.breakEvenRepairCents)} />
         </div>
       )}
     </section>
@@ -135,9 +127,9 @@ function FleetTab({ data, raw }: { data: any; raw: any[] }) {
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="Book Value" value={usd(data.netBookValueCents)} sub={`${usd(data.originalCostCents)} cost`} />
+          <Stat label="Book Value" value={usd(data.netBookValueCents)} />
           <Stat label="Market Value" value={usd(data.marketValueCents)} />
-          <Stat label="Loans" value={usd(data.loanBalanceCents)} sub={data.monthlyPaymentsCents ? `${usd(data.monthlyPaymentsCents)} / month` : undefined} />
+          <Stat label="Loans" value={usd(data.loanBalanceCents)} />
           <Stat label="Replace Next" value={data.replacementCandidate ?? "None"} />
         </div>
       </section>
@@ -162,11 +154,7 @@ function FleetTab({ data, raw }: { data: any; raw: any[] }) {
                   <tr key={a.id} className={`row-click${a.id === selected ? " row-selected" : ""}`} onClick={() => setSelected(a.id === selected ? null : a.id)}>
                     <td className="cell-name" style={{ minWidth: 220 }}>
                       {a.name}
-                      {a.reasons.length > 0 && (
-                        <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
-                          {a.reasons.join(" · ")}
-                        </div>
-                      )}
+                      
                     </td>
                     <td className="num" style={{ whiteSpace: "nowrap" }}>{age(a.ageMonths)}</td>
                     <td className={`num${a.lifeUsedPct >= 100 ? " neg" : ""}`}>{pct(a.lifeUsedPct, 0)}</td>
@@ -223,12 +211,12 @@ function BuyTab({ defaults }: { defaults: any }) {
       {r && (
         <section className="card">
           <div className="stats">
-            <Stat label="Cash Down" value={usd(r.downPaymentCents)} sub={r.cashAfterDownCents !== null ? `${usd(r.cashAfterDownCents)} cash left` : undefined} />
-            <Stat label="Payment" value={usd(r.monthlyPaymentCents)} sub="per month" />
+            <Stat label="Cash Down" value={usd(r.downPaymentCents)} />
+            <Stat label="Payment" value={usd(r.monthlyPaymentCents)} />
             <Stat label="Net Cash / Month" value={usd(r.monthlyCashFlowCents)} tone={r.monthlyCashFlowCents < 0 ? "neg" : "pos"} />
             <Stat label="Year 1 Cash" value={usd(r.year1CashEffectCents)} tone={r.year1CashEffectCents < 0 ? "neg" : "pos"} />
-            <Stat label="Breakeven Revenue" value={money(r.breakevenMonthlyRevenueCents)} sub="per month" />
-            <Stat label="Payback" value={r.paybackMonths ? `${r.paybackMonths} mo` : "—"} sub={`${usd(r.debtAddedCents)} debt added`} />
+            <Stat label="Breakeven Revenue" value={money(r.breakevenMonthlyRevenueCents)} />
+            <Stat label="Payback" value={r.paybackMonths ? `${r.paybackMonths} mo` : "—"} />
           </div>
         </section>
       )}
@@ -268,10 +256,10 @@ function HireTab({ defaults }: { defaults: any }) {
       {r && (
         <section className="card">
           <div className="stats">
-            <Stat label="Loaded Cost" value={usd(r.monthlyCostCents)} sub={`per month · ${pct(r.burdenPct, 0)} over wages`} />
-            <Stat label="Revenue Needed" value={money(r.requiredMonthlyRevenueCents)} sub="per month at your margin" />
-            {r.addedCapacityCents !== null && <Stat label="Capacity Added" value={usd(r.addedCapacityCents)} sub={`per year at ${defaults.bestFieldYear} pace`} />}
-            {r.coverage !== null && <Stat label="Coverage" value={`${r.coverage.toFixed(1)}x`} sub="capacity vs revenue needed" tone={r.coverage >= 1 ? "pos" : "neg"} />}
+            <Stat label="Loaded Cost" value={usd(r.monthlyCostCents)} />
+            <Stat label="Revenue Needed" value={money(r.requiredMonthlyRevenueCents)} />
+            {r.addedCapacityCents !== null && <Stat label="Capacity Added" value={usd(r.addedCapacityCents)} />}
+            {r.coverage !== null && <Stat label="Coverage" value={`${r.coverage.toFixed(1)}x`} tone={r.coverage >= 1 ? "pos" : "neg"} />}
           </div>
         </section>
       )}
@@ -325,10 +313,10 @@ function CrewTab({ defaults }: { defaults: any }) {
         <>
           <section className="card">
             <div className="stats">
-              <Stat label="New Fixed Costs" value={usd(r.newFixedCostsCents)} sub={`${usd(r.monthlyPaymentCents)} / month loan`} />
-              <Stat label="Breakeven Revenue" value={usd(r.breakevenRevenueCents)} sub={`${pct(r.breakevenPctOfCapacity)} of a mature crew`} />
+              <Stat label="New Fixed Costs" value={usd(r.newFixedCostsCents)} />
+              <Stat label="Breakeven Revenue" value={usd(r.breakevenRevenueCents)} />
               <Stat label="Year 1 Contribution" value={usd(r.year1ContributionCents)} tone={r.year1ContributionCents < 0 ? "neg" : "pos"} />
-              <Stat label="Startup Cash Dip" value={usd(r.startupCashDipCents)} sub={r.cashAfterDipCents !== null ? `${usd(r.cashAfterDipCents)} cash left` : undefined} tone={r.cashAfterDipCents !== null && r.cashAfterDipCents < 0 ? "neg" : undefined} />
+              <Stat label="Startup Cash Dip" value={usd(r.startupCashDipCents)} tone={r.cashAfterDipCents !== null && r.cashAfterDipCents < 0 ? "neg" : undefined} />
             </div>
           </section>
           <section className="card">
@@ -360,12 +348,12 @@ function CrewTab({ defaults }: { defaults: any }) {
 }
 
 const TABS = [
-  { key: "what-if", label: "What If" },
-  { key: "value", label: "Value" },
+  { key: "what-if", label: "Scenarios" },
+  { key: "value", label: "Valuation" },
   { key: "fleet", label: "Fleet" },
-  { key: "buy", label: "Buy Equipment" },
-  { key: "hire", label: "Hire" },
-  { key: "crew", label: "Add Crew" },
+  { key: "buy", label: "Equipment Purchase" },
+  { key: "hire", label: "Hiring" },
+  { key: "crew", label: "Crew Expansion" },
 ] as const;
 
 export default function Plan() {
@@ -389,9 +377,8 @@ export default function Plan() {
     <main className="container container-wide">
       <div className="page-head">
         <div>
-          <h1>Plan</h1>
+          <h1>Planning</h1>
         </div>
-        {fleet?.asOf && <span className="num muted">As of {fleet.asOf}</span>}
       </div>
       <div className="toolbar">
         <div className="tabs">

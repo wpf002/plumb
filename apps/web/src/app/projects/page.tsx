@@ -9,7 +9,7 @@ import { PayersTab } from "./payers-tab";
 
 const TABS = [
   { key: "profit", label: "Profitability", path: "jobs", View: ProfitabilityView },
-  { key: "estimates", label: "Estimates", path: "jobs/estimates", View: EstimatesView },
+  { key: "estimates", label: "Estimate vs Actual", path: "jobs/estimates", View: EstimatesView },
   { key: "wip", label: "WIP", path: "jobs/wip", View: WipView },
   { key: "change-orders", label: "Change Orders", path: "jobs/change-orders", View: ChangeOrdersView },
   { key: "retainage", label: "Retainage", path: "jobs/retainage", View: RetainageView },
@@ -40,9 +40,6 @@ export default function Jobs() {
         <div>
           <h1>Jobs</h1>
         </div>
-        <Link href="/bid" className="btn btn-primary">
-          New Bid
-        </Link>
       </div>
       <div className="toolbar">
         <div className="tabs">

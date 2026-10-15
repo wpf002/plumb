@@ -148,11 +148,7 @@ export function PayersTab() {
                           </option>
                         ))}
                       </select>
-                      {project.payerDaysLate > 0 && (
-                        <div style={{ fontSize: 12, color: "var(--text-faint)", marginTop: 4 }}>
-                          pays {project.payerDaysLate} days past terms
-                        </div>
-                      )}
+                      
                     </td>
                     <td className="num">{usd(project.contractValueCents)}</td>
                     <td className="num">
@@ -160,18 +156,11 @@ export function PayersTab() {
                       <b style={{ color: margin.marginErosionPct > 0 ? C.danger : C.good }}>
                         {margin.projectedFinalMarginPct.toFixed(1)}%
                       </b>
-                      <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                        {usd(margin.adjustedContractCents - margin.projectedFinalCostCents)}{" "}
-                        projected profit
-                      </div>
                     </td>
                     <td>
                       {billing?.nextMilestone ? (
                         <>
                           {shortDate(billing.nextMilestone.expectedDate)}
-                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                            {billing.nextMilestone.name} · {usd(billing.nextMilestone.amountCents)}
-                          </div>
                         </>
                       ) : (
                         <span style={{ color: "var(--text-faint)" }}>no schedule</span>
@@ -192,7 +181,7 @@ export function PayersTab() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Who Pays You
+            Payers
           </div>
           <button className="btn btn-ghost btn-xs" onClick={() => setAdding((v) => !v)}>
             {adding ? "Cancel" : "Add Payer"}
@@ -269,18 +258,13 @@ export function PayersTab() {
                 <tr key={p.id}>
                   <td className="cell-name">
                     {p.name}
-                    {p.projects.length > 0 && (
-                      <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
-                        {p.projects.map((j: any) => j.name).join(", ")}
-                      </div>
-                    )}
+                    
                   </td>
                   <td style={{ color: "var(--text-muted)" }}>{PAYER_TYPE_LABELS[p.type]}</td>
                   <td className="num">
                     <b style={{ color: p.typicalDaysLate >= 30 ? C.danger : C.ink }}>
                       {p.typicalDaysLate} days
                     </b>
-                    <div style={{ fontSize: 12, color: "var(--text-faint)" }}>past terms</div>
                   </td>
                   <td>
                     {p.source === "OBSERVED" ? (

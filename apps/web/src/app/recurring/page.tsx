@@ -163,7 +163,7 @@ export default function Recurring() {
     <main className="container">
       <div className="page-head">
         <div>
-          <h1>Obligations</h1>
+          <h1>Fixed Costs</h1>
         </div>
       </div>
 
@@ -174,37 +174,21 @@ export default function Recurring() {
       )}
 
       <section className="card">
-        <div className="card-title">Monthly Fixed Cost</div>
+        <div className="card-title">Monthly Total</div>
         <div className="stats">
           <div className="stat">
-            <div className="stat-label">Total Every Month</div>
+            <div className="stat-label">Total</div>
             <div className="stat-value num">{usd(ob.monthlyFixedCents)}</div>
-            <div className="stat-sub">before a single job cost</div>
           </div>
           <div className="stat">
             <div className="stat-label">Overhead</div>
             <div className="stat-value num">{usd(ob.monthlyOverheadCents)}</div>
-            <div className="stat-sub">insurance, software, fuel, rent</div>
           </div>
           <div className="stat">
             <div className="stat-label">Debt Service</div>
             <div className="stat-value num">{usd(ob.monthlyDebtServiceCents)}</div>
-            <div className="stat-sub">loans, cards, leases</div>
           </div>
         </div>
-        {ob.byCategory.length > 0 && (
-          <div className="chips" style={{ marginTop: 16 }}>
-            {ob.byCategory
-              .slice()
-              .sort((a: any, b: any) => b.monthlyCents - a.monthlyCents)
-              .map((c: any) => (
-                <span key={c.category} className="chip">
-                  {CATEGORY_LABELS[c.category] ?? c.category}
-                  <b>{usd(c.monthlyCents)}</b>
-                </span>
-              ))}
-          </div>
-        )}
       </section>
 
       <DetectedRecurring onAdded={load} />
@@ -212,7 +196,7 @@ export default function Recurring() {
       <section className="card">
         <div className="row-between">
           <div className="card-title" style={{ marginBottom: 0 }}>
-            Recurring Overhead
+            Overhead
           </div>
           <button className="btn btn-ghost" onClick={() => setAdding((v) => !v)}>
             {adding ? "Cancel" : "Add Expense"}
@@ -326,11 +310,7 @@ export default function Recurring() {
                   <tr key={e.id} style={e.active ? undefined : { opacity: 0.5 }}>
                     <td className="cell-name">
                       {e.name}
-                      {e.matchKeyword && (
-                        <div style={{ fontSize: 12, color: "var(--text-faint)", fontWeight: 400 }}>
-                          matches QuickBooks vendor &ldquo;{e.matchKeyword}&rdquo;
-                        </div>
-                      )}
+                      
                     </td>
                     <td style={{ color: "var(--text-muted)" }}>
                       {CATEGORY_LABELS[e.category] ?? e.category}
@@ -364,7 +344,7 @@ export default function Recurring() {
         <section className="card">
           <div className="row-between">
             <div className="card-title" style={{ marginBottom: 0 }}>
-              Recurring Revenue
+              Service Contracts
             </div>
             <button className="btn btn-ghost" onClick={() => setAddingContract((v) => !v)}>
               {addingContract ? "Cancel" : "Add Contract"}
@@ -373,12 +353,8 @@ export default function Recurring() {
 
           <div className="stats" style={{ marginBottom: 16 }}>
             <div className="stat">
-              <div className="stat-label">Coming In Every Month</div>
+              <div className="stat-label">Monthly Contracts</div>
               <div className="stat-value num">{usd(svc.summary.monthlyRecurringCents)}</div>
-              <div className="stat-sub">
-                {svc.summary.activeCount} active contract
-                {svc.summary.activeCount === 1 ? "" : "s"}
-              </div>
             </div>
             <div className="stat">
               <div className="stat-label">Covers Your Fixed Cost</div>
@@ -393,7 +369,6 @@ export default function Recurring() {
                   ? `${Math.round((svc.summary.monthlyRecurringCents / ob.monthlyFixedCents) * 100)}%`
                   : "—"}
               </div>
-              <div className="stat-sub">of the nut, before any job</div>
             </div>
             <div className="stat">
               <div className="stat-label">Biggest Client</div>
@@ -403,7 +378,6 @@ export default function Recurring() {
               >
                 {svc.summary.largestClientSharePct}%
               </div>
-              <div className="stat-sub">{svc.summary.largestClientName ?? "—"}</div>
             </div>
           </div>
 
@@ -542,11 +516,7 @@ export default function Recurring() {
                       <td className="cell-name">{c.name}</td>
                       <td style={{ color: "var(--text-muted)" }}>
                         {c.client}
-                        {c.payer && (
-                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                            pays {c.payer.typicalDaysLate}d past terms
-                          </div>
-                        )}
+                        
                       </td>
                       <td className="num">{usd(c.amountCents)}</td>
                       <td style={{ color: "var(--text-muted)" }}>
@@ -555,11 +525,7 @@ export default function Recurring() {
                       <td className="num">{usd(Math.round(c.amountCents * (perMonth ?? 1)))}</td>
                       <td>
                         {c.renewalDate ? shortDate(c.renewalDate) : "—"}
-                        {c.renewalDate && (
-                          <div style={{ fontSize: 12, color: "var(--text-faint)" }}>
-                            {c.autoRenew ? "auto-renews" : "must be re-signed"}
-                          </div>
-                        )}
+                        
                       </td>
                       <td className="num" style={{ whiteSpace: "nowrap" }}>
                         <button
@@ -589,7 +555,7 @@ export default function Recurring() {
       )}
 
       <section className="card">
-        <div className="card-title">Leaving the Bank — Next 30 Days</div>
+        <div className="card-title">Next 30 Days</div>
         {data.upcoming.length === 0 ? (
           <p className="empty">No scheduled obligations in the next 30 days.</p>
         ) : (

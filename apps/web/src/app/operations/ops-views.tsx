@@ -1,20 +1,12 @@
 "use client";
 
+import { Stat } from "../stat";
 import { usd } from "../ui";
 
 const pct = (v: number | null | undefined, d = 1) => (v === null || v === undefined ? "—" : `${v.toFixed(d)}%`);
 const signed = (v: number | null | undefined) => (v === null || v === undefined ? "—" : `${v > 0 ? "+" : ""}${v.toFixed(1)}%`);
 const money = (v: number | null | undefined) => (v === null || v === undefined ? "—" : usd(v));
 
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "pos" | "neg" }) {
-  return (
-    <div className="stat">
-      <div className="stat-label">{label}</div>
-      <div className={`stat-value num${tone ? ` ${tone}` : ""}`}>{value}</div>
-      {sub && <div className="stat-sub">{sub}</div>}
-    </div>
-  );
-}
 
 const Empty = ({ what }: { what: string }) => <p className="card empty">{what}</p>;
 
@@ -70,7 +62,7 @@ export function CustomersView({ data }: { data: any }) {
       <section className="card">
         <div className="stats">
           <Stat label="Customers" value={String(data.rows.length)} />
-          <Stat label="Largest" value={pct(c.maxPct)} sub={c.top?.name} tone={c.maxPct >= 25 ? "neg" : undefined} />
+          <Stat label="Largest" value={pct(c.maxPct)} tone={c.maxPct >= 25 ? "neg" : undefined} />
           <Stat label="Top Five" value={pct(c.top5Pct)} />
           <Stat label="Gross Margin" value={pct(data.marginPct)} />
         </div>
@@ -130,13 +122,13 @@ export function LaborView({ data }: { data: any }) {
             <Stat label="Field Staff" value={String(latest.fieldCount)} />
             <Stat label="Revenue / Field" value={money(latest.revenuePerFieldCents)} />
             <Stat label="Gross Profit / Field" value={money(latest.grossProfitPerFieldCents)} />
-            {u.project && <Stat label="Project Crew Load" value={pct(u.project.trailing24AvgPct, 0)} sub={`peak ${u.project.peakYear} at ${pct(u.project.peakYearAvgPct, 0)}`} />}
-            {u.maintenance && <Stat label="Maintenance Load" value={pct(u.maintenance.trailing12AvgPct, 0)} sub="last 12 months" />}
+            {u.project && <Stat label="Project Crew Load" value={pct(u.project.trailing24AvgPct, 0)} />}
+            {u.maintenance && <Stat label="Maintenance Load" value={pct(u.maintenance.trailing12AvgPct, 0)} />}
           </div>
         </section>
       )}
       <section className="card">
-        <div className="card-title">Productivity</div>
+        <div className="card-title">Labor Productivity</div>
         <table className="table">
           <thead>
             <tr>
@@ -186,9 +178,6 @@ export function LaborView({ data }: { data: any }) {
                   <tr key={c.name}>
                     <td className="cell-name">
                       {c.name}
-                      <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
-                        {KIND[c.kind] ?? c.kind}
-                      </div>
                     </td>
                     <td className="num">{c.headcount}</td>
                     <td className="num">{usd(c.payrollCents)}</td>
@@ -249,13 +238,13 @@ export function CapacityView({ data }: { data: any }) {
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="Revenue Ceiling" value={usd(h.ceilingCents)} sub={`${h.fieldCount} field staff at ${h.bestYear} pace`} />
+          <Stat label="Revenue Ceiling" value={usd(h.ceilingCents)} />
           <Stat label="Last Year" value={usd(h.lastYearRevenueCents)} />
-          <Stat label="Headroom" value={usd(h.headroomCents)} sub={`${pct(h.headroomPct, 0)} above last year`} tone={h.headroomCents > 0 ? "pos" : "neg"} />
+          <Stat label="Headroom" value={usd(h.headroomCents)} tone={h.headroomCents > 0 ? "pos" : "neg"} />
         </div>
       </section>
       <section className="card">
-        <div className="card-title">Next Six Months</div>
+        <div className="card-title">Booked Capacity</div>
         <table className="table">
           <thead>
             <tr>
@@ -323,12 +312,12 @@ export function RecurringView({ data }: { data: any }) {
     <>
       <section className="card">
         <div className="stats">
-          <Stat label="MRR" value={usd(data.mrrCents)} sub={data.asOf} />
+          <Stat label="MRR" value={usd(data.mrrCents)} />
           <Stat label="Last 12 Months" value={usd(data.trailing12Cents)} />
-          {data.activeContracts !== null && <Stat label="Active Contracts" value={String(data.activeContracts)} sub={`${usd(data.avgMonthlyContractCents)} avg / month`} />}
-          {data.renewalPct !== null && <Stat label="Retention" value={pct(data.renewalPct)} sub={`${pct(data.churnPct)} churn`} />}
+          {data.activeContracts !== null && <Stat label="Active Contracts" value={String(data.activeContracts)} />}
+          {data.renewalPct !== null && <Stat label="Retention" value={pct(data.renewalPct)} />}
           {data.grossMarginPct !== null && <Stat label="Gross Margin" value={pct(data.grossMarginPct)} />}
-          <Stat label="Seasonal Swing" value={pct(data.seasonalSwingPct, 0)} sub="peak to trough" />
+          <Stat label="Seasonal Swing" value={pct(data.seasonalSwingPct, 0)} />
         </div>
       </section>
       <section className="card">
@@ -378,10 +367,10 @@ export function ServiceCallsView({ data }: { data: any }) {
     <>
       <section className="card">
         <div className="stats">
-          <Stat label={`Calls ${data.year}`} value={latest.calls.toLocaleString("en-US")} sub={callsChange !== null ? `${signed(callsChange)} vs ${prior.year}` : undefined} />
+          <Stat label={`Calls ${data.year}`} value={latest.calls.toLocaleString("en-US")} />
           <Stat label="Average Ticket" value={usd(latest.avgTicketCents)} />
           <Stat label="Revenue" value={usd(latest.revenueCents)} />
-          {data.revenuePerTechCents !== null && <Stat label="Revenue / Tech" value={usd(data.revenuePerTechCents)} sub={`${data.techs} techs · ${data.callsPerTechPerWeek} calls / week`} />}
+          {data.revenuePerTechCents !== null && <Stat label="Revenue / Tech" value={usd(data.revenuePerTechCents)} />}
         </div>
       </section>
       <div className="grid-2">
@@ -409,7 +398,7 @@ export function ServiceCallsView({ data }: { data: any }) {
           </table>
         </section>
         <section className="card">
-          <div className="card-title">By Call Type</div>
+          <div className="card-title">Call Types</div>
           <table className="table">
             <thead>
               <tr>
@@ -424,9 +413,6 @@ export function ServiceCallsView({ data }: { data: any }) {
                 <tr key={`${c.segment}${c.category}`}>
                   <td className="cell-name">
                     {c.category}
-                    <div className="muted" style={{ fontSize: 12, fontWeight: 400 }}>
-                      {c.segment}
-                    </div>
                   </td>
                   <td className="num">{c.calls.toLocaleString("en-US")}</td>
                   <td className="num">{usd(c.avgTicketCents)}</td>
@@ -455,11 +441,8 @@ export function BenchmarksView({ data }: { data: any }) {
     <section className="card">
       <div className="row-between">
         <div className="card-title" style={{ marginBottom: 0 }}>
-          Against {data.peers} Peers
+          Peer Benchmarks
         </div>
-        <span className="muted" style={{ fontSize: 12 }} title="Other DNRD companies, anonymized. A metric shows only when three or more report it.">
-          DNRD companies, anonymized
-        </span>
       </div>
       <table className="table">
         <thead>
