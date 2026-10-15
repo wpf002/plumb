@@ -99,7 +99,7 @@ export function DataSources() {
                 .filter((s: any) => s.phase === phase)
                 .map((s: any) => {
                   const p = preview[s.key];
-                  const fields = credentialFields(s.key);
+                  const fields: string[] = s.credentialFields;
                   return (
                     <Fragment key={s.key}>
                       <tr>
@@ -113,7 +113,7 @@ export function DataSources() {
                           {s.provides.map((k: string) => KIND[k] ?? k).join(", ")}
                         </td>
                         <td>
-                          {s.live ? <span className="badge good">Live</span> : <span className="badge neutral">Preview</span>}
+                          {s.live ? <span className="badge good">Live</span> : s.csvOnly ? <span className="badge info" title="No open API; import its CSV export above">CSV Import</span> : <span className="badge neutral">Preview</span>}
                           {s.lastSync && (
                             <div className="muted" style={{ fontSize: 12 }}>
                               {s.lastSync.status === "OK" ? "Synced" : "Failed"} {shortDate(s.lastSync.at)}
@@ -164,14 +164,4 @@ export function DataSources() {
       </table>
     </section>
   );
-}
-
-/** Credential fields per source, for sources connected by key rather than OAuth. */
-function credentialFields(key: string): string[] {
-  const F: Record<string, string[]> = {
-    plaid: [],
-    stripe: ["apiKey"],
-    gusto: ["token", "companyId"],
-  };
-  return F[key] ?? ["token"];
 }

@@ -36,6 +36,7 @@ export const quickbooks: SourceAdapter = {
   phase: 1,
   env: ["QBO_CLIENT_ID", "QBO_CLIENT_SECRET"],
   provides: ["customers", "vendors", "invoices", "payments", "bills", "accounts"],
+  credentialFields: [],
   live: (ctx) => !!ctx.connected?.has("quickbooks"),
   async fetch(ctx) {
     const q = await client(ctx.companyId);

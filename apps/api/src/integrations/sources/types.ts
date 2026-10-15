@@ -88,4 +88,8 @@ export interface SourceAdapter {
   fetch(ctx: AdapterContext): Promise<CanonicalBatch>;
   /** Representative data for a preview when the source isn't connected. Never written. */
   sample(ctx: AdapterContext): CanonicalBatch;
+  /** The vendor offers no open API; its exports come in through CSV import. */
+  csvOnly?: boolean;
+  /** Fields the owner enters to connect by key; empty for OAuth or link flows. */
+  credentialFields: string[];
 }

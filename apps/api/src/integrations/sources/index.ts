@@ -7,9 +7,10 @@ import { gusto } from "./gusto.js";
 import { plaid } from "./plaid.js";
 import { quickbooks } from "./quickbooks.js";
 import { stripe } from "./stripe.js";
+import { PHASE2 } from "./vertical.js";
 
 /** Every outside system DNRD reads from, in roadmap order. */
-export const SOURCES: SourceAdapter[] = [quickbooks, plaid, stripe, gusto];
+export const SOURCES: SourceAdapter[] = [quickbooks, plaid, stripe, gusto, ...PHASE2];
 
 export function sourceFor(key: string) {
   const s = SOURCES.find((x) => x.key === key);
@@ -42,6 +43,8 @@ export async function listSources(companyId: string) {
       phase: s.phase,
       provides: s.provides,
       live: s.live(ctx),
+      csvOnly: !!s.csvOnly,
+      credentialFields: s.credentialFields,
       connected: !!conn || ctx.connected?.has(s.key) === true,
       env: s.env,
       lastSync: last ? { at: last.finishedAt ?? last.startedAt, status: last.status, counts: last.counts, error: last.error } : null,

@@ -40,3 +40,5 @@ Every outside system implements one adapter (`apps/api/src/integrations/sources/
 | `GET /companies/:id/recurring-transactions` | Recurring charges and deposits found in the last 13 months of feeds |
 
 Phase 1 sources: QuickBooks Online (OAuth), Plaid (access token from the link flow, 24 months), Stripe (restricted read key; the company's own payments, refunds, fees, payouts), Gusto (token + company id). Live paths for Stripe and Gusto have not been exercised against real accounts.
+
+Phase 2 sources (`vertical.ts`, built with the `restAdapter` spec factory): Jobber, ServiceTitan, Housecall Pro, Procore, FreshBooks, Xero, QuickBooks Time, busybusy, Deputy, Square. ADP, QuickBooks Payroll, Paychex, ClockShark, Buildertrend, STACK, and Procore Estimating offer partner-only APIs and come in through their CSV exports. Endpoints follow each vendor's public docs; none have been run against a real account.

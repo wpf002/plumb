@@ -39,6 +39,7 @@ export const plaid: SourceAdapter = {
   phase: 1,
   env: ["PLAID_CLIENT_ID", "PLAID_SECRET"],
   provides: ["accounts", "transactions"],
+  credentialFields: [],
   live: (ctx) => {
     const c = creds(ctx);
     return !!(c.clientId && c.secret && c.accessToken);

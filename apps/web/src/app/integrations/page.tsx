@@ -213,25 +213,6 @@ export default function Integrations() {
       <ApiKeys />
 
       <Panel
-        title="FreshBooks"
-        blurb="Another place your invoices and expenses can come from, if you don't run QuickBooks."
-        action="Preview Sync"
-        run={async () => {
-          const d = await post("/integrations/freshbooks/sync");
-          return {
-            live: d.live,
-            note: d.note,
-            summary: `${usd(d.inflowCents)} in · ${usd(d.outflowCents)} out`,
-            rows: d.preview.map((e: any) => ({
-              left: e.counterparty,
-              mid: e.date,
-              right: `${e.direction === "IN" ? "+" : "–"}${usd(e.amountCents)}`,
-            })),
-          };
-        }}
-      />
-
-      <Panel
         title="Tax Obligations"
         blurb="Estimated quarterly tax from projected profit, timed into the cash forecast."
         action="Preview Obligations"

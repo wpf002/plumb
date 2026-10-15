@@ -26,6 +26,7 @@ export const stripe: SourceAdapter = {
   phase: 1,
   env: ["STRIPE_READ_KEY"],
   provides: ["accounts", "transactions"],
+  credentialFields: ["apiKey"],
   live: (ctx) => !!key(ctx),
   async fetch(ctx) {
     const since = Math.floor((ctx.since ?? daysAgo(730)).getTime() / 1000);

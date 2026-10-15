@@ -27,6 +27,7 @@ export const gusto: SourceAdapter = {
   phase: 1,
   env: ["GUSTO_API_TOKEN", "GUSTO_COMPANY_ID"],
   provides: ["payroll"],
+  credentialFields: ["token", "companyId"],
   live: (ctx) => !!(creds(ctx).token && creds(ctx).company),
   async fetch(ctx) {
     const c = creds(ctx);

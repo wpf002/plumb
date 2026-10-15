@@ -48,13 +48,6 @@ export function registerConnectionRoutes(app: FastifyInstance) {
             action: "settings",
           },
           {
-            key: "freshbooks",
-            name: "FreshBooks",
-            status: has("FRESHBOOKS_TOKEN") ? "configured" : "demo",
-            detail: has("FRESHBOOKS_TOKEN") ? "Live sync enabled" : "Preview only — set FRESHBOOKS_TOKEN",
-            action: "integrations",
-          },
-          {
             key: "tax",
             name: "Tax export",
             status: has("TAX_PROVIDER") ? "configured" : "demo",
