@@ -213,11 +213,6 @@ export function WhatIf() {
             <div className="card-title" style={{ marginBottom: 0 }}>
               Impact on {result.year}
             </div>
-            {result.notes?.length > 0 && (
-              <span className="badge neutral" title={result.notes.join(" ")}>
-                Assumptions
-              </span>
-            )}
           </div>
           <table className="table">
             <thead>

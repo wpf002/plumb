@@ -133,7 +133,7 @@ export function ApiKeys() {
                   <td className="cell-name num">{c.tool}</td>
                   <td>{c.caller}</td>
                   <td className="muted">{new Date(c.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</td>
-                  <td>{c.ok ? <span className="badge good">OK</span> : <span className="badge bad">{c.error === "permission" ? "Denied" : "Error"}</span>}</td>
+                  <td>{!c.ok && <span className="badge bad">{c.error === "permission" ? "Denied" : "Error"}</span>}</td>
                 </tr>
               ))}
             </tbody>

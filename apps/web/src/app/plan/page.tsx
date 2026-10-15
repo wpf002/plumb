@@ -219,9 +219,11 @@ function FleetTab({ data, raw, onSaved }: { data: any; raw: any[]; onSaved: () =
                     <td className="num">{a.utilizationPct == null ? "—" : pct(a.utilizationPct, 0)}</td>
                     <td className={`num${a.lifeUsedPct >= 100 ? " neg" : ""}`}>{pct(a.lifeUsedPct, 0)}</td>
                     <td>
-                      <span className={`badge ${s.cls}`} title={a.reasons.join(", ")}>
-                        {s.label}
-                      </span>
+                      {a.status !== "keep" && (
+                        <span className={`badge ${s.cls}`} title={a.reasons.join(", ")}>
+                          {s.label}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 );

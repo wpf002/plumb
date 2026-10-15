@@ -263,9 +263,7 @@ export default function ProjectDetail() {
             {project.billingType.replace(/_/g, " ")}
           </p>
         </div>
-        <span className={`badge ${margin.atRisk ? "bad" : "good"}`}>
-          {margin.atRisk ? "Margin at risk" : "On track"}
-        </span>
+        {margin.atRisk && <span className="badge bad">Margin at Risk</span>}
       </div>
 
       <section className="card">
@@ -331,13 +329,7 @@ export default function ProjectDetail() {
                     {v ? usdExact(v.varianceCents) : "—"}
                   </td>
                   <td>
-                    {v ? (
-                      <span className={`badge ${over ? "bad" : "good"}`}>
-                        {over ? `Over ${v.variancePct}%` : "Under"}
-                      </span>
-                    ) : (
-                      <span className="badge neutral">No budget</span>
-                    )}
+                    {v && over && <span className="badge bad">Over {v.variancePct}%</span>}
                   </td>
                 </tr>
               );

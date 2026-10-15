@@ -167,7 +167,7 @@ export function PayersTab() {
                       )}
                     </td>
                     <td>
-                      <span className={`badge ${b.cls}`}>{b.label}</span>
+                      {b.cls !== "good" && <span className={`badge ${b.cls}`}>{b.label}</span>}
                     </td>
                   </tr>
                 );
@@ -248,7 +248,6 @@ export function PayersTab() {
                 <th>Payer</th>
                 <th>Type</th>
                 <th className="num">Runs Late By</th>
-                <th>Based On</th>
                 <th className="num">Work In Their Hands</th>
                 <th></th>
               </tr>
@@ -265,13 +264,6 @@ export function PayersTab() {
                     <b style={{ color: p.typicalDaysLate >= 30 ? C.danger : C.ink }}>
                       {p.typicalDaysLate} days
                     </b>
-                  </td>
-                  <td>
-                    {p.source === "OBSERVED" ? (
-                      <span className="badge info">{p.sampleSize} paid invoices</span>
-                    ) : (
-                      <span className="badge neutral">Your estimate</span>
-                    )}
                   </td>
                   <td className="num">{usd(p.exposureCents)}</td>
                   <td className="num">

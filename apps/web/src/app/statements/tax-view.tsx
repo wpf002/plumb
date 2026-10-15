@@ -37,9 +37,7 @@ export function TaxView({ data }: { data: any }) {
             <div className="card-title" style={{ marginBottom: 0 }}>
               By Tax Line
             </div>
-            <span className="badge neutral" title="Suggested from account names. Your CPA confirms the mapping and makes tax adjustments.">
-              Suggested
-            </span>
+
           </div>
           <table className="table">
             <tbody>

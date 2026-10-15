@@ -31,7 +31,7 @@ export function InvoiceList({ rows }: { rows: any[] }) {
               <td className="muted">{shortDate(i.issueDate)}</td>
               <td className="muted">{shortDate(i.dueDate)}</td>
               <td className="num">{i.daysOutstanding}</td>
-              <td>{i.daysLate > 0 ? <span className={`badge ${i.daysLate > 30 ? "bad" : "warn"}`}>{i.daysLate} Days Late</span> : <span className="badge good">Current</span>}</td>
+              <td>{i.daysLate > 0 && <span className={`badge ${i.daysLate > 30 ? "bad" : "warn"}`}>{i.daysLate} Days Late</span>}</td>
             </tr>
           ))}
         </tbody>
@@ -67,7 +67,7 @@ export function BillList({ rows }: { rows: any[] }) {
               <td className="muted">{shortDate(b.dueDate)}</td>
               <td className="muted">{b.category ?? "—"}</td>
               <td className="muted">{b.job ?? "—"}</td>
-              <td>{b.daysLate > 0 ? <span className="badge warn">{b.daysLate} Days Late</span> : <span className="badge good">Current</span>}</td>
+              <td>{b.daysLate > 0 && <span className="badge warn">{b.daysLate} Days Late</span>}</td>
             </tr>
           ))}
         </tbody>

@@ -110,7 +110,7 @@ export function DataSources() {
                           {s.provides.map((k: string) => KIND[k] ?? k).join(", ")}
                         </td>
                         <td>
-                          {s.live ? <span className="badge good">Live</span> : s.csvOnly ? <span className="badge info" title="No open API; import its CSV export above">CSV Import</span> : <span className="badge neutral">Preview</span>}
+                          {s.live ? <span className="badge good">Live</span> : s.csvOnly ? <span className="badge info" title="No open API; import its CSV export above">CSV Import</span> : null}
                           
                         </td>
                         <td className="num" style={{ whiteSpace: "nowrap" }}>
