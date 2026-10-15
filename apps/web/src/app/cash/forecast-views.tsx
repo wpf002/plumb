@@ -32,10 +32,14 @@ function useApi(path: string) {
   useEffect(() => {
     const id = getCompanyId();
     if (!id) return;
+    let live = true;
     setData(null);
     apiFetch(`/companies/${id}${path}`, { cache: "no-store" })
       .then(readGated)
-      .then(setData);
+      .then((j) => live && setData(j));
+    return () => {
+      live = false;
+    };
   }, [path]);
   return data;
 }

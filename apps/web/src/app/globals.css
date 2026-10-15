@@ -1560,3 +1560,14 @@ button.chip.active {
 .legend .bar-late {
   background: var(--info);
 }
+.daily-head {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.daily-head .card-title {
+  white-space: nowrap;
+}
+.daily-head .tabs {
+  max-width: 100%;
+  overflow-x: auto;
+}

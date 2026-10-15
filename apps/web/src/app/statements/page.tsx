@@ -2,7 +2,7 @@
 
 import { TaxView } from "./tax-view";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
 
 const TABS = [
@@ -131,12 +131,18 @@ export default function Statements() {
   const [view, setView] = useState<string>("annual");
   const [compare, setCompare] = useState<string>("none");
   const [taxYear, setTaxYear] = useState<number | null>(null);
-  const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  // Each response is tagged with the request that made it, so a previous
+  // tab's data or a late response never renders under the current tab.
+  const key = `${tab}|${view}|${compare}|${taxYear}`;
+  const [loaded, setLoaded] = useState<{ key: string; body: any } | null>(null);
+  const data = loaded?.key === key ? loaded.body : null;
+
+  useEffect(() => {
     const id = getCompanyId();
     if (!id) return;
+    let live = true;
     setError(null);
     const path =
       tab === "tax"
@@ -144,16 +150,18 @@ export default function Statements() {
         : tab === "budget"
         ? `/companies/${id}/budget-vs-actual`
         : `/companies/${id}/statements/${tab}?view=${view}&compare=${tab === "income" ? compare : compare === "prior_year" ? "prior_year" : "none"}`;
-    const res = await apiFetch(path, { cache: "no-store" });
-    const j = await res.json();
-    if (!res.ok) setError(j.message ?? `Failed (${res.status})`);
-    else setData(j);
-  }, [tab, view, compare, taxYear]);
-
-  useEffect(() => {
-    setData(null);
-    load();
-  }, [load]);
+    apiFetch(path, { cache: "no-store" })
+      .then(async (res) => {
+        const j = await res.json();
+        if (!live) return;
+        if (!res.ok) setError(j.message ?? `Failed (${res.status})`);
+        else setLoaded({ key, body: j });
+      })
+      .catch(() => live && setError("Could not load."));
+    return () => {
+      live = false;
+    };
+  }, [key, tab, view, compare, taxYear]);
 
   const noLedger = data && data.hasLedger === false;
 
@@ -228,8 +236,7 @@ export default function Statements() {
           </p>
         </section>
       ) : tab === "tax" ? (
-        // The previous tab's data can still be in state for one render.
-        data.summary ? <TaxView data={data} /> : <div className="card">Loading…</div>
+        <TaxView data={data} />
       ) : tab === "budget" ? (
         <section className="card">
           <div className="row-between">

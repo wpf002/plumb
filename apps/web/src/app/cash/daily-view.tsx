@@ -28,9 +28,18 @@ function scale(lo: number, hi: number, ticks = 4) {
 }
 
 function Chart({ data }: { data: any }) {
-  const W = 1000;
-  const H = 300;
-  const L = 64;
+  // Draw at the container's real width so axis text stays at 12px on phones.
+  const box = useRef<HTMLDivElement>(null);
+  const [W, setW] = useState(1000);
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const H = Math.round(Math.min(300, Math.max(200, W * 0.3)));
+  const L = 52;
   const R = 16;
   const T = 16;
   const B = 32;
@@ -54,7 +63,7 @@ function Chart({ data }: { data: any }) {
   const path = (pts: { cents: number }[]) => pts.map((p, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(p.cents).toFixed(1)}`).join(" ");
   const area = `${path(base)} L${x(base.length - 1)},${H - B} L${x(0)},${H - B} Z`;
   const reserveVisible = data.reserveCents > 0 && data.reserveCents >= min && data.reserveCents <= max;
-  const xTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(f * (base.length - 1)));
+  const xTicks = (W < 560 ? [0, 0.5, 1] : [0, 0.25, 0.5, 0.75, 1]).map((f) => Math.round(f * (base.length - 1)));
 
   function move(e: React.MouseEvent) {
     const r = ref.current!.getBoundingClientRect();
@@ -64,7 +73,7 @@ function Chart({ data }: { data: any }) {
   }
 
   return (
-    <div className="daily-chart">
+    <div className="daily-chart" ref={box}>
       <svg ref={ref} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Daily cash balance" onMouseMove={move} onMouseLeave={() => setHover(null)}>
         {steps.map((v) => (
           <g key={v}>
@@ -117,10 +126,14 @@ export function DailyView() {
   const [days, setDays] = useState(90);
   const [data, setData] = useState<any>(null);
   useEffect(() => {
+    let live = true;
     setData(null);
     apiFetch(`/companies/${getCompanyId()}/forecast/daily?days=${days}`, { cache: "no-store" })
       .then(readGated)
-      .then(setData);
+      .then((j) => live && setData(j));
+    return () => {
+      live = false;
+    };
   }, [days]);
 
   const picker = (
@@ -137,7 +150,7 @@ export function DailyView() {
   return (
     <>
       <section className="card">
-        <div className="row-between">
+        <div className="row-between daily-head">
           <div className="card-title" style={{ marginBottom: 0 }}>
             Daily Cash
           </div>
