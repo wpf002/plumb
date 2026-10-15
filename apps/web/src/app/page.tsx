@@ -98,7 +98,6 @@ export default async function Dashboard() {
                   <div key={m.key} className="metric-row" title={m.basis ?? undefined}>
                     <span className="metric-label">{m.label}</span>
                     <span className="metric-value num">{formatMetric(m)}</span>
-                    {m.reading && <span className={`metric-reading ${m.reading.tone}`}>{m.reading.label}</span>}
 
                   </div>
                 ))}

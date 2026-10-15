@@ -355,9 +355,9 @@ export default function BalanceSheet() {
             <Stat label="Total Debt" value={usd(debt.totalDebtCents)} />
             <Stat label="Annual Debt Service" value={usd(debt.annualDebtServiceCents)} />
             <Stat label="Monthly Burden" value={usd(debt.monthlyDebtBurdenCents)} />
-            <Stat label="Debt to Equity" value={debt.debtToEquity === null ? "—" : `${debt.debtToEquity}x`} reading={debt.readings.debtToEquity} />
-            <Stat label="Debt Coverage" value={debt.dscr === null ? "—" : `${debt.dscr}x`} reading={debt.readings.dscr} />
-            {debt.loc.limitCents > 0 && <Stat label="Line of Credit" value={`${usd(debt.loc.balanceCents)} / ${usd(debt.loc.limitCents)}`} reading={debt.readings.loc} />}
+            <Stat label="Debt to Equity" value={debt.debtToEquity === null ? "—" : `${debt.debtToEquity}x`} />
+            <Stat label="Debt Coverage" value={debt.dscr === null ? "—" : `${debt.dscr}x`} />
+            {debt.loc.limitCents > 0 && <Stat label="Line of Credit" value={`${usd(debt.loc.balanceCents)} / ${usd(debt.loc.limitCents)}`} />}
           </div>
           {debt.loans.filter((l: any) => l.balanceCents > 0).length > 0 && (
             <div className="statement-scroll" style={{ marginTop: 24 }}>

@@ -115,12 +115,10 @@ export default function WorkingCapital() {
           <div className="stat">
             <div className="stat-label">Current Ratio</div>
             <div className="stat-value num">{wc.currentRatio === null ? "—" : `${wc.currentRatio.toFixed(2)}x`}</div>
-            <div className={`stat-reading tone-${wc.readings.currentRatio.tone}`}>{wc.readings.currentRatio.label}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Quick Ratio</div>
             <div className="stat-value num">{wc.quickRatio === null ? "—" : `${wc.quickRatio.toFixed(2)}x`}</div>
-            <div className={`stat-reading tone-${wc.readings.quickRatio.tone}`}>{wc.readings.quickRatio.label}</div>
           </div>
           <div className="stat">
             <div className="stat-label">Cash</div>
