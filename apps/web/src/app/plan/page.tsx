@@ -2,7 +2,7 @@
 
 import { Stat } from "../stat";
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, readGated, usd } from "../ui";
+import { apiFetch, getCompanyId, readGated, shortDate, usd } from "../ui";
 import { Locked } from "../plan-ui";
 import { ValueTab } from "./value";
 import { WhatIf } from "./what-if";
@@ -85,8 +85,16 @@ const REPAIR_FIELDS: Field[] = [
   { key: "financeRatePct", label: "Finance Rate", unit: "%" },
 ];
 
-function RepairReplace({ asset }: { asset: any }) {
+const COST_FIELDS: Field[] = [
+  { key: "fuelCostAnnualCents", label: "Fuel / Year", unit: "$" },
+  { key: "insuranceCostAnnualCents", label: "Insurance / Year", unit: "$" },
+  { key: "utilizationPct", label: "Utilization", unit: "%" },
+];
+
+function RepairReplace({ asset, onSaved }: { asset: any; onSaved: () => void }) {
   const [v, setV] = useState<Record<string, string>>({});
+  const [costs, setCosts] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState(false);
   useEffect(() => {
     setV({
       annualRepairCents: dollars(asset.annualRepairCents ?? 0),
@@ -99,12 +107,48 @@ function RepairReplace({ asset }: { asset: any }) {
       newSalvagePct: "10",
       financeRatePct: "8",
     });
+    setCosts({
+      fuelCostAnnualCents: dollars(asset.annualFuelCents),
+      insuranceCostAnnualCents: dollars(asset.annualInsuranceCents),
+      utilizationPct: asset.utilizationPct == null ? "" : String(asset.utilizationPct),
+    });
+    setSaved(false);
   }, [asset]);
+
+  // Repairs, upkeep, downtime, replacement cost, and running costs stay on the asset.
+  async function save() {
+    const r = payload(REPAIR_FIELDS, v);
+    const c = payload(COST_FIELDS, costs);
+    await apiFetch(`/companies/${getCompanyId()}/assets/${asset.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        repairCostAnnualCents: r.annualRepairCents ?? null,
+        maintenanceCostAnnualCents: r.annualMaintenanceCents ?? null,
+        downtimeDaysAnnual: r.downtimeDaysAnnual ?? null,
+        replacementCostCents: r.replacementCostCents ?? null,
+        fuelCostAnnualCents: c.fuelCostAnnualCents ?? null,
+        insuranceCostAnnualCents: c.insuranceCostAnnualCents ?? null,
+        utilizationPct: c.utilizationPct ?? null,
+      }),
+    });
+    setSaved(true);
+    onSaved();
+  }
   const { result: r, error } = useCalc("repair-replace", payload(REPAIR_FIELDS, v), Object.keys(v).length > 0);
   return (
     <section className="card">
       <div className="card-title">{asset.name}</div>
       <NumberForm fields={REPAIR_FIELDS} values={v} onChange={(k, val) => setV((p) => ({ ...p, [k]: val }))} />
+      <div style={{ marginTop: 16 }}>
+        <NumberForm fields={COST_FIELDS} values={costs} onChange={(k, val) => setCosts((p) => ({ ...p, [k]: val }))} />
+      </div>
+      <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
+        <button className="btn btn-primary btn-xs" onClick={save}>
+          Save Costs
+        </button>
+        {saved && <span className="badge good">Saved</span>}
+      </div>
       {error && <p className="neg">{error}</p>}
       {r && (
         <div className="stats" style={{ marginTop: 16 }}>
@@ -118,7 +162,12 @@ function RepairReplace({ asset }: { asset: any }) {
   );
 }
 
-function FleetTab({ data, raw }: { data: any; raw: any[] }) {
+const runningCost = (a: any) => {
+  const parts = [a.annualMaintenanceCents, a.annualRepairCents, a.annualFuelCents, a.annualInsuranceCents].filter((x) => x != null);
+  return parts.length ? usd(parts.reduce((t: number, x: number) => t + x, 0)) : "—";
+};
+
+function FleetTab({ data, raw, onSaved }: { data: any; raw: any[]; onSaved: () => void }) {
   const [selected, setSelected] = useState<string | null>(null);
   if (!data.assets.length) return <p className="card empty">No vehicles or equipment.</p>;
   const sel = data.assets.find((a: any) => a.id === selected);
@@ -139,11 +188,15 @@ function FleetTab({ data, raw }: { data: any; raw: any[] }) {
             <thead>
               <tr>
                 <th>Asset</th>
-                <th className="num">Age</th>
-                <th className="num">Life Used</th>
+                <th>Purchased</th>
+                <th className="num">Cost</th>
                 <th className="num">Book</th>
                 <th className="num">Market</th>
-                <th className="num">Replace Cost</th>
+                <th className="num">Loan</th>
+                <th className="num">Payment</th>
+                <th className="num">Running / Yr</th>
+                <th className="num">Use</th>
+                <th className="num">Life Used</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -156,16 +209,19 @@ function FleetTab({ data, raw }: { data: any; raw: any[] }) {
                       {a.name}
                       
                     </td>
-                    <td className="num" style={{ whiteSpace: "nowrap" }}>{age(a.ageMonths)}</td>
-                    <td className={`num${a.lifeUsedPct >= 100 ? " neg" : ""}`}>{pct(a.lifeUsedPct, 0)}</td>
+                    <td className="muted nowrap" title={age(a.ageMonths)}>{shortDate(a.purchaseDate)}</td>
+                    <td className="num">{usd(a.costCents)}</td>
                     <td className="num">{usd(a.bookValueCents)}</td>
                     <td className="num">{money(a.marketValueCents)}</td>
-                    <td className="num" title={a.replacementCostEstimated ? "Original cost grown 3% a year" : undefined}>
-                      {usd(a.replacementCostCents)}
-                      {a.replacementCostEstimated && <span className="muted">*</span>}
-                    </td>
+                    <td className="num">{a.loanBalanceCents ? usd(a.loanBalanceCents) : "—"}</td>
+                    <td className="num">{a.monthlyPaymentCents ? usd(a.monthlyPaymentCents) : "—"}</td>
+                    <td className="num" title="Maintenance, repairs, fuel, and insurance">{runningCost(a)}</td>
+                    <td className="num">{a.utilizationPct == null ? "—" : pct(a.utilizationPct, 0)}</td>
+                    <td className={`num${a.lifeUsedPct >= 100 ? " neg" : ""}`}>{pct(a.lifeUsedPct, 0)}</td>
                     <td>
-                      <span className={`badge ${s.cls}`}>{s.label}</span>
+                      <span className={`badge ${s.cls}`} title={a.reasons.join(", ")}>
+                        {s.label}
+                      </span>
                     </td>
                   </tr>
                 );
@@ -174,7 +230,7 @@ function FleetTab({ data, raw }: { data: any; raw: any[] }) {
           </table>
         </div>
       </section>
-      {sel && <RepairReplace asset={{ ...sel, ...src, bookValueCents: sel.bookValueCents, replacementCostCents: sel.replacementCostCents }} />}
+      {sel && <RepairReplace asset={{ ...src, ...sel }} onSaved={onSaved} />}
     </>
   );
 }
@@ -347,6 +403,44 @@ function CrewTab({ defaults }: { defaults: any }) {
   );
 }
 
+const ACQ_FIELDS: Field[] = [
+  { key: "priceCents", label: "Price", unit: "$" },
+  { key: "targetRevenueCents", label: "Target Revenue", unit: "$" },
+  { key: "targetEbitdaCents", label: "Target EBITDA", unit: "$" },
+  { key: "downPct", label: "Down Payment", unit: "%" },
+  { key: "ratePct", label: "Rate", unit: "%" },
+  { key: "termMonths", label: "Term", unit: "mo" },
+  { key: "synergyPct", label: "Synergies", unit: "%" },
+];
+
+function AcquisitionTab() {
+  const [v, setV] = useState<Record<string, string>>({ priceCents: "1200000", targetRevenueCents: "2000000", targetEbitdaCents: "300000", downPct: "20", ratePct: "9", termMonths: "120", synergyPct: "0" });
+  const { result: r, error } = useCalc("acquisition", payload(ACQ_FIELDS, v), true);
+  if (error && /plan/i.test(error)) return <Locked info={{ message: error, plan: "BUSINESS" }} />;
+  return (
+    <>
+      <section className="card">
+        <NumberForm fields={ACQ_FIELDS} values={v} onChange={(k, val) => setV((p) => ({ ...p, [k]: val }))} />
+        {error && <p className="neg">{error}</p>}
+      </section>
+      {r && (
+        <section className="card">
+          <div className="stats">
+            <Stat label="Multiple Paid" value={r.multiplePaid === null ? "—" : `${r.multiplePaid.toFixed(1)}x`} />
+            <Stat label="Cash at Close" value={usd(r.downPaymentCents)} />
+            <Stat label="Cash Left" value={usd(r.cashAfterCloseCents)} tone={r.cashAfterCloseCents < 0 ? "neg" : undefined} />
+            <Stat label="Monthly Payment" value={usd(r.monthlyPaymentCents)} />
+            <Stat label="Combined EBITDA" value={usd(r.combinedEbitdaCents)} />
+            <Stat label="Debt Coverage" value={r.combinedDscr === null ? "—" : `${r.combinedDscr.toFixed(2)}x`} tone={r.combinedDscr !== null && r.combinedDscr < 1.25 ? "neg" : undefined} />
+            <Stat label="Payback" value={r.paybackYears === null ? "—" : `${r.paybackYears} yrs`} />
+            <Stat label="Value Added" value={usd(r.valueAddedCents)} tone={r.valueAddedCents < 0 ? "neg" : "pos"} />
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
+
 const TABS = [
   { key: "what-if", label: "Scenarios" },
   { key: "value", label: "Valuation" },
@@ -354,6 +448,7 @@ const TABS = [
   { key: "buy", label: "Equipment Purchase" },
   { key: "hire", label: "Hiring" },
   { key: "crew", label: "Crew Expansion" },
+  { key: "acquisition", label: "Acquisition" },
 ] as const;
 
 export default function Plan() {
@@ -361,6 +456,7 @@ export default function Plan() {
   const [fleet, setFleet] = useState<any>(null);
   const [assets, setAssets] = useState<any[]>([]);
   const [defaults, setDefaults] = useState<any>(null);
+  const [reload, setReload] = useState(0);
 
   useEffect(() => {
     const id = getCompanyId();
@@ -371,7 +467,7 @@ export default function Plan() {
       setDefaults(d);
       setAssets(a?.assets ?? []);
     });
-  }, []);
+  }, [reload]);
 
   return (
     <main className="container container-wide">
@@ -391,6 +487,8 @@ export default function Plan() {
       </div>
       {tab === "what-if" ? (
         <WhatIf />
+      ) : tab === "acquisition" ? (
+        <AcquisitionTab />
       ) : tab === "value" ? (
         <ValueTab />
       ) : !fleet || !defaults ? (
@@ -405,6 +503,7 @@ export default function Plan() {
             annualMaintenanceCents: a.maintenanceCostAnnualCents,
             downtimeDaysAnnual: a.downtimeDaysAnnual,
           }))}
+          onSaved={() => setReload((x) => x + 1)}
         />
       ) : defaults.__locked ? (
         <Locked info={defaults.__locked} />

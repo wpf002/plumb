@@ -1,5 +1,6 @@
 "use client";
 
+import { Stat } from "../stat";
 import { useCallback, useEffect, useState } from "react";
 import {
   apiFetch,
@@ -351,27 +352,47 @@ export default function BalanceSheet() {
         <section className="card">
           <div className="card-title">Debt</div>
           <div className="stats">
-            <div className="stat">
-              <div className="stat-label">Total Debt</div>
-              <div className="stat-value num">{usd(debt.totalDebtCents)}</div>
-            </div>
-            <div className="stat">
-              <div className="stat-label">Annual Debt Service</div>
-              <div className="stat-value num">{usd(debt.annualDebtServiceCents)}</div>
-            </div>
-            <div className="stat">
-              <div className="stat-label">Debt Coverage</div>
-              <div className="stat-value num">{debt.dscr === null ? "—" : `${debt.dscr}x`}</div>
-            </div>
-            {debt.loc.limitCents > 0 && (
-              <div className="stat">
-                <div className="stat-label">Line of Credit</div>
-                <div className="stat-value num">
-                  {usd(debt.loc.balanceCents)} / {usd(debt.loc.limitCents)}
-                </div>
-              </div>
-            )}
+            <Stat label="Total Debt" value={usd(debt.totalDebtCents)} />
+            <Stat label="Annual Debt Service" value={usd(debt.annualDebtServiceCents)} />
+            <Stat label="Monthly Burden" value={usd(debt.monthlyDebtBurdenCents)} />
+            <Stat label="Debt to Equity" value={debt.debtToEquity === null ? "—" : `${debt.debtToEquity}x`} reading={debt.readings.debtToEquity} />
+            <Stat label="Debt Coverage" value={debt.dscr === null ? "—" : `${debt.dscr}x`} reading={debt.readings.dscr} />
+            {debt.loc.limitCents > 0 && <Stat label="Line of Credit" value={`${usd(debt.loc.balanceCents)} / ${usd(debt.loc.limitCents)}`} reading={debt.readings.loc} />}
           </div>
+          {debt.loans.filter((l: any) => l.balanceCents > 0).length > 0 && (
+            <div className="statement-scroll" style={{ marginTop: 24 }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Loan</th>
+                    <th>Lender</th>
+                    <th className="num">Original</th>
+                    <th className="num">Balance</th>
+                    <th className="num">Payment</th>
+                    <th className="num">Rate</th>
+                    <th>Maturity</th>
+                    <th>Collateral</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debt.loans
+                    .filter((l: any) => l.balanceCents > 0)
+                    .map((l: any) => (
+                      <tr key={l.id}>
+                        <td className="cell-name">{l.name}</td>
+                        <td>{l.lender ?? "—"}</td>
+                        <td className="num">{l.originalCents ? usd(l.originalCents) : "—"}</td>
+                        <td className="num">{usd(l.balanceCents)}</td>
+                        <td className="num">{usd(l.paymentCents)}</td>
+                        <td className="num">{l.ratePct ? `${Number(l.ratePct).toFixed(2)}%` : "—"}</td>
+                        <td className="muted">{l.maturity ? shortDate(l.maturity) : "—"}</td>
+                        <td className="muted">{l.collateral ?? "—"}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       )}
 

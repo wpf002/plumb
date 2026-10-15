@@ -326,11 +326,44 @@ export function Accuracy() {
           <div className="stat-label">Month-End Cash Error</div>
           <div className="stat-value num">{bt.cash.mapePct}%</div>
         </div>
+        {bt.jobMargin && (
+          <div className="stat">
+            <div className="stat-label">Job Margin Error</div>
+            <div className="stat-value num">{bt.jobMargin.avgErrorPts} pts</div>
+          </div>
+        )}
         <div className="stat">
           <div className="stat-label">Forecast Made</div>
           <div className="stat-value num">{shortDate(bt.asOf)}</div>
         </div>
       </div>
+      {(bt.payroll || bt.backlog) && (
+        <table className="table" style={{ marginBottom: 24 }}>
+          <thead>
+            <tr>
+              <th>Six Months</th>
+              <th className="num">Forecast</th>
+              <th className="num">Actual</th>
+              <th className="num">Off By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ["Payroll", bt.payroll],
+              ["Backlog Earned", bt.backlog],
+            ]
+              .filter(([, v]) => v)
+              .map(([label, v]: any) => (
+                <tr key={label}>
+                  <td className="cell-name">{label}</td>
+                  <td className="num">{usd(v.forecastCents)}</td>
+                  <td className="num">{usd(v.actualCents)}</td>
+                  <td className="num">{v.errorPct === null ? "—" : `${v.errorPct > 0 ? "+" : ""}${v.errorPct}%`}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      )}
       <table className="table">
         <thead>
           <tr>

@@ -328,13 +328,13 @@ export const TOOLS: Tool[] = [
   {
     name: "run_scenario",
     description:
-      "Run a what-if: lose_customer (customer, pct), exit_line (line), grow_line (line, pct), materials (pct), hire (count), buy_equipment (priceCents), payment_delay (amountCents, days). Returns the restated year.",
+      "Run a what-if: revenue_change (pct, negative for a decline), lose_customer (customer, pct), exit_line (line), grow_line (line, pct), materials (pct), hire (count), buy_equipment (priceCents), payment_delay (amountCents, days). Returns the restated year.",
     scope: "analyze",
     inputSchema: {
       type: "object",
       required: ["kind"],
       properties: {
-        kind: { type: "string", enum: ["lose_customer", "exit_line", "grow_line", "materials", "hire", "buy_equipment", "payment_delay"] },
+        kind: { type: "string", enum: ["revenue_change", "lose_customer", "exit_line", "grow_line", "materials", "hire", "buy_equipment", "payment_delay"] },
         customer: { type: "string" },
         line: { type: "string" },
         pct: { type: "number" },
@@ -357,6 +357,8 @@ export const TOOLS: Tool[] = [
         return { facts, data: r };
       };
       switch (i.kind) {
+        case "revenue_change":
+          return restated(await scen.revenueChange(ctx.companyId, ctx.ledger, i.pct ?? -15));
         case "lose_customer":
           return restated(await scen.loseCustomerShare(ctx.companyId, ctx.ledger, i.customer ?? "", i.pct ?? 100));
         case "exit_line":

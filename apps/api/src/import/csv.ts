@@ -83,6 +83,9 @@ export function date(v: string | undefined): Date | null {
   if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, 1));
   m = t.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  // US bank exports: M/D/YYYY or M/D/YY.
+  m = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (m) return new Date(Date.UTC(m[3].length === 2 ? 2000 + +m[3] : +m[3], +m[1] - 1, +m[2]));
   return null;
 }
 

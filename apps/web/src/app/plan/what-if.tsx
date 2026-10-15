@@ -6,9 +6,10 @@ import { Locked } from "../plan-ui";
 
 const toCents = (s: string) => Math.round((Number(s.replace(/[$,]/g, "")) || 0) * 100);
 
-type Kind = "lose_customer" | "exit_line" | "grow_line" | "materials" | "add_pm" | "add_location" | "payment_delay";
+type Kind = "revenue_change" | "lose_customer" | "exit_line" | "grow_line" | "materials" | "add_pm" | "add_location" | "payment_delay";
 
 const KINDS: { key: Kind; label: string }[] = [
+  { key: "revenue_change", label: "Revenue Change" },
   { key: "lose_customer", label: "Lose a Customer" },
   { key: "materials", label: "Materials Up" },
   { key: "exit_line", label: "Exit a Line" },
@@ -21,6 +22,7 @@ const KINDS: { key: Kind; label: string }[] = [
 type Input = { key: string; label: string; unit: "$" | "%" | "days" | "mo" };
 
 const INPUTS: Record<Kind, Input[]> = {
+  revenue_change: [{ key: "pct", label: "Change", unit: "%" }],
   lose_customer: [
     { key: "pct", label: "Share Lost", unit: "%" },
     { key: "contributionMarginPct", label: "Contribution Margin", unit: "%" },
@@ -84,8 +86,8 @@ function fmt(v: number | null, isPct?: boolean) {
 
 export function WhatIf() {
   const [opts, setOpts] = useState<any>(null);
-  const [kind, setKind] = useState<Kind>("lose_customer");
-  const [v, setV] = useState<Record<string, string>>({ ...DEFAULTS });
+  const [kind, setKind] = useState<Kind>("revenue_change");
+  const [v, setV] = useState<Record<string, string>>({ ...DEFAULTS, pct: "-15" });
   const [pick, setPick] = useState<{ customer: string; line: string }>({ customer: "", line: "" });
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +139,14 @@ export function WhatIf() {
       <section className="card">
         <div className="chips">
           {KINDS.map((k) => (
-            <button key={k.key} className={`chip${k.key === kind ? " active" : ""}`} onClick={() => setKind(k.key)}>
+            <button
+              key={k.key}
+              className={`chip${k.key === kind ? " active" : ""}`}
+              onClick={() => {
+                setKind(k.key);
+                setV((p) => ({ ...p, pct: k.key === "revenue_change" ? "-15" : DEFAULTS.pct }));
+              }}
+            >
               {k.label}
             </button>
           ))}

@@ -21,6 +21,7 @@ const ROUTES: { re: RegExp; feature: Feature; methods?: string[] }[] = [
   { re: new RegExp(`${C}\\/operations\\/capacity$`), feature: "capacity" },
   { re: new RegExp(`${C}\\/operations\\/service-calls$`), feature: "serviceCalls" },
   { re: new RegExp(`${C}\\/operations\\/benchmarks$`), feature: "benchmarks" },
+  { re: new RegExp(`${C}\\/capital\\/acquisition$`), feature: "acquisition" },
   { re: new RegExp(`${C}\\/capital\\/(purchase|repair-replace|hire|crew|defaults)$`), feature: "capital" },
   { re: new RegExp(`${C}\\/what-if(\\/options)?$`), feature: "scenarios" },
   { re: new RegExp(`${C}\\/brief$`), feature: "brief" },

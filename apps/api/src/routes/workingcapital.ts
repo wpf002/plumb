@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { agingReport } from "@plumb/engine";
 import { loadLedger } from "../analytics/ledger.js";
 import { healthDashboard } from "../analytics/health.js";
-import { arAging, collections, debtDashboard, openPayables, workingCapital } from "../analytics/workingcapital.js";
+import { arAging, billList, collections, debtDashboard, invoiceList, openPayables, workingCapital } from "../analytics/workingcapital.js";
 import { companyAsOf } from "../snapshot.js";
 
 export function registerWorkingCapitalRoutes(app: FastifyInstance) {
@@ -16,13 +16,15 @@ export function registerWorkingCapitalRoutes(app: FastifyInstance) {
     const companyId = req.params.companyId;
     const ledger = await loadLedger(companyId);
     const asOf = await companyAsOf(companyId);
-    const [wc, ar, priority, payables] = await Promise.all([
+    const [wc, ar, priority, payables, invoices, bills] = await Promise.all([
       workingCapital(companyId, ledger),
       arAging(companyId),
       collections(companyId),
       openPayables(companyId, asOf),
+      invoiceList(companyId, asOf),
+      billList(companyId, asOf),
     ]);
-    return { workingCapital: wc, receivables: ar.aging, collections: priority, payables: agingReport(payables, asOf) };
+    return { workingCapital: wc, receivables: ar.aging, collections: priority, payables: agingReport(payables, asOf), invoices, bills };
   });
 
   app.get<{ Params: { companyId: string } }>("/companies/:companyId/debt", async (req) =>

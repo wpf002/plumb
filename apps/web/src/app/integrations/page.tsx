@@ -6,6 +6,7 @@ import { DataHealthCard } from "../health-ui";
 import { CsvImport } from "../csv-import";
 import { ApiKeys } from "./api-keys";
 import { DataSources } from "./sources";
+import { TransactionsImport } from "./transactions-import";
 
 const statusBadge: Record<string, { cls: string; label: string }> = {
   connected: { cls: "good", label: "Connected" },
@@ -205,6 +206,8 @@ export default function Integrations() {
       <DataHealth />
 
       <ImportCard />
+
+      <TransactionsImport />
 
       <Connections />
 

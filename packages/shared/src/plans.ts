@@ -35,6 +35,7 @@ export const FEATURE_PLAN = {
   exports: "BUSINESS",
   benchmarks: "BUSINESS",
   lenderPackage: "BUSINESS",
+  acquisition: "BUSINESS",
 } as const satisfies Record<string, Plan>;
 
 export type Feature = keyof typeof FEATURE_PLAN;
@@ -64,6 +65,7 @@ export const FEATURE_LABEL: Record<Feature, string> = {
   exports: "Data warehouse exports",
   benchmarks: "Benchmarks",
   lenderPackage: "Lender package",
+  acquisition: "Acquisition analysis",
 };
 
 export const LIMITS: Record<Plan, { seats: number | null; dennyPerMonth: number | null }> = {

@@ -42,7 +42,34 @@ export async function loadFleet(companyId: string): Promise<FleetAsset[]> {
 
 export async function fleet(companyId: string) {
   const asOf = await companyAsOf(companyId);
-  return { asOf: asOf.toISOString().slice(0, 10), ...fleetSummary(await loadFleet(companyId), asOf) };
+  const assets = await loadFleet(companyId);
+  const extra = new Map(
+    (await prisma.asset.findMany({ where: { companyId, id: { in: assets.map((a) => a.id) } }, select: { id: true, fuelCostAnnual: true, insuranceCostAnnual: true, utilizationPct: true } })).map((a) => [a.id, a])
+  );
+  const summary = fleetSummary(assets, asOf);
+  return {
+    asOf: asOf.toISOString().slice(0, 10),
+    ...summary,
+    // The register fields the fleet dashboard shows next to each assessment.
+    assets: summary.assets.map((x) => {
+      const a = assets.find((y) => y.id === x.id)!;
+      const e = extra.get(x.id);
+      return {
+        ...x,
+        purchaseDate: a.purchaseDate,
+        costCents: a.costCents,
+        usefulLifeMonths: a.usefulLifeMonths,
+        loanBalanceCents: a.loanBalanceCents,
+        monthlyPaymentCents: a.monthlyPaymentCents,
+        annualRepairCents: a.annualRepairCents,
+        annualMaintenanceCents: a.annualMaintenanceCents,
+        annualFuelCents: e?.fuelCostAnnual == null ? null : n(e.fuelCostAnnual),
+        annualInsuranceCents: e?.insuranceCostAnnual == null ? null : n(e.insuranceCostAnnual),
+        utilizationPct: e?.utilizationPct ?? null,
+        downtimeDaysAnnual: a.downtimeDaysAnnual,
+      };
+    }),
+  };
 }
 
 /** What the company's own numbers say, used to prefill every capital decision. */

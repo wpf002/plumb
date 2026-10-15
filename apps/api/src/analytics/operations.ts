@@ -388,6 +388,7 @@ export async function labor(companyId: string, ledger: Ledger) {
       payrollPctOfRevenue: pay ? pct(pay, t.revenue) : null,
       hours: hours || null,
       revenuePerHourCents: hours ? Math.round(t.revenue / hours) : null,
+      grossProfitPerHourCents: hours ? Math.round(t.grossProfit / hours) : null,
       overtimePct: hours ? pct(ot, hours) : null,
     });
   }
@@ -410,7 +411,28 @@ export async function labor(companyId: string, ledger: Ledger) {
   };
 }
 
-export async function crews(companyId: string) {
+/**
+ * Revenue a crew produces, when the books tie it to one: a crew named for a
+ * service line earns that line's revenue; a company's only field crew earns
+ * all of it.
+ */
+function crewRevenue(name: string, kind: string, fieldCrews: number, ledger: Ledger | null, periods: string[]) {
+  if (!ledger || !periods.length) return null;
+  const lines = ledger.accounts.filter((a) => a.statement === "INCOME" && a.type === "REVENUE");
+  const sum = (as: typeof lines) => as.reduce((t, a) => t + periods.reduce((x, p) => x + (a.amounts.get(p) ?? 0), 0), 0);
+  const match = lines.filter((a) => (a.serviceLine ?? a.name).toLowerCase() === name.toLowerCase());
+  if (match.length) return sum(match);
+  if (kind !== "SUPPORT" && fieldCrews === 1) return sum(lines);
+  return null;
+}
+
+/** Payroll of crews that carry a service line's name, over the given months. */
+export async function lineLabor(companyId: string, periods: string[]) {
+  const crewsWithPay = await prisma.crew.findMany({ where: { companyId }, include: { employees: { include: { timeEntries: { where: { period: { in: periods } } } } } } });
+  return new Map(crewsWithPay.map((c) => [c.name.toLowerCase(), c.employees.reduce((t, e) => t + e.timeEntries.reduce((x, te) => x + n(te.grossPay), 0), 0)]));
+}
+
+export async function crews(companyId: string, ledger: Ledger | null = null) {
   const asOf = await companyAsOf(companyId);
   const last = monthKeyOf(asOf);
   const from = `${Number(last.slice(0, 4)) - 1}-${last.slice(5)}`;
@@ -421,9 +443,11 @@ export async function crews(companyId: string) {
       capacity: { where: { period: { gt: from, lte: last } } },
     },
   });
-  return rows
-    .filter((c) => c.kind !== "SUPPORT" && c.employees.length > 0)
+  const field = rows.filter((c) => c.kind !== "SUPPORT" && c.employees.length > 0);
+  const trailing = ledger ? ledger.periods.filter((p) => p > from && p <= last) : [];
+  return field
     .map((c) => {
+      const revenue = crewRevenue(c.name, c.kind, field.length, ledger, trailing);
       const te = c.employees.flatMap((e) => e.timeEntries);
       const hours = te.reduce((s, e) => s + e.regularHours + e.overtimeHours, 0);
       const ot = te.reduce((s, e) => s + e.overtimeHours, 0);
@@ -436,6 +460,8 @@ export async function crews(companyId: string) {
         hours: hours || null,
         overtimePct: hours ? pct(ot, hours) : null,
         utilizationPct: util.length ? r1(avg(util)) : null,
+        revenueCents: revenue,
+        laborPctOfRevenue: revenue ? pct(te.reduce((s, e) => s + n(e.grossPay), 0), revenue) : null,
       };
     })
     .sort((a, b) => b.payrollCents - a.payrollCents);
@@ -500,8 +526,11 @@ export async function capacityPlan(companyId: string, ledger: Ledger) {
     const span = months.filter((m) => m >= start).slice(0, 3);
     for (const m of span) pending.set(m, pending.get(m)! + (n(o.estimatedValue) * o.probabilityPct) / 100 / span.length);
   }
+  // Hours: field staff at a standard 173-hour month, committed in proportion to booked revenue.
+  const availableHours = head.fieldCount * 173;
   return {
     monthlyCeilingCents: Math.round(monthlyCeiling),
+    availableHours,
     headroom: head,
     months: months.map((m) => ({
       period: m,
@@ -509,6 +538,7 @@ export async function capacityPlan(companyId: string, ledger: Ledger) {
       pipelineCents: Math.round(pending.get(m)!),
       bookedPct: monthlyCeiling ? r1((booked.get(m)! / monthlyCeiling) * 100) : null,
       withPipelinePct: monthlyCeiling ? r1(((booked.get(m)! + pending.get(m)!) / monthlyCeiling) * 100) : null,
+      committedHours: monthlyCeiling ? Math.round((booked.get(m)! / monthlyCeiling) * availableHours) : null,
     })),
   };
 }

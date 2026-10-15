@@ -31,6 +31,7 @@ export function ServiceLinesView({ data }: { data: any }) {
               <th className="num">Growth</th>
               <th className="num">Since {years[0]}</th>
               {showMargin && <th className="num" title="Direct costs named for the line, plus a revenue share of shared costs">Gross Margin</th>}
+              {data.lines.some((l: any) => l.laborPct !== null) && <th className="num" title="Payroll of the crew named for this line, as a share of its revenue">Labor %</th>}
             </tr>
           </thead>
           <tbody>
@@ -46,6 +47,7 @@ export function ServiceLinesView({ data }: { data: any }) {
                 <td className={`num${l.growthPct < 0 ? " neg" : ""}`}>{signed(l.growthPct)}</td>
                 <td className={`num${l.sinceFirstPct < 0 ? " neg" : ""}`}>{signed(l.sinceFirstPct)}</td>
                 {showMargin && <td className="num">{pct(l.byYear[last].marginPct)}</td>}
+                {data.lines.some((x: any) => x.laborPct !== null) && <td className="num">{pct(l.laborPct)}</td>}
               </tr>
             ))}
           </tbody>
@@ -78,6 +80,7 @@ export function CustomersView({ data }: { data: any }) {
                 <th className="num">Gross Profit</th>
                 <th className="num">Margin</th>
                 <th className="num">Jobs</th>
+                <th className="num">Change Orders</th>
                 <th className="num">Days to Pay</th>
               </tr>
             </thead>
@@ -97,6 +100,7 @@ export function CustomersView({ data }: { data: any }) {
                   <td className="num">{usd(r.grossProfitCents)}</td>
                   <td className="num">{pct(r.marginPct)}</td>
                   <td className="num">{r.jobs || "—"}</td>
+                  <td className="num">{r.changeOrders || "—"}</td>
                   <td className="num">{r.avgDaysToPay === null ? "—" : Math.round(r.avgDaysToPay)}</td>
                 </tr>
               ))}
@@ -139,6 +143,7 @@ export function LaborView({ data }: { data: any }) {
               <th className="num">Field Payroll</th>
               <th className="num">% of Revenue</th>
               {hasHours && <th className="num">Revenue / Hour</th>}
+              {hasHours && <th className="num">Gross Profit / Hour</th>}
               {hasHours && <th className="num">Overtime</th>}
             </tr>
           </thead>
@@ -152,6 +157,7 @@ export function LaborView({ data }: { data: any }) {
                 <td className="num">{y.fieldPayrollCents ? usd(y.fieldPayrollCents) : "—"}</td>
                 <td className="num">{pct(y.payrollPctOfRevenue)}</td>
                 {hasHours && <td className="num">{money(y.revenuePerHourCents)}</td>}
+                {hasHours && <td className="num">{money(y.grossProfitPerHourCents)}</td>}
                 {hasHours && <td className="num">{pct(y.overtimePct)}</td>}
               </tr>
             ))}
@@ -170,6 +176,8 @@ export function LaborView({ data }: { data: any }) {
                   <th>Crew</th>
                   <th className="num">People</th>
                   <th className="num">Payroll</th>
+                  {data.crews.some((c: any) => c.revenueCents) && <th className="num">Revenue</th>}
+                  {data.crews.some((c: any) => c.revenueCents) && <th className="num">Labor %</th>}
                   {data.crews.some((c: any) => c.overtimePct !== null) && <th className="num">Overtime</th>}
                 </tr>
               </thead>
@@ -181,6 +189,8 @@ export function LaborView({ data }: { data: any }) {
                     </td>
                     <td className="num">{c.headcount}</td>
                     <td className="num">{usd(c.payrollCents)}</td>
+                    {data.crews.some((x: any) => x.revenueCents) && <td className="num">{money(c.revenueCents)}</td>}
+                    {data.crews.some((x: any) => x.revenueCents) && <td className="num">{pct(c.laborPctOfRevenue)}</td>}
                     {data.crews.some((x: any) => x.overtimePct !== null) && <td className="num">{pct(c.overtimePct)}</td>}
                   </tr>
                 ))}
@@ -249,9 +259,10 @@ export function CapacityView({ data }: { data: any }) {
           <thead>
             <tr>
               <th>Month</th>
-              <th className="num">Booked</th>
+              <th className="num">Available Hours</th>
+              <th className="num">Committed Hours</th>
               <th className="num">Pipeline</th>
-              <th style={{ width: "40%" }}>Load</th>
+              <th style={{ width: "30%" }}>Load</th>
               <th className="num">Booked</th>
               <th className="num">If Pipeline Closes</th>
             </tr>
@@ -260,7 +271,8 @@ export function CapacityView({ data }: { data: any }) {
             {data.months.map((m: any) => (
               <tr key={m.period}>
                 <td className="cell-name">{monthLabel(m.period)}</td>
-                <td className="num">{usd(m.bookedCents)}</td>
+                <td className="num">{data.availableHours ? data.availableHours.toLocaleString("en-US") : "—"}</td>
+                <td className="num" title={usd(m.bookedCents)}>{m.committedHours !== null ? m.committedHours.toLocaleString("en-US") : "—"}</td>
                 <td className="num">{usd(m.pipelineCents)}</td>
                 <td>
                   <LoadBar booked={m.bookedPct ?? 0} pipeline={(m.withPipelinePct ?? 0) - (m.bookedPct ?? 0)} />

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { purchaseAnalysis, repairVsReplace, type PurchaseInput, type RepairReplaceInput } from "@plumb/engine";
+import { acquisitionAnalysis, incomeTotals, purchaseAnalysis, repairVsReplace, type PurchaseInput, type RepairReplaceInput } from "@plumb/engine";
+import { debtDashboard, workingCapital } from "../analytics/workingcapital.js";
 import { capitalDefaults, crewExpansionFor, fleet, hireFor, type CrewExpansionScenario, type HireScenario } from "../analytics/capital.js";
 import { loadLedger } from "../analytics/ledger.js";
 import { completeYears, customerRevenue, serviceLines } from "../analytics/operations.js";
@@ -80,7 +81,47 @@ const crewBody = {
   },
 } as const;
 
+const acquisitionBody = {
+  type: "object",
+  additionalProperties: false,
+  required: ["priceCents", "targetRevenueCents", "targetEbitdaCents", "downPct", "ratePct", "termMonths"],
+  properties: {
+    priceCents: money,
+    targetRevenueCents: money,
+    targetEbitdaCents: { type: "integer" },
+    downPct: rate,
+    ratePct: rate,
+    termMonths: { type: "integer", minimum: 1, maximum: 360 },
+    synergyPct: rate,
+  },
+} as const;
+
 export function registerCapitalRoutes(app: FastifyInstance) {
+  // Buying another company: the deal, the combined coverage, payback, and value added.
+  app.post<P & { Body: { priceCents: number; targetRevenueCents: number; targetEbitdaCents: number; downPct: number; ratePct: number; termMonths: number; synergyPct?: number } }>(
+    "/companies/:companyId/capital/acquisition",
+    { schema: { body: acquisitionBody } },
+    async (req, reply) => {
+      const id = req.params.companyId;
+      const ledger = await loadLedger(id);
+      const years = completeYears(ledger, await companyAsOf(id));
+      const y = years.at(-1);
+      if (!y) return reply.code(422).send({ error: "Unprocessable", message: "Needs a full year of books." });
+      const t = incomeTotals(ledger.accounts, ledger.periods.filter((p) => p.startsWith(String(y))));
+      const [wc, debt, v] = await Promise.all([workingCapital(id, ledger), debtDashboard(id, ledger), valuation(id, ledger).catch(() => null)]);
+      const multiple = v ? (v.multiples.ebitda[0] + v.multiples.ebitda[1]) / 2 : 3.5;
+      return acquisitionAnalysis({
+        ...req.body,
+        synergyPct: req.body.synergyPct ?? 0,
+        buyerRevenueCents: t.revenue,
+        buyerEbitdaCents: t.ebitda,
+        buyerAnnualDebtServiceCents: debt.annualDebtServiceCents,
+        buyerCashCents: wc.cashCents,
+        valuationMultiple: multiple,
+      });
+    }
+  );
+
   app.get<P>("/companies/:companyId/capital/fleet", async (req) => fleet(req.params.companyId));
   app.get<P>("/companies/:companyId/capital/defaults", async (req) => capitalDefaults(req.params.companyId, await loadLedger(req.params.companyId)));
 
@@ -105,10 +146,10 @@ const scenarioBody = {
   type: "object",
   required: ["kind"],
   properties: {
-    kind: { type: "string", enum: ["lose_customer", "exit_line", "grow_line", "materials", "add_pm", "add_location", "payment_delay"] },
+    kind: { type: "string", enum: ["revenue_change", "lose_customer", "exit_line", "grow_line", "materials", "add_pm", "add_location", "payment_delay"] },
     customer: { type: "string", maxLength: 200 },
     line: { type: "string", maxLength: 200 },
-    pct: { type: "number", minimum: 0, maximum: 500 },
+    pct: { type: "number", minimum: -100, maximum: 500 },
     contributionMarginPct: rate,
     amountCents: money,
     days: { type: "integer", minimum: 1, maximum: 365 },
@@ -159,6 +200,8 @@ export function registerScenarioV2Routes(app: FastifyInstance) {
     const cm = b.contributionMarginPct !== undefined ? { contributionMarginPct: b.contributionMarginPct } : {};
     try {
       switch (b.kind) {
+        case "revenue_change":
+          return await scen.revenueChange(id, ledger, b.pct ?? -15);
         case "lose_customer":
           return await scen.loseCustomerShare(id, ledger, b.customer ?? "", b.pct ?? 100, cm);
         case "exit_line":

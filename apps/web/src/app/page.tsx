@@ -9,7 +9,6 @@ import { Fragment } from "react";
 
 
 const TONE: Record<string, string> = { good: "good", warn: "warn", bad: "bad", neutral: "neutral" };
-const POSITION: Record<string, string> = { good: "Strong", warn: "Tight", bad: "At Risk", neutral: "Stable" };
 const RATING_BADGE: Record<string, string> = { Strong: "good", Stable: "info", Watch: "warn", "At Risk": "bad" };
 const RATING_TONE: Record<string, string> = { Strong: "", Stable: "", Watch: "warning", "At Risk": "critical" };
 
@@ -91,9 +90,7 @@ export default async function Dashboard() {
           <div className="card-title" style={{ marginBottom: 0 }}>
             Financial Health
           </div>
-          <span className={`badge ${TONE[dash.position.tone]}`} title={dash.position.label}>
-            {POSITION[dash.position.tone] ?? dash.position.label}
-          </span>
+          <span className={`badge ${TONE[dash.position.tone]}`}>{dash.position.label}</span>
         </div>
         <div className="metric-columns">
           {dash.groups.map((g: any) => (
@@ -104,7 +101,8 @@ export default async function Dashboard() {
                 .map((m: any) => (
                   <div key={m.key} className="metric-row" title={m.basis ?? undefined}>
                     <span className="metric-label">{m.label}</span>
-                    <span className={`metric-value num${m.reading && m.reading.tone !== "good" && m.reading.tone !== "neutral" ? ` tone-${m.reading.tone}` : ""}`} title={m.reading?.label}>{formatMetric(m)}</span>
+                    <span className="metric-value num">{formatMetric(m)}</span>
+                    {m.reading && <span className={`metric-reading ${m.reading.tone}`}>{m.reading.label}</span>}
 
                   </div>
                 ))}

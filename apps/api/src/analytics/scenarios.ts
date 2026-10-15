@@ -165,6 +165,13 @@ export async function growServiceLine(companyId: string, ledger: Ledger, line: s
   return { ...r, addedRevenueCents: added, newRevenueCents: l.revenueCents + added, fieldStaffNeeded: hires };
 }
 
+/** Revenue up or down across the board; direct costs move with it, overhead stays. */
+export async function revenueChange(companyId: string, ledger: Ledger, changePct: number) {
+  const b = await baseline(companyId, ledger);
+  const delta = Math.round((b.position.revenueCents * changePct) / 100);
+  return impact(b, "revenue_change", { revenueCents: delta, grossProfitCents: Math.round((delta * b.grossMarginPct) / 100) }, { changePct, grossMarginPct: b.grossMarginPct }, ["Direct costs scale with revenue; overhead holds."]);
+}
+
 export async function materialsIncrease(companyId: string, ledger: Ledger, increasePct: number) {
   const b = await baseline(companyId, ledger);
   const materials = ledger.accounts
@@ -268,4 +275,4 @@ export async function paymentDelay(companyId: string, amountCents: number, days:
   };
 }
 
-export const SCENARIO_KINDS = ["lose_customer", "exit_line", "grow_line", "materials", "add_crew", "add_pm", "add_location", "payment_delay"] as const;
+export const SCENARIO_KINDS = ["revenue_change", "lose_customer", "exit_line", "grow_line", "materials", "add_crew", "add_pm", "add_location", "payment_delay"] as const;

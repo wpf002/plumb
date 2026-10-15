@@ -299,3 +299,47 @@ export function crewExpansion(i: CrewExpansionInput) {
     cashAfterDipCents: i.cashCents !== undefined ? i.cashCents - dip : null,
   };
 }
+
+// ---- acquisition ---------------------------------------------------------------------------
+
+export interface AcquisitionInput {
+  priceCents: Cents;
+  targetRevenueCents: Cents;
+  targetEbitdaCents: Cents;
+  downPct: number;
+  ratePct: number;
+  termMonths: number;
+  /** Cost savings or added margin from combining, as a share of the target's revenue. */
+  synergyPct: number;
+  /** The buyer's own last-year figures. */
+  buyerRevenueCents: Cents;
+  buyerEbitdaCents: Cents;
+  buyerAnnualDebtServiceCents: Cents;
+  buyerCashCents: Cents;
+  /** EBITDA multiple used to value the combined company. */
+  valuationMultiple: number;
+}
+
+export function acquisitionAnalysis(i: AcquisitionInput) {
+  const down = Math.round((i.priceCents * i.downPct) / 100);
+  const financed = i.priceCents - down;
+  const payment = loanPaymentCents(financed, i.ratePct, i.termMonths);
+  const synergy = Math.round((i.targetRevenueCents * i.synergyPct) / 100);
+  const targetEbitda = i.targetEbitdaCents + synergy;
+  const combinedEbitda = i.buyerEbitdaCents + targetEbitda;
+  const debtService = i.buyerAnnualDebtServiceCents + payment * 12;
+  const freeCash = targetEbitda - payment * 12;
+  return {
+    multiplePaid: i.targetEbitdaCents > 0 ? Math.round((i.priceCents / i.targetEbitdaCents) * 10) / 10 : null,
+    downPaymentCents: down,
+    financedCents: financed,
+    monthlyPaymentCents: payment,
+    combinedRevenueCents: i.buyerRevenueCents + i.targetRevenueCents,
+    combinedEbitdaCents: combinedEbitda,
+    combinedDscr: debtService > 0 ? Math.round((combinedEbitda / debtService) * 100) / 100 : null,
+    annualCashAfterDebtCents: freeCash,
+    paybackYears: freeCash > 0 ? Math.round((down / freeCash) * 10) / 10 : null,
+    cashAfterCloseCents: i.buyerCashCents - down,
+    valueAddedCents: Math.round(targetEbitda * i.valuationMultiple) - i.priceCents,
+  };
+}

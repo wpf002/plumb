@@ -130,8 +130,9 @@ export function ProfitabilityView({ data }: { data: any }) {
                   <th>Progress</th>
                   <th className="num">Contract</th>
                   <th className="num">Gross Profit</th>
+                  <th className="num">Bid Margin</th>
                   <th className="num">Target</th>
-                  <th className="num">Margin</th>
+                  <th className="num">Projected</th>
                   <th></th>
                 </tr>
               </thead>
@@ -150,6 +151,7 @@ export function ProfitabilityView({ data }: { data: any }) {
                       </td>
                       <td className="num">{usd(j.revisedContractCents)}</td>
                       <td className={`num${j.projectedGrossProfitCents < 0 ? " neg" : ""}`}>{usd(j.projectedGrossProfitCents)}</td>
+                      <td className="num">{pct(j.bidMarginPct)}</td>
                       <td className="num">{j.targetMarginPct ? pct(j.targetMarginPct) : "—"}</td>
                       <td className="num" style={{ fontWeight: 700 }}>
                         {pct(j.projectedMarginPct)}
@@ -204,6 +206,14 @@ export function EstimatesView({ data }: { data: any }) {
                 <td className={`num${l.variancePct > 2 ? " neg" : ""}`}>{l.variancePct === null ? "—" : `${l.variancePct > 0 ? "+" : ""}${l.variancePct.toFixed(1)}%`}</td>
               </tr>
             ))}
+            {data.hours && (
+              <tr>
+                <td className="cell-name">Labor Hours</td>
+                <td className="num">{data.hours.estimated.toLocaleString("en-US")}</td>
+                <td className="num">{data.hours.actual.toLocaleString("en-US")}</td>
+                <td className={`num${data.hours.variancePct > 2 ? " neg" : ""}`}>{`${data.hours.variancePct > 0 ? "+" : ""}${data.hours.variancePct.toFixed(1)}%`}</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
@@ -264,6 +274,7 @@ export function WipView({ data }: { data: any }) {
                   <th className="num">Contract</th>
                   <th className="num">Complete</th>
                   <th className="num">Cost to Date</th>
+                  <th className="num">Committed</th>
                   <th className="num">Cost to Finish</th>
                   <th className="num">Earned</th>
                   <th className="num">Billed</th>
@@ -286,11 +297,17 @@ export function WipView({ data }: { data: any }) {
                     <td className="num">{usd(r.revisedContractCents)}</td>
                     <td className="num">{Math.round(r.percentComplete * 100)}%</td>
                     <td className="num">{money(r.costToDateCents)}</td>
+                    <td className="num">{r.committedCents ? usd(r.committedCents) : "—"}</td>
                     <td className="num">{money(r.costToCompleteCents)}</td>
                     <td className="num">{usd(r.earnedCents)}</td>
                     <td className="num">{money(r.billedCents)}</td>
                     <td className="num">{money(r.collectedCents)}</td>
-                    <td className={`num${r.overUnderCents < 0 ? " neg" : r.overUnderCents > 0 ? " pos" : ""}`}>{money(r.overUnderCents)}</td>
+                    <td
+                      className={`num${r.overUnderCents < 0 ? " neg" : r.overUnderCents > 0 ? " pos" : ""}`}
+                      title={r.overUnderCents < 0 ? "Underbilled: work done but not invoiced. You are carrying this cost." : r.overUnderCents > 0 ? "Overbilled: billed ahead of the work. The customer is funding the job." : undefined}
+                    >
+                      {money(r.overUnderCents)}
+                    </td>
                     <td className="num">
                       {pct(r.projectedMarginPct)}
                       
@@ -320,6 +337,7 @@ export function ChangeOrdersView({ data }: { data: any }) {
           {statuses.map(([s, v]) => (
             <Stat key={s} label={CO_STATUS[s] ?? s} value={usd(v.valueCents)} />
           ))}
+          {data.totals.unbilledApprovedCents > 0 && <Stat label="Approved, Not Billed" value={usd(data.totals.unbilledApprovedCents)} tone="neg" />}
           {data.totals.timeImpactDays > 0 && <Stat label="Schedule Impact" value={`${data.totals.timeImpactDays} days`} />}
         </div>
       </section>
@@ -402,6 +420,7 @@ export function RetainageView({ data }: { data: any }) {
       <div className="stats" style={{ marginBottom: 16 }}>
         <Stat label="Held" value={usd(data.totalHeldCents)} />
         <Stat label="Due Within 90 Days" value={usd(data.next90Cents)} tone="pos" />
+        <Stat label="Collected" value={usd(data.collectedCents ?? 0)} />
       </div>
       <table className="table">
         <thead>
@@ -455,6 +474,7 @@ export function BacklogView({ data }: { data: any }) {
                 <th>Start</th>
                 <th>Finish</th>
                 <th className="num">Margin</th>
+                <th className="num">Labor Hours</th>
               </tr>
             </thead>
             <tbody>
@@ -469,6 +489,7 @@ export function BacklogView({ data }: { data: any }) {
                   <td className="muted">{shortDate(r.start)}</td>
                   <td className="muted">{shortDate(r.end)}</td>
                   <td className="num">{r.expectedMarginPct ? pct(r.expectedMarginPct) : "—"}</td>
+                  <td className="num">{r.expectedLaborHours ? r.expectedLaborHours.toLocaleString("en-US") : "—"}</td>
                 </tr>
               ))}
             </tbody>
@@ -507,6 +528,8 @@ export function PipelineView({ data }: { data: any }) {
                 <th className="num">Value</th>
                 <th className="num">Odds</th>
                 <th className="num">Weighted</th>
+                <th className="num">Margin</th>
+                <th className="num">Expected Profit</th>
                 <th>Expected Start</th>
               </tr>
             </thead>
@@ -518,6 +541,8 @@ export function PipelineView({ data }: { data: any }) {
                   <td className="num">{usd(o.valueCents)}</td>
                   <td className="num">{pct(o.probabilityPct, 0)}</td>
                   <td className="num">{usd(o.weightedCents)}</td>
+                  <td className="num">{pct(o.expectedMarginPct)}</td>
+                  <td className="num">{usd(o.expectedGrossProfitCents)}</td>
                   <td className="muted">{shortDate(o.expectedStart)}</td>
                 </tr>
               ))}

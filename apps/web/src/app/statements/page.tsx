@@ -26,6 +26,7 @@ const COMPARE = [
   { key: "prior_year", label: "Prior Year" },
   { key: "prior_period", label: "Prior Period" },
   { key: "budget", label: "Budget" },
+  { key: "forecast", label: "Forecast" },
 ] as const;
 
 type Tab = (typeof TABS)[number]["key"];

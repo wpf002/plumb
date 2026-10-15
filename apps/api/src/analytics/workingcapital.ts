@@ -78,6 +78,41 @@ export async function openPayables(companyId: string, asOf: Date): Promise<OpenI
   return events.map((e) => ({ id: e.id, party: "Vendor", amountCents: n(e.amount), issueDate: e.expectedDate, dueDate: e.expectedDate }));
 }
 
+const DAY = 86_400_000;
+
+/** Open invoices with how long each has been outstanding, oldest first. */
+export async function invoiceList(companyId: string, asOf: Date) {
+  return (await openReceivables(companyId, asOf))
+    .map((i) => ({
+      id: i.id,
+      party: i.party,
+      amountCents: i.amountCents,
+      issueDate: i.issueDate,
+      dueDate: i.dueDate,
+      daysOutstanding: Math.max(0, Math.round((asOf.getTime() - i.issueDate.getTime()) / DAY)),
+      daysLate: Math.max(0, Math.round((asOf.getTime() - i.dueDate.getTime()) / DAY)),
+    }))
+    .sort((a, b) => b.daysLate - a.daysLate || b.amountCents - a.amountCents);
+}
+
+/** Open bills with expense type and job, due soonest first. */
+export async function billList(companyId: string, asOf: Date) {
+  const bills = await prisma.bill.findMany({
+    where: { companyId, billDate: { lte: asOf }, status: { not: "VOID" }, OR: [{ paidDate: null }, { paidDate: { gt: asOf } }] },
+    include: { vendor: true, project: true },
+    orderBy: { dueDate: "asc" },
+  });
+  return bills.map((b) => ({
+    id: b.externalId ?? b.id,
+    vendor: b.vendor?.name ?? "Unknown vendor",
+    amountCents: n(b.amount),
+    dueDate: b.dueDate,
+    category: b.category ?? b.vendor?.category ?? null,
+    job: b.project?.name ?? null,
+    daysLate: Math.max(0, Math.round((asOf.getTime() - b.dueDate.getTime()) / DAY)),
+  }));
+}
+
 export function toArAging(aging: Aging): ArAging {
   const top = aging.byParty[0] ?? null;
   const pastDue = [...aging.byParty].sort((a, b) => b.pastDue30Cents - a.pastDue30Cents)[0];

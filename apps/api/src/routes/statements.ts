@@ -19,7 +19,7 @@ import { periodOf } from "../import/csv.js";
 import { taxCsv, taxPackage } from "../analytics/tax.js";
 
 const VIEWS = ["monthly", "quarterly", "annual", "ytd", "t12"] as const;
-const COMPARE = ["none", "prior_year", "prior_period", "budget"] as const;
+const COMPARE = ["none", "prior_year", "prior_period", "budget", "forecast"] as const;
 
 const query = {
   type: "object",
@@ -88,6 +88,7 @@ export function registerStatementRoutes(app: FastifyInstance) {
       if (compare === "prior_year") comparison = incomeStatement(ledger.accounts, columns.map(priorYear));
       if (compare === "prior_period") comparison = incomeStatement(ledger.accounts, columns.map(priorPeriod));
       if (compare === "budget") budget = await budgetColumns(req.params.companyId, columns);
+      if (compare === "forecast") comparison = forecastStatement(ledger.accounts, columns);
       return { through, hasLedger: ledger.accounts.length > 0, statement, comparison, budget };
     }
   );
@@ -209,4 +210,20 @@ export function registerTaxRoutes(app: FastifyInstance) {
       }
     }
   );
+}
+
+
+/**
+ * What a forecast made a year earlier would have said: each column's prior-year
+ * figures grown by the growth rate known at the time (the year before that),
+ * capped at ±30%. Every line scales together, so margins carry over.
+ */
+function forecastStatement(accounts: Parameters<typeof incomeStatement>[0], columns: Parameters<typeof incomeStatement>[1]) {
+  const base = incomeStatement(accounts, columns.map(priorYear));
+  const growth = columns.map((c) => {
+    const py = incomeTotals(accounts, priorYear(c).periods).revenue;
+    const ppy = incomeTotals(accounts, priorYear(priorYear(c)).periods).revenue;
+    return ppy > 0 && py > 0 ? Math.max(-0.3, Math.min(0.3, py / ppy - 1)) : 0;
+  });
+  return { ...base, lines: base.lines.map((l) => ({ ...l, values: l.values.map((v, i) => Math.round(v * (1 + growth[i]))) })) };
 }

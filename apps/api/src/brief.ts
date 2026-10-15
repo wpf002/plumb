@@ -2,7 +2,8 @@ import { incomeTotals, monthKeyOf } from "@plumb/engine";
 import type { Fact } from "./ai.js";
 import { verifyNarration } from "./ai.js";
 import { twelveMonth } from "./analytics/forecast.js";
-import { capacityPlan, completeYears, concentration, crewUtilization, recurringAnnual } from "./analytics/operations.js";
+import { capacityPlan, completeYears, concentration, crewUtilization, recurringAnnual, serviceLines } from "./analytics/operations.js";
+import { fleet } from "./analytics/capital.js";
 import { backlog, loadJobs } from "./analytics/projects.js";
 import { budgetRows } from "./analytics/statements.js";
 import { exitReadiness } from "./analytics/valuation.js";
@@ -166,6 +167,30 @@ export async function buildBrief(companyId: string, period: "week" | "month" = "
     const s = fact("backlog.signed", "Signed backlog", usd(bl.signedCents));
     const m = fact("backlog.months", "Months of work signed", `${bl.monthsOfCoverage} months`);
     add({ key: "backlog", text: `${s} of signed backlog covers ${m}.`, tone: "warn", weight: 50 });
+  }
+  // Pricing: a service line earning well under the company's margin.
+  if (last) {
+    const sl = serviceLines(ctx.ledger, [last]);
+    if (sl.costBasis === "direct") {
+      const t = incomeTotals(ctx.ledger.accounts, ctx.ledger.periods.filter((p) => p.startsWith(String(last))));
+      const gm = pctOf(t.grossProfit, t.revenue);
+      const weakest = [...sl.lines].filter((l) => l.byYear[last].revenueCents > 0).sort((a, b) => a.byYear[last].marginPct - b.byYear[last].marginPct)[0];
+      if (weakest && weakest.byYear[last].marginPct < gm - 5) {
+        const line = fact("pricing.line", "Lowest-margin service line", weakest.line);
+        actions.push({ key: "pricing", text: sentence(`Review pricing on ${line} work`), tone: "warn" });
+      }
+    }
+  }
+  // Purchase timing: replace the asset that's due after the year's cash low.
+  if (m12) {
+    const fl = await fleet(companyId).catch(() => null);
+    const due = fl?.assets.find((a) => a.status === "replace");
+    if (due) {
+      const low = [...m12.cases.base.buckets].sort((a, b) => a.endingCents - b.endingCents)[0];
+      const asset = fact("buy.asset", "Asset due for replacement", due.name);
+      const when = fact("buy.after", "Month cash bottoms out", monthName(low.label));
+      actions.push({ key: "timing", text: sentence(`Plan the ${asset} replacement after ${when}`), tone: "neutral" });
+    }
   }
   const readiness = last ? await exitReadiness(companyId, ctx.ledger).catch(() => null) : null;
   if (readiness?.topActions[0]) {

@@ -339,7 +339,7 @@ export async function wip(companyId: string) {
 
 export async function changeOrders(companyId: string) {
   const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
-  const cos = await prisma.changeOrder.findMany({ where: { project: { companyId } }, include: { project: true }, orderBy: { date: "desc" } });
+  const cos = await prisma.changeOrder.findMany({ where: { project: { companyId } }, include: { project: { include: { periods: { orderBy: { period: "desc" }, take: 1 }, invoices: true } } }, orderBy: { date: "desc" } });
   const byStatus: Record<string, { count: number; valueCents: number; costCents: number }> = {};
   for (const c of cos) {
     const s = (byStatus[c.status] ??= { count: 0, valueCents: 0, costCents: 0 });
@@ -354,9 +354,20 @@ export async function changeOrders(companyId: string) {
     s.changes += n(c.contractDelta);
     scope.set(c.projectId, s);
   }
+  // Approved change-order value not yet billed on open jobs: billing past the
+  // original contract is counted against the change orders first.
+  const unbilledByProject = new Map<string, number>();
+  for (const c of cos.filter((x) => x.status === "APPROVED" && x.project.status !== "CLOSED")) unbilledByProject.set(c.projectId, (unbilledByProject.get(c.projectId) ?? 0) + n(c.contractDelta));
+  let unbilledApproved = 0;
+  for (const [pid, approvedValue] of unbilledByProject) {
+    const p = cos.find((c) => c.projectId === pid)!.project;
+    const billed = p.periods[0]?.billedCumulative != null ? n(p.periods[0].billedCumulative) : p.invoices.reduce((t, i) => t + n(i.amount), 0) || n(p.billedToDate);
+    unbilledApproved += Math.max(0, approvedValue - Math.max(0, billed - n(p.contractValue)));
+  }
   return {
     byStatus,
     totals: {
+      unbilledApprovedCents: unbilledApproved,
       valueCents: cos.reduce((s, c) => s + n(c.contractDelta), 0),
       costCents: cos.reduce((s, c) => s + n(c.costDelta), 0),
       timeImpactDays: cos.reduce((s, c) => s + (c.timeImpactDays ?? 0), 0),
@@ -401,11 +412,22 @@ export async function retainage(companyId: string) {
     rows.push({ project: p.name, ratePct: p.retainagePct, heldCents: held, expectedRelease: release, closed: p.status === "CLOSED" });
   }
   const outstanding = rows.filter((r) => r.heldCents > 0);
+  // Released retainage: the most a job ever had held, less what's still held.
+  const collected = projects.reduce((t, p) => {
+    const held = p.periods
+      .filter((x) => x.period <= asOfMonth && x.retainageHeldCumulative != null)
+      .sort((a, b) => a.period.localeCompare(b.period))
+      .map((x) => n(x.retainageHeldCumulative));
+    if (!held.length) return t;
+    const live = w.rows.find((r) => r.id === p.id)?.retainageHeldCents ?? held[held.length - 1];
+    return t + Math.max(0, Math.max(...held) - (p.status === "CLOSED" ? 0 : live));
+  }, 0);
   const in90 = outstanding.filter((r) => r.expectedRelease <= addDays(asOf, 90));
   return {
     asOf: asOf.toISOString().slice(0, 10),
     totalHeldCents: outstanding.reduce((s, r) => s + r.heldCents, 0),
     next90Cents: in90.reduce((s, r) => s + r.heldCents, 0),
+    collectedCents: collected,
     rows: outstanding.sort((a, b) => a.expectedRelease.getTime() - b.expectedRelease.getTime()),
   };
 }
@@ -522,8 +544,13 @@ export async function estimateVsActual(companyId: string) {
       consistentlyUnderbid: js.length >= 3 && (median > 3 || overShare >= 0.3),
     };
   }).sort((a, b) => b.medianCostVariancePct - a.medianCostVariancePct);
+  // Hours only when time entries are tied to jobs; imported payroll usually isn't.
+  const hoursActual = (await prisma.timeEntry.aggregate({ where: { companyId, projectId: { in: done.map((j) => j.id) } }, _sum: { regularHours: true, overtimeHours: true } }))._sum;
+  const actualHours = (hoursActual.regularHours ?? 0) + (hoursActual.overtimeHours ?? 0);
+  const estimatedHours = done.reduce((s, j) => s + j.estimate.hours, 0);
   return {
     jobs: done.length,
+    hours: actualHours > 0 && estimatedHours > 0 ? { estimated: Math.round(estimatedHours), actual: Math.round(actualHours), variancePct: pct(actualHours - estimatedHours, estimatedHours) } : null,
     lines,
     estimatedGrossProfitCents: done.reduce((s, j) => s + (j.originalContractCents - j.estimate.total), 0),
     actualGrossProfitCents: done.reduce((s, j) => s + (j.revisedContractCents - j.actual.total), 0),

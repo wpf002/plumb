@@ -92,3 +92,10 @@ describe("statement classification", () => {
     });
   });
 });
+
+describe("bank export dates", () => {
+  it("reads M/D/YYYY and M/D/YY", () => {
+    expect(date("3/7/2025")?.toISOString().slice(0, 10)).toBe("2025-03-07");
+    expect(date("12/31/25")?.toISOString().slice(0, 10)).toBe("2025-12-31");
+  });
+});

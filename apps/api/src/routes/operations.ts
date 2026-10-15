@@ -12,13 +12,23 @@ export function registerOperationsRoutes(app: FastifyInstance) {
     const id = req.params.companyId;
     const ledger = await loadLedger(id);
     const years = ops.completeYears(ledger, await companyAsOf(id));
-    return ops.serviceLines(ledger, years.slice(-4));
+    const sl = ops.serviceLines(ledger, years.slice(-4));
+    const last = years.at(-1);
+    const labor = last ? await ops.lineLabor(id, ledger.periods.filter((p) => p.startsWith(String(last)))) : new Map();
+    return {
+      ...sl,
+      lines: sl.lines.map((l) => {
+        const pay = labor.get(l.line.toLowerCase());
+        const rev = last ? l.byYear[last].revenueCents : 0;
+        return { ...l, laborPct: pay && rev ? Math.round((pay / rev) * 1000) / 10 : null };
+      }),
+    };
   });
   app.get<P>("/companies/:companyId/operations/customers", async (req) => ops.customers(req.params.companyId, await loadLedger(req.params.companyId)));
   app.get<P>("/companies/:companyId/operations/labor", async (req) => {
     const id = req.params.companyId;
     const ledger = await loadLedger(id);
-    const [labor, crews, utilization] = await Promise.all([ops.labor(id, ledger), ops.crews(id), ops.crewUtilization(id)]);
+    const [labor, crews, utilization] = await Promise.all([ops.labor(id, ledger), ops.crews(id, ledger), ops.crewUtilization(id)]);
     return { ...labor, crews, utilization };
   });
   app.get<P>("/companies/:companyId/operations/capacity", async (req) => ops.capacityPlan(req.params.companyId, await loadLedger(req.params.companyId)));

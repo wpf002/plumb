@@ -95,3 +95,20 @@ describe("crew expansion", () => {
     expect(Math.abs(r.startupCashDipCents / 100 - 83_406)).toBeLessThan(5);
   });
 });
+
+import { acquisitionAnalysis } from "../src/fleet.js";
+
+describe("acquisition", () => {
+  it("prices the deal, the combined coverage, and the payback", () => {
+    const r = acquisitionAnalysis({
+      priceCents: 1_200_000_00, targetRevenueCents: 2_000_000_00, targetEbitdaCents: 300_000_00, downPct: 20, ratePct: 9, termMonths: 120,
+      synergyPct: 2, buyerRevenueCents: 3_000_000_00, buyerEbitdaCents: 500_000_00, buyerAnnualDebtServiceCents: 60_000_00, buyerCashCents: 400_000_00, valuationMultiple: 4,
+    });
+    expect(r.multiplePaid).toBe(4);
+    expect(r.downPaymentCents).toBe(240_000_00);
+    expect(r.combinedEbitdaCents).toBe(840_000_00);
+    expect(r.cashAfterCloseCents).toBe(160_000_00);
+    expect(r.combinedDscr).toBeGreaterThan(1);
+    expect(r.valueAddedCents).toBe(340_000_00 * 4 - 1_200_000_00);
+  });
+});

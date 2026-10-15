@@ -36,6 +36,7 @@ export function registerJobRoutes(app: FastifyInstance) {
           costCents: j.actual.total,
           projectedGrossProfitCents: j.projectedGrossProfitCents,
           targetMarginPct: j.targetMarginPct,
+          bidMarginPct: j.originalMarginPct,
           projectedMarginPct: j.projectedMarginPct,
           percentComplete: j.percentComplete,
           flag: j.flag,

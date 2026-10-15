@@ -367,6 +367,39 @@ export async function forecastAccuracy(companyId: string) {
   const cashForecast = new Map(cash.buckets.map((b) => [b.label, b.endingCents]));
   const cashActual = new Map(closed.slice(-6).map((p) => [p, ledger.get("BALANCE", "cash", p) ?? 0]));
 
+  const next6 = closed.slice(-6);
+  const errPct = (f: number, a: number) => (a ? Math.round(((f - a) / Math.abs(a)) * 1000) / 10 : null);
+
+  // Payroll: the run rate the forecast carried against what was actually paid.
+  const payrollStream = a.input.streams.find((x) => x.category === "payroll");
+  const payrollForecast = (payrollStream?.monthlyCents ?? 0) * next6.length;
+  const payrollSub = new Set(["LABOR", "PAYROLL", "OWNER_COMP"]);
+  const payrollActual = ledger.accounts.filter((x) => x.statement === "INCOME" && payrollSub.has(x.subtype ?? "")).reduce((t, x) => t + next6.reduce((u, p) => u + (x.amounts.get(p) ?? 0), 0), 0);
+
+  // Backlog: work signed at the backtest date against revenue those jobs actually earned in the next six months.
+  const periods = await prisma.projectPeriod.findMany({ where: { project: { companyId } }, select: { projectId: true, period: true, revenueMonth: true, revenueCumulative: true, revisedContract: true, projectedGrossProfit: true } });
+  const byProject = new Map<string, typeof periods>();
+  for (const x of periods) byProject.set(x.projectId, [...(byProject.get(x.projectId) ?? []), x]);
+  let backlogForecast = 0;
+  let backlogActual = 0;
+  const marginErrors: number[] = [];
+  for (const rows of byProject.values()) {
+    rows.sort((x, y) => x.period.localeCompare(y.period));
+    const at = rows.filter((x) => x.period <= backtestMonth).at(-1);
+    const after = rows.filter((x) => x.period > backtestMonth && x.period <= next6[next6.length - 1]);
+    if (at && after.length && at.revisedContract) {
+      backlogForecast += Math.max(0, n(at.revisedContract) - n(at.revenueCumulative));
+      backlogActual += after.reduce((t, x) => t + n(x.revenueMonth), 0);
+      // Job margin: the margin projected at the backtest date against where the job ended up.
+      const end = rows.at(-1)!;
+      if (at.projectedGrossProfit != null && end.projectedGrossProfit != null && end !== at && end.revisedContract) {
+        const projected = (n(at.projectedGrossProfit) / n(at.revisedContract)) * 100;
+        const final = (n(end.projectedGrossProfit) / n(end.revisedContract)) * 100;
+        marginErrors.push(Math.abs(projected - final));
+      }
+    }
+  }
+
   const snapshots = await prisma.forecastSnapshot.findMany({ where: { companyId }, orderBy: { asOf: "desc" }, take: 10, select: { kind: true, asOf: true, createdAt: true } });
   return {
     backtest: {
@@ -379,6 +412,9 @@ export async function forecastAccuracy(companyId: string) {
         ...forecastError(cashForecast, cashActual),
         months: [...cashForecast].map(([m, f]) => ({ month: m, forecastCents: f, actualCents: cashActual.get(m) ?? null })),
       },
+      payroll: payrollStream ? { forecastCents: payrollForecast, actualCents: payrollActual, errorPct: errPct(payrollForecast, payrollActual) } : null,
+      backlog: backlogForecast ? { forecastCents: backlogForecast, actualCents: backlogActual, errorPct: errPct(backlogForecast, backlogActual) } : null,
+      jobMargin: marginErrors.length ? { jobs: marginErrors.length, avgErrorPts: Math.round((marginErrors.reduce((t, x) => t + x, 0) / marginErrors.length) * 10) / 10 } : null,
     },
     snapshots,
   };
