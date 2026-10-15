@@ -1488,3 +1488,75 @@ button.chip.active {
   font-weight: 500;
   margin-top: 4px;
 }
+
+/* ---- Daily cash chart ---- */
+.daily-chart {
+  position: relative;
+}
+.daily-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.daily-chart .grid {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.daily-chart .axis {
+  fill: var(--text-faint);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.daily-chart .area {
+  fill: var(--accent-soft);
+  opacity: 0.7;
+}
+.daily-chart .line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+.daily-chart .late {
+  fill: none;
+  stroke: var(--info);
+  stroke-width: 2;
+  stroke-dasharray: 6 5;
+}
+.daily-chart .reserve {
+  stroke: var(--danger);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+.daily-chart .reserve-label {
+  fill: var(--danger);
+  font-size: 12px;
+  font-weight: 500;
+}
+.daily-chart .cursor {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.daily-chart .dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.daily-tip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(20, 38, 31, 0.08);
+  font-size: 13px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.legend .bar-late {
+  background: var(--info);
+}

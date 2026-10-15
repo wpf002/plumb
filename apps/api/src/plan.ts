@@ -9,7 +9,7 @@ import { FEATURE_LABEL, FEATURE_PLAN, LIMITS, PLAN_LABEL, PLANS, allows, asPlan,
 
 const C = "^\\/companies\\/[^/]+";
 const ROUTES: { re: RegExp; feature: Feature; methods?: string[] }[] = [
-  { re: new RegExp(`${C}\\/forecast\\/(13-week|12-month|revenue|accuracy)$`), feature: "forecasts" },
+  { re: new RegExp(`${C}\\/forecast\\/(13-week|12-month|revenue|accuracy|daily)$`), feature: "forecasts" },
   { re: new RegExp(`${C}\\/jobs\\/wip$`), feature: "wip" },
   { re: new RegExp(`${C}\\/jobs\\/change-orders$`), feature: "changeOrders" },
   { re: new RegExp(`${C}\\/jobs\\/retainage$`), feature: "retainage" },

@@ -119,3 +119,29 @@ describe("revenue forecast", () => {
     expect(e.biasPct).toBe(5);
   });
 });
+
+import { dailyBalances } from "../src/forecast.js";
+
+describe("dailyBalances", () => {
+  it("walks the balance day by day and finds the low", () => {
+    const r = dailyBalances(
+      {
+        asOf: d("2026-01-01"),
+        openingCashCents: 100_000_00,
+        reserveTargetCents: 50_000_00,
+        locLimitCents: 0,
+        locBalanceCents: 0,
+        flows: [
+          { date: d("2026-01-05"), cents: 70_000_00, category: "payroll", label: "Payroll" },
+          { date: d("2026-01-10"), cents: 40_000_00, category: "collections", label: "Customer" },
+        ],
+        streams: [],
+      },
+      15
+    );
+    expect(r.series).toHaveLength(15);
+    expect(r.low).toEqual({ date: "2026-01-05", cents: 30_000_00 });
+    expect(r.firstUnderReserve).toBe("2026-01-05");
+    expect(r.endingCents).toBe(70_000_00);
+  });
+});

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch, getCompanyId, usd, centsFrom, shortDate, C } from "../ui";
 import { ReconciliationCard } from "../health-ui";
 import { Accuracy, RevenueForecast, ThirteenWeek, TwelveMonth } from "./forecast-views";
+import { DailyView } from "./daily-view";
 
 const VIEWS = [
   { key: "13w", label: "13-Week" },
@@ -18,50 +19,6 @@ const HORIZONS = [30, 60, 90, 120, 180, 365];
 
 // Two lines: what you expect, and what happens if every payer runs at their
 // own worst. The gap between them is the thing an owner needs to feel.
-function CashChart({
-  base,
-  stress,
-  floor,
-}: {
-  base: { date: string; balanceCents: number }[];
-  stress: { date: string; balanceCents: number }[];
-  floor: number;
-}) {
-  const w = 900;
-  const h = 240;
-  const pad = { l: 8, r: 8, t: 12, b: 22 };
-  const all = [...base, ...stress].map((p) => p.balanceCents);
-  const max = Math.max(...all, floor, 0);
-  const min = Math.min(...all, floor, 0);
-  const span = max - min || 1;
-
-  const x = (i: number, n: number) => pad.l + ((w - pad.l - pad.r) * i) / Math.max(1, n - 1);
-  const y = (v: number) => pad.t + (h - pad.t - pad.b) * (1 - (v - min) / span);
-
-  const path = (pts: { balanceCents: number }[]) =>
-    pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(i, pts.length).toFixed(1)},${y(p.balanceCents).toFixed(1)}`).join(" ");
-
-  const ticks = base.length > 1 ? [0, Math.floor(base.length / 2), base.length - 1] : [0];
-
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img" aria-label="Cash forecast">
-      <line x1={pad.l} x2={w - pad.r} y1={y(floor)} y2={y(floor)} stroke={C.danger} strokeDasharray="4 4" strokeWidth="1.5" />
-      <text x={pad.l + 4} y={y(floor) - 5} fontSize="11" fill={C.danger}>
-        safety floor {usd(floor)}
-      </text>
-      {min < 0 && (
-        <line x1={pad.l} x2={w - pad.r} y1={y(0)} y2={y(0)} stroke={C.border} strokeWidth="1" />
-      )}
-      <path d={path(stress)} fill="none" stroke={C.warn} strokeWidth="2" strokeDasharray="5 4" />
-      <path d={path(base)} fill="none" stroke={C.ink} strokeWidth="2.5" />
-      {ticks.map((i) => (
-        <text key={i} x={x(i, base.length)} y={h - 6} fontSize="11" fill="#8695a3" textAnchor={i === 0 ? "start" : i === base.length - 1 ? "end" : "middle"}>
-          {base[i]?.date}
-        </text>
-      ))}
-    </svg>
-  );
-}
 
 const emptyWhatIf = {
   kind: "DELAY_PROJECT",
@@ -210,7 +167,6 @@ export default function Cash() {
     );
   }
 
-  const breach = forecast.base.firstBreachDate ?? forecast.stress.firstBreachDate;
 
   return (
     <main className="container">
@@ -246,87 +202,7 @@ export default function Cash() {
         </div>
       )}
 
-      {view === "daily" && (
-      <section className="card">
-        <div className="row-between">
-          <div className="card-title" style={{ marginBottom: 0 }}>
-            Next {horizon} Days
-          </div>
-          <div style={{ display: "flex", gap: 4 }}>
-            {HORIZONS.map((h) => (
-              <button
-                key={h}
-                className={`btn btn-xs ${h === horizon ? "btn-primary" : "btn-ghost"}`}
-                onClick={() => setHorizon(h)}
-              >
-                {h === 365 ? "1 yr" : `${h}d`}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="stats" style={{ marginBottom: 16 }}>
-          <div className="stat">
-            <div className="stat-label">Starting Cash</div>
-            <div className="stat-value num">{usd(forecast.openingCashCents)}</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Expected Low</div>
-            <div className="stat-value num">{usd(forecast.base.minBalanceCents)}</div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">If Payers Run Late</div>
-            <div className="stat-value num" style={{ color: forecast.stress.firstBreachDate ? C.danger : undefined }}>
-              {usd(forecast.stress.minBalanceCents)}
-            </div>
-          </div>
-          <div className="stat">
-            <div className="stat-label">Ends At</div>
-            <div className="stat-value num">{usd(forecast.base.endingBalanceCents)}</div>
-          </div>
-        </div>
-
-        <CashChart
-          base={forecast.base.series}
-          stress={forecast.stress.series}
-          floor={forecast.safetyThresholdCents}
-        />
-
-        {breach && (
-          <div className={`alert ${forecast.base.firstBreachDate ? "critical" : "warning"}`} style={{ marginTop: 12 }}>
-            <div className="alert-title">
-              {forecast.base.firstBreachDate
-                ? `You go under your safety floor on ${shortDate(forecast.base.firstBreachDate)}.`
-                : `If your payers run at their worst, you go under your floor on ${shortDate(forecast.stress.firstBreachDate)}.`}
-            </div>
-          </div>
-        )}
-
-        {forecast.monthly && (
-          <table className="table" style={{ marginTop: 16 }}>
-            <thead>
-              <tr>
-                <th>Month</th>
-                <th className="num">Low Point</th>
-                <th className="num">Ends At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {forecast.monthly.map((m: any) => (
-                <tr key={m.month}>
-                  <td className="cell-name">{m.month}</td>
-                  <td className="num" style={{ color: m.lowBalanceCents < forecast.safetyThresholdCents ? C.danger : undefined }}>
-                    {usd(m.lowBalanceCents)}
-                  </td>
-                  <td className="num">{usd(m.endingBalanceCents)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
-
-      )}
+      {view === "daily" && <DailyView />}
 
       {view === "whatif" && (
       <>

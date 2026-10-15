@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { forecastAccuracy, revenueForecast, thirteenWeek, twelveMonth } from "../analytics/forecast.js";
+import { dailyForecast, forecastAccuracy, revenueForecast, thirteenWeek, twelveMonth } from "../analytics/forecast.js";
 
 export function registerForecastV2Routes(app: FastifyInstance) {
   // Flagship: weekly cash for the next 13 weeks with reserve, LOC, and shortfall.
@@ -7,6 +7,12 @@ export function registerForecastV2Routes(app: FastifyInstance) {
     "/companies/:companyId/forecast/13-week",
     { schema: { querystring: { type: "object", properties: { case: { type: "string", enum: ["base", "upside", "downside"] } } } } },
     async (req) => thirteenWeek(req.params.companyId, { case: req.query.case })
+  );
+
+  app.get<{ Params: { companyId: string }; Querystring: { days?: number } }>(
+    "/companies/:companyId/forecast/daily",
+    { schema: { querystring: { type: "object", properties: { days: { type: "integer", minimum: 7, maximum: 365 } } } } },
+    async (req) => dailyForecast(req.params.companyId, req.query.days ?? 90)
   );
 
   app.get<{ Params: { companyId: string } }>("/companies/:companyId/forecast/12-month", async (req) =>

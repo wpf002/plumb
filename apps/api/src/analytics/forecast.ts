@@ -9,6 +9,7 @@ import {
   monthWindows,
   nextMonths,
   projectCash,
+  dailyBalances,
   weekWindows,
   type CashForecast,
   type DatedFlow,
@@ -417,5 +418,34 @@ export async function forecastAccuracy(companyId: string) {
       jobMargin: marginErrors.length ? { jobs: marginErrors.length, avgErrorPts: Math.round((marginErrors.reduce((t, x) => t + x, 0) / marginErrors.length) * 10) / 10 } : null,
     },
     snapshots,
+  };
+}
+
+/**
+ * Day-by-day cash for the next `days` days on the same inputs as the 13-week
+ * forecast, plus a late-payer line where every collection lands 15 days later.
+ */
+export async function dailyForecast(companyId: string, days: number) {
+  const a = await assembleForecast(companyId, { horizonDays: days + 30 });
+  const base = dailyBalances(a.input, days, CASES.base);
+  const late = dailyBalances(a.input, days, { ...CASES.base, collectionDelayDays: 15 });
+  const months = new Map<string, { low: number; ending: number }>();
+  for (const p of base.series) {
+    const m = p.date.slice(0, 7);
+    const cur = months.get(m);
+    months.set(m, { low: cur ? Math.min(cur.low, p.cents) : p.cents, ending: p.cents });
+  }
+  return {
+    asOf: a.input.asOf.toISOString().slice(0, 10),
+    openingCents: a.input.openingCashCents,
+    reserveCents: a.input.reserveTargetCents,
+    series: base.series,
+    lateSeries: late.series,
+    low: base.low,
+    lateLow: late.low,
+    endingCents: base.endingCents,
+    firstUnderReserve: base.firstUnderReserve,
+    lateFirstUnderReserve: late.firstUnderReserve,
+    monthly: [...months].map(([month, v]) => ({ month, lowCents: v.low, endingCents: v.ending })),
   };
 }

@@ -280,3 +280,34 @@ export function monthWindows(asOf: Date, months = 12) {
 export function withPayerLateness(flows: DatedFlow[], lateDaysByLabel: Map<string, number>): DatedFlow[] {
   return flows.map((f) => (f.category === "collections" && lateDaysByLabel.has(f.label) ? { ...f, date: addDays(f.date, lateDaysByLabel.get(f.label)!) } : f));
 }
+
+export interface DailyPoint {
+  date: string;
+  cents: Cents;
+}
+
+/**
+ * Day-by-day cash balance for the next `days` days: every dated flow and
+ * expanded stream applied on its date, before any credit-line draw.
+ */
+export function dailyBalances(input: ForecastInput, days: number, forecastCase: ForecastCase = CASES.base) {
+  const from = addDays(input.asOf, 1);
+  const to = addDays(input.asOf, days + 1);
+  const flows = applyCase([...input.flows, ...input.streams.flatMap((s) => expandStream(s, from, to))], forecastCase);
+  const byDay = new Map<string, number>();
+  for (const f of flows) {
+    if (f.date < from || f.date >= to) continue;
+    const k = iso(f.date);
+    byDay.set(k, (byDay.get(k) ?? 0) + (isInflow(f.category) ? f.cents : -f.cents));
+  }
+  const series: DailyPoint[] = [];
+  let cash = input.openingCashCents;
+  for (let d = 0; d < days; d++) {
+    const k = iso(addDays(from, d));
+    cash += byDay.get(k) ?? 0;
+    series.push({ date: k, cents: cash });
+  }
+  const low = series.reduce((m, p) => (p.cents < m.cents ? p : m), series[0] ?? { date: iso(input.asOf), cents: cash });
+  const firstUnderReserve = series.find((p) => p.cents < input.reserveTargetCents)?.date ?? null;
+  return { series, low, endingCents: cash, firstUnderReserve };
+}
