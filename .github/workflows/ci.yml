@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: plumb
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/plumb?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile=false
+      # Migrations must apply cleanly to an empty database on every change.
+      - run: pnpm --filter @plumb/db exec prisma migrate deploy
+      - run: pnpm build
+      - run: pnpm test
+      # Answer-key findings: a wrong number fails the build; a finding whose
+      # phase hasn't shipped yet is reported as pending.
+      - run: pnpm --filter @plumb/api test:acceptance
+      - run: pnpm --filter @plumb/api scoreboard
