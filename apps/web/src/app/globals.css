@@ -1152,3 +1152,14 @@ select.input {
   height: 10px;
   border-radius: 2px;
 }
+
+/* ---- Selectable rows ---- */
+.row-click {
+  cursor: pointer;
+}
+.row-click:hover td {
+  background: var(--surface-2);
+}
+.row-selected td {
+  background: var(--accent-soft);
+}

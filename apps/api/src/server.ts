@@ -41,6 +41,7 @@ import { registerStatementRoutes } from "./routes/statements.js";
 import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
 import { registerJobRoutes } from "./routes/jobs.js";
 import { registerOperationsRoutes } from "./routes/operations.js";
+import { registerCapitalRoutes } from "./routes/capital.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -126,6 +127,7 @@ export function buildServer() {
   registerWorkingCapitalRoutes(app);
   registerJobRoutes(app);
   registerOperationsRoutes(app);
+  registerCapitalRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

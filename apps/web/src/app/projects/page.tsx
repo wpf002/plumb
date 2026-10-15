@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId } from "../ui";
 import { BacklogView, ChangeOrdersView, EstimatesView, PipelineView, ProfitabilityView, RetainageView, WipView } from "./job-views";
@@ -38,7 +39,9 @@ export default function Jobs() {
         <div>
           <h1>Jobs</h1>
         </div>
-        {data.wip?.asOf && <span className="num muted">As of {data.wip.asOf}</span>}
+        <Link href="/bid" className="btn btn-primary">
+          New Bid
+        </Link>
       </div>
       <div className="toolbar">
         <div className="tabs">

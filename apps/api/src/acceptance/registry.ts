@@ -316,7 +316,17 @@ export const FINDINGS: Finding[] = [
     account: "joe", ref: "insight 10", phase: "D10",
     title: "Second crew breaks even at ~11% of capacity",
     async run(a) {
-      const r = await a.scenarios.crewExpansion();
+      // Inputs from 18_scenario_assumptions.md; capacity and margin come from the books.
+      const r = await a.scenarios.crewExpansion({
+        equipmentCents: 140_500_00,
+        downPct: 15,
+        ratePct: 7.9,
+        termMonths: 60,
+        insuranceAnnualCents: 9_600_00,
+        fuelMaintenanceAnnualCents: 14_000_00,
+        ramp: [0.45, 0.6, 0.72],
+        burdenedPayrollAnnualCents: 299_187_00,
+      });
       money("breakeven revenue", r.breakevenRevenueCents, 155_989, 1);
       between("breakeven % of mature capacity", r.breakevenPctOfCapacity, 10, 12);
       money("year-1 contribution", r.year1ContributionCents, 156_772, 1);

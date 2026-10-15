@@ -25,6 +25,15 @@ const assetBody = {
     usefulLifeMonths: { type: "integer", minimum: 1, maximum: 1200, nullable: true },
     salvageValueCents: { type: "integer", minimum: 0 },
     disposedAt: { type: "string", format: "date-time", nullable: true },
+    assetType: { type: "string", maxLength: 80, nullable: true },
+    unitCount: { type: "integer", minimum: 1, maximum: 500 },
+    replacementCostCents: { type: "integer", minimum: 0, nullable: true },
+    maintenanceCostAnnualCents: { type: "integer", minimum: 0, nullable: true },
+    repairCostAnnualCents: { type: "integer", minimum: 0, nullable: true },
+    fuelCostAnnualCents: { type: "integer", minimum: 0, nullable: true },
+    insuranceCostAnnualCents: { type: "integer", minimum: 0, nullable: true },
+    utilizationPct: { type: "number", minimum: 0, maximum: 100, nullable: true },
+    downtimeDaysAnnual: { type: "integer", minimum: 0, maximum: 366, nullable: true },
   },
 } as const;
 
@@ -43,7 +52,18 @@ interface AssetBody {
   usefulLifeMonths?: number | null;
   salvageValueCents?: number;
   disposedAt?: string | null;
+  assetType?: string | null;
+  unitCount?: number;
+  replacementCostCents?: number | null;
+  maintenanceCostAnnualCents?: number | null;
+  repairCostAnnualCents?: number | null;
+  fuelCostAnnualCents?: number | null;
+  insuranceCostAnnualCents?: number | null;
+  utilizationPct?: number | null;
+  downtimeDaysAnnual?: number | null;
 }
+
+const big = (v: number | null) => (v === null ? null : BigInt(v));
 
 const shape = (a: any) => ({
   id: a.id,
@@ -57,6 +77,15 @@ const shape = (a: any) => ({
   usefulLifeMonths: a.usefulLifeMonths,
   salvageValueCents: n(a.salvageValue),
   disposedAt: a.disposedAt,
+  assetType: a.assetType,
+  unitCount: a.unitCount,
+  replacementCostCents: a.replacementCost === null ? null : n(a.replacementCost),
+  maintenanceCostAnnualCents: a.maintenanceCostAnnual === null ? null : n(a.maintenanceCostAnnual),
+  repairCostAnnualCents: a.repairCostAnnual === null ? null : n(a.repairCostAnnual),
+  fuelCostAnnualCents: a.fuelCostAnnual === null ? null : n(a.fuelCostAnnual),
+  insuranceCostAnnualCents: a.insuranceCostAnnual === null ? null : n(a.insuranceCostAnnual),
+  utilizationPct: a.utilizationPct,
+  downtimeDaysAnnual: a.downtimeDaysAnnual,
 });
 
 // Entering a manual current value re-anchors depreciation, so valueAsOf is
@@ -78,6 +107,15 @@ function writeData(b: AssetBody, isCreate: boolean) {
     ...(b.disposedAt !== undefined && {
       disposedAt: b.disposedAt === null ? null : new Date(b.disposedAt),
     }),
+    ...(b.assetType !== undefined && { assetType: b.assetType }),
+    ...(b.unitCount !== undefined && { unitCount: b.unitCount }),
+    ...(b.replacementCostCents !== undefined && { replacementCost: big(b.replacementCostCents) }),
+    ...(b.maintenanceCostAnnualCents !== undefined && { maintenanceCostAnnual: big(b.maintenanceCostAnnualCents) }),
+    ...(b.repairCostAnnualCents !== undefined && { repairCostAnnual: big(b.repairCostAnnualCents) }),
+    ...(b.fuelCostAnnualCents !== undefined && { fuelCostAnnual: big(b.fuelCostAnnualCents) }),
+    ...(b.insuranceCostAnnualCents !== undefined && { insuranceCostAnnual: big(b.insuranceCostAnnualCents) }),
+    ...(b.utilizationPct !== undefined && { utilizationPct: b.utilizationPct }),
+    ...(b.downtimeDaysAnnual !== undefined && { downtimeDaysAnnual: b.downtimeDaysAnnual }),
     ...(isCreate && b.salvageValueCents === undefined && { salvageValue: 0n }),
   };
 }

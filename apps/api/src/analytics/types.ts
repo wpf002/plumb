@@ -1,3 +1,4 @@
+import type { CrewExpansionScenario } from "./capital.js";
 /**
  * The analytics contract. Every DNRD capability the acceptance harness checks is
  * a method here, computed from the canonical model for one company. All money is
@@ -168,7 +169,8 @@ export interface Analytics {
     exitServiceLine(line: string): Promise<{ revenueCents: number; contributionLossCents: number }>;
     growServiceLine(line: string, pct: number): Promise<{ addedRevenueCents: number; newRevenueCents: number }>;
     materialsIncrease(pct: number): Promise<{ addedCostCents: number; ebitdaCents: number; ebitdaImpactPct: number }>;
-    crewExpansion(): Promise<{ breakevenRevenueCents: number; breakevenPctOfCapacity: number; year1ContributionCents: number }>;
+    /** Owner's what-if inputs; capacity and margin default to the company's own history. */
+    crewExpansion(input: CrewExpansionScenario): Promise<{ breakevenRevenueCents: number; breakevenPctOfCapacity: number; year1ContributionCents: number }>;
     fieldHire(count: number): Promise<{ addedCapacityCents: number }>;
     capacityHeadroom(): Promise<{ ceilingCents: number; headroomCents: number; headroomPct: number }>;
     paymentDelay(amountCents: number, days: number): Promise<{ locDrawRequired: boolean; minCashCents: number }>;
