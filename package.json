@@ -11,7 +11,8 @@
     "db:generate": "pnpm --filter @plumb/db exec prisma generate",
     "db:seed": "pnpm --filter @plumb/db exec tsx prisma/seed.ts",
     "db:migrate": "pnpm --filter @plumb/db exec prisma migrate dev",
-    "db:deploy": "pnpm --filter @plumb/db exec prisma migrate deploy"
+    "db:deploy": "pnpm --filter @plumb/db exec prisma migrate deploy",
+    "db:demo": "pnpm db:seed && pnpm --filter @plumb/api exec tsx src/import/cli.ts ../../fixtures/dnrd/steve_electric ../../fixtures/dnrd/joe_landscaping ../../fixtures/dnrd/robert_plumbing_dataset ../../fixtures/dnrd/jerry_gc_dataset --owner owner@foley.test"
   },
   "devDependencies": {
     "turbo": "^2.1.0",

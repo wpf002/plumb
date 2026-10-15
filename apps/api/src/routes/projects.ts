@@ -9,6 +9,7 @@ import {
   toEngineBudgets,
   toEngineMilestone,
 } from "../map.js";
+import { companyAsOf } from "../snapshot.js";
 
 const CATEGORIES = ["LABOR", "MATERIAL", "EQUIPMENT", "TRAVEL", "SUBCONTRACT", "OTHER"] as const;
 
@@ -52,7 +53,7 @@ export function registerProjectRoutes(app: FastifyInstance) {
   app.get<{ Params: { companyId: string } }>(
     "/companies/:companyId/projects",
     async (req) => {
-      const asOf = new Date();
+      const asOf = await companyAsOf(req.params.companyId);
       const projects = await prisma.project.findMany({
         where: { companyId: req.params.companyId, status: { not: "CLOSED" } },
         include: { costs: true, changeOrders: true, budgetLines: true, milestones: true, payer: true },
@@ -109,7 +110,7 @@ export function registerProjectRoutes(app: FastifyInstance) {
           endDate: p.endDate,
           netDays: p.netDays,
         })),
-        new Date()
+        await companyAsOf(req.params.companyId)
       );
     }
   );

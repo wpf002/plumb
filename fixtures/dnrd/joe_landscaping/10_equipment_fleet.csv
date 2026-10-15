@@ -1,0 +1,10 @@
+asset_id,asset,type,purchase_date,original_cost,useful_life_months,salvage,financed,current_market_value_2025,loan_id
+EQ-01,2019 Ford F-250 - Maintenance Crew A Truck,Vehicle,2019-03-01,38000,84,4000,False,15000,
+EQ-02,2021 Ford F-250 - Maintenance Crew B Truck,Vehicle,2021-02-01,41500,84,4500,True,24000,LOAN-TRUCKB
+EQ-03,2020 Ford F-350 - Project Crew Truck,Vehicle,2020-05-01,48000,84,5000,True,26000,LOAN-TRUCKPROJ
+EQ-04,"Landscape Trailers (3, various)",Vehicle,2018-04-01,21000,120,2000,False,10000,
+EQ-05,"Zero-Turn Mowers (4, fleet)",Equipment,2022-03-01,42000,60,3000,False,22000,
+EQ-06,Mini Excavator (Kubota KX040),Equipment,2020-08-01,68000,96,8000,True,42000,LOAN-EXCAVATOR
+EQ-07,Bobcat S70 Skid Steer,Equipment,2021-06-01,38000,96,4000,True,26000,LOAN-SKIDSTEER
+EQ-08,"Hand Tools, Trimmers, Blowers (pooled, all crews)",Equipment,2021-01-01,24000,48,1500,False,7000,
+EQ-09,Irrigation Install Equipment & Misc Hardscape Tools,Equipment,2019-06-01,18000,84,1500,False,6000,

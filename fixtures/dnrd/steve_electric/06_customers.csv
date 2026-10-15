@@ -1,0 +1,16 @@
+customer_id,customer_name,segment,customer_type,payment_terms,avg_days_to_pay,lifetime_revenue,pct_of_total_revenue,active_status,current_ar
+CUST-001,"Musco Lighting, Inc.",Repeat Partner,Commercial - Manufacturer Partner,Net 30,34,5179700.0,54.1,Active,269196.82
+CUST-014,City of Scottsville,Municipal/School,Municipal,Net 45,63,565100.0,5.9,Active,139900.0
+CUST-008,Greenview Medical Plaza LLC,Standalone Commercial,Commercial,Net 30,33,484900.0,5.1,Active,30226.84
+CUST-005,Barren County Schools,Municipal/School,Institutional,Net 30,52,439900.0,4.6,Active,28773.66
+CUST-004,Simpson County School District,Municipal/School,Institutional,Net 30,47,422700.0,4.4,Active,0.0
+CUST-006,City of Franklin KY,Municipal/School,Municipal,Net 45,55,376800.0,3.9,Active,0.0
+CUST-011,Todd County Industrial Park,Standalone Commercial,Commercial,Net 30,38,366200.0,3.8,Active,0.0
+CUST-003,City of Bowling Green - Parks & Rec,Municipal/School,Municipal,Net 45,61,359800.0,3.8,Active,0.0
+CUST-013,Logan County Schools,Municipal/School,Institutional,Net 45,50,325500.0,3.4,Active,0.0
+CUST-012,RiverBend Logistics Warehouse,Standalone Commercial,Commercial,Net 30,41,264100.0,2.8,Active,0.0
+CUST-009,Southcentral Bank - Facilities,Standalone Commercial,Commercial,Net 30,27,245000.0,2.6,Active,0.0
+CUST-010,Oakland Retail Partners,Standalone Commercial,Commercial,Net 30,31,234600.0,2.5,Active,39000.0
+CUST-002,Warren County Public Schools,Municipal/School,Institutional,Net 45,58,126700.0,1.3,Active,0.0
+CUST-015,Crossroads Shopping Center,Standalone Commercial,Commercial,Net 30,36,119300.0,1.2,Active,0.0
+CUST-007,Hartland Baptist Church,Standalone Commercial,Commercial,Net 30,29,58300.0,0.6,Active,0.0

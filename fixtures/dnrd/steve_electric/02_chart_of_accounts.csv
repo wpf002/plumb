@@ -1,0 +1,51 @@
+account_code,account_type,account_name
+1000,Asset,Cash - Operating Checking
+1010,Asset,Cash - Payroll Account
+1100,Asset,Accounts Receivable
+1150,Asset,Retainage Receivable
+1200,Asset,Prepaid Expenses (Insurance)
+1300,Asset,Vehicles - Trucks
+1310,Asset,"Heavy Equipment (Excavator, Bobcat, Forklift, Scissor Lift)"
+1320,Asset,Tools & Small Equipment
+1400,Asset,Buildings - Shop/Office
+1410,Asset,Land
+1500,Asset,Accumulated Depreciation - Vehicles
+1510,Asset,Accumulated Depreciation - Heavy Equipment
+1520,Asset,Accumulated Depreciation - Tools
+1530,Asset,Accumulated Depreciation - Buildings
+2000,Liability,Accounts Payable
+2050,Liability,Credit Card Payable
+2100,Liability,Equipment Loan - Bobcat Skid Steer
+2110,Liability,Vehicle Loan - F-150 (2024)
+2200,Liability,Line of Credit
+2300,Liability,Payroll Liabilities (Accrued Wages/Taxes)
+2400,Liability,Sales/Use Tax Payable
+3000,Equity,Owner Contributed Capital
+3100,Equity,Owner Distributions
+3900,Equity,Retained Earnings
+4000,Revenue,Revenue - Musco Partner Projects
+4100,Revenue,Revenue - School & Municipal Projects
+4200,Revenue,Revenue - Standalone Commercial Projects
+5000,COGS,Direct Labor - Field
+5100,COGS,Materials & Fixtures
+5200,COGS,Subcontracted Labor (Trenching/Concrete)
+5300,COGS,Equipment Rental - Job Specific
+5400,COGS,Permits & Inspection Fees
+5500,COGS,Job Supplies & Disposal
+6000,Opex,Officer Compensation (Steve - Management Portion)
+6010,Opex,Administrative Payroll
+6020,Opex,Payroll Taxes - Admin/Officer
+6030,Opex,Employee Benefits & Health Insurance
+6040,Opex,Workers' Compensation Insurance
+6100,Opex,Rent/Occupancy (n/a - owned)
+6110,Opex,Utilities - Shop
+6120,Opex,Property Taxes - Shop
+6130,Opex,Property & Liability Insurance
+6200,Opex,"Vehicle Expense (Fuel, Maintenance - Non-Job)"
+6300,Opex,Advertising & Marketing
+6400,Opex,Professional Services (Legal/Accounting)
+6500,Opex,Software & Office Supplies
+6600,Opex,Repairs & Maintenance - Shop/Equipment
+6700,Opex,Depreciation Expense
+6800,Opex,Interest Expense
+6900,Opex,Miscellaneous/Other Opex

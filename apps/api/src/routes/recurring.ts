@@ -4,6 +4,7 @@ import { expandSchedules, summarizeObligations } from "@plumb/engine";
 import { addDays, sourceKeyFor } from "@plumb/shared";
 import { n, toEngineLiability, toEngineRecurring } from "../map.js";
 import { FREQUENCIES } from "./liabilities.js";
+import { companyAsOf } from "../snapshot.js";
 
 // Overhead is deliberately narrow: the ordinary costs of opening the doors.
 // Anything with a balance and an interest rate belongs in Liability instead.
@@ -78,7 +79,7 @@ export function registerRecurringRoutes(app: FastifyInstance) {
     "/companies/:companyId/recurring-expenses",
     async (req) => {
       const companyId = req.params.companyId;
-      const asOf = new Date();
+      const asOf = await companyAsOf(companyId);
       const horizonDays = req.query.horizonDays ?? 365;
 
       const [rows, liabilityRows, settled] = await Promise.all([

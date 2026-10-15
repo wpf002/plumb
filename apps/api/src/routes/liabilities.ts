@@ -3,6 +3,7 @@ import { prisma } from "@plumb/db";
 import { amortizationSchedule, monthlyDebtServiceCents, summarizeLiability } from "@plumb/engine";
 import { addDays } from "@plumb/shared";
 import { n, toEngineLiability } from "../map.js";
+import { companyAsOf } from "../snapshot.js";
 
 export const LIABILITY_KINDS = [
   "CREDIT_CARD",
@@ -123,7 +124,7 @@ export function registerLiabilityRoutes(app: FastifyInstance) {
       },
     },
     async (req) => {
-      const asOf = new Date();
+      const asOf = await companyAsOf(req.params.companyId);
       const horizonEnd = addDays(asOf, req.query.horizonDays ?? 365 * 5);
       const rows = await prisma.liability.findMany({
         where: { companyId: req.params.companyId },
@@ -157,7 +158,7 @@ export function registerLiabilityRoutes(app: FastifyInstance) {
   }>(
     "/companies/:companyId/liabilities/:liabilityId/schedule",
     async (req) => {
-      const asOf = new Date();
+      const asOf = await companyAsOf(req.params.companyId);
       const row = await prisma.liability.findFirstOrThrow({
         where: { id: req.params.liabilityId, companyId: req.params.companyId },
       });

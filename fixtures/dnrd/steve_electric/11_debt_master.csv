@@ -1,0 +1,4 @@
+loan_id,lender,debt_type,original_principal,interest_rate,term_months,origination_date,maturity_date,collateral,monthly_payment
+LOAN-BOBCAT,First Southern National Bank,Equipment Loan,51200.0,0.0725,72.0,2021-06-01,2027-05-01,Bobcat S650 Skid Steer,879.07
+LOAN-TRUCK24,First Southern National Bank,Vehicle Loan,49725.0,0.079,72.0,2024-03-01,2030-02-01,2024 Ford F-150 Work Truck #3,869.41
+LOC-01,First Southern National Bank,Line of Credit,150000.0,0.0875,,2019-01-01,Revolving - annual renewal,Blanket UCC - business assets,Interest-only on drawn balance

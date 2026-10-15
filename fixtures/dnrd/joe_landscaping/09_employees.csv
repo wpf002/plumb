@@ -1,0 +1,16 @@
+employee_id,name,position,pay_type,base_annual_2022,crew,hire_date,cogs_allocation_pct,hourly_rate_2022
+EMP-01,Joe Marchetti,Owner,Salary,92000.0,Management,2014-03-01,0.15,
+EMP-02,Renee Alvarado,Office Manager,Salary,40000.0,Admin,2017-06-01,0.0,
+EMP-03,Hector Luna,Crew Lead - Maintenance A,Hourly,,Maintenance A,2016-04-01,1.0,23.0
+EMP-04,Dylan Pratt,Maintenance Tech,Hourly,,Maintenance A,2019-03-01,1.0,18.5
+EMP-05,Miguel Torres,Maintenance Tech,Hourly,,Maintenance A,2021-05-01,1.0,17.75
+EMP-06,Caleb Reyes,Maintenance Tech,Hourly,,Maintenance A,2022-04-01,1.0,17.0
+EMP-07,Antonio Reyes,Crew Lead - Maintenance B,Hourly,,Maintenance B,2018-02-01,1.0,22.5
+EMP-08,Jalen Fisher,Maintenance Tech,Hourly,,Maintenance B,2020-03-01,1.0,18.0
+EMP-09,Oscar Villalobos,Maintenance Tech,Hourly,,Maintenance B,2021-06-01,1.0,17.5
+EMP-10,Trey Jackson,Maintenance Tech,Hourly,,Maintenance B,2023-03-01,1.0,17.0
+EMP-11,Marcus Deleon,Project Crew Lead,Hourly,,Project Crew,2015-05-01,1.0,30.0
+EMP-12,Wyatt Simmons,Hardscape Installer,Hourly,,Project Crew,2018-07-01,1.0,25.0
+EMP-13,Bryce Hollander,Hardscape Installer,Hourly,,Project Crew,2020-02-01,1.0,23.5
+EMP-14,Isaiah Combs,Equipment Operator,Hourly,,Project Crew,2021-09-01,1.0,24.0
+EMP-15,Gage Whitfield,Laborer/Apprentice,Hourly,,Project Crew,2023-05-01,1.0,18.5

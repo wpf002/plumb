@@ -1,0 +1,46 @@
+account_code,account_type,account_name
+1000,Asset,Cash - Operating
+1050,Asset,Cash - Trust/Draw Account
+1100,Asset,Accounts Receivable
+1120,Asset,Retainage Receivable
+1150,Asset,Costs & Earnings in Excess of Billings (Underbilling)
+1200,Asset,Prepaid Expenses
+1300,Asset,Vehicles & Trailers
+1310,Asset,Tools & Equipment
+1500,Asset,Accumulated Depreciation - Vehicles/Equipment
+2000,Liability,Accounts Payable
+2050,Liability,Retainage Payable (to Subcontractors)
+2100,Liability,Vehicle & Equipment Loans
+2150,Liability,Billings in Excess of Costs & Earnings (Overbilling)
+2200,Liability,Line of Credit
+2300,Liability,Payroll Liabilities
+2350,Liability,Customer Deposits
+3000,Equity,Owner Contributed Capital
+3100,Equity,Owner Distributions
+3900,Equity,Retained Earnings
+4000,Revenue,Revenue - Remodels
+4100,Revenue,Revenue - New Construction (Custom Homes)
+4200,Revenue,Change Order Revenue
+5000,COGS,Direct Labor - Internal Crew
+5100,COGS,Materials
+5200,COGS,"Subcontractors (Electrical, Plumbing, HVAC, Roofing, Foundation)"
+5300,COGS,Permits & Fees
+5400,COGS,Dumpster/Site/Equipment Rental (Job Related)
+5500,COGS,Design/Engineering
+6000,Opex,Officer Compensation (Jerry)
+6010,Opex,Project Manager/Superintendent Payroll
+6020,Opex,Office/Admin Payroll
+6030,Opex,Estimating Payroll
+6040,Opex,Payroll Taxes & Benefits - Admin
+6050,Opex,Workers' Compensation Insurance
+6100,Opex,Office Rent
+6130,Opex,Liability & Vehicle Insurance
+6200,Opex,Vehicle Expense (Non-Job)
+6300,Opex,Advertising & Marketing
+6310,Opex,Estimating/Project Software
+6400,Opex,Professional Services (Legal/Accounting)
+6500,Opex,Office Supplies & IT
+6600,Opex,Repairs & Maintenance (Non-Job Equipment)
+6700,Opex,Depreciation Expense
+6800,Opex,Interest Expense
+6900,Opex,Miscellaneous/Other Opex

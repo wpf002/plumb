@@ -1,0 +1,13 @@
+employee_id,name,position,crew,pay_type,hourly_rate_2022,base_annual_2022,hire_date,cogs_allocation_pct
+EMP-001,Owner #1,Owner / General Contractor,Management,Salary,,125000.0,2009-03-01,0.15
+EMP-002,Project Manager #1,Project Manager / Superintendent,Field Supervision,Salary,,76000.0,2014-06-01,1.0
+EMP-003,Project Manager #2,Project Manager / Superintendent,Field Supervision,Salary,,76000.0,2019-06-01,1.0
+EMP-004,Office Manager #1,Office Manager / Bookkeeper,Admin,Hourly,23.0,,2013-03-01,0.0
+EMP-005,Estimator #1,Estimator,Sales,Salary,,64000.0,2020-02-01,0.3
+EMP-006,Lead Finish Carpenter #1,Lead Finish Carpenter,Field Crew,Hourly,29.5,,2011-03-01,1.0
+EMP-007,Lead Finish Carpenter #2,Lead Finish Carpenter,Field Crew,Hourly,29.5,,2017-08-01,1.0
+EMP-008,Framing #1,Framing / Carpentry Crew,Field Crew,Hourly,25.0,,2016-01-01,1.0
+EMP-009,Framing #2,Framing / Carpentry Crew,Field Crew,Hourly,25.0,,2021-07-01,1.0
+EMP-010,Drywall & Paint Lead #1,Drywall & Paint Lead,Field Crew,Hourly,24.0,,2018-03-01,1.0
+EMP-011,Tile & Masonry Specialist #1,Tile & Masonry Specialist,Field Crew,Hourly,27.5,,2015-08-01,1.0
+EMP-012,Cabinetry & Millwork Installer #1,Cabinetry & Millwork Installer,Field Crew,Hourly,28.0,,2019-08-01,1.0

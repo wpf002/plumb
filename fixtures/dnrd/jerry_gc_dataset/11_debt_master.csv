@@ -1,0 +1,5 @@
+loan_id,lender,debt_type,original_principal,interest_rate,term_months,origination_date,collateral
+LOAN-TRUCKS21,Franklin Synergy Bank Equipment Finance,Vehicle Loan,119850.0,0.072,72.0,2021-03-01,3 Crew Trucks
+LOAN-TRUCKS23,Franklin Synergy Bank Equipment Finance,Vehicle Loan,86700.0,0.079,72.0,2023-05-01,2 Owner/PM Trucks
+LOAN-EQUIP22,Franklin Synergy Bank Equipment Finance,Equipment Loan,46400.0,0.084,60.0,2022-02-01,"Scaffolding, Scissor Lift & Site Equipment"
+LOC-01,Franklin Synergy Bank,Line of Credit,275000.0,0.0925,,2016-01-01,Blanket business assets; used to bridge overlapping project draw timing

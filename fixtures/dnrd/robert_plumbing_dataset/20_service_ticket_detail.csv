@@ -1,0 +1,529 @@
+month,segment,category,ticket_count,avg_ticket,revenue
+2022-01,Residential Service,Emergency Plumbing Call,73,409.44,29889.43
+2022-01,Residential Service,Routine Plumbing Service,160,255.34,40855.2
+2022-01,Residential Service,Drain Cleaning,90,282.73,25446.04
+2022-01,Residential Service,HVAC Repair,110,369.15,40606.91
+2022-01,Residential Service,HVAC Maintenance Visit (non-contract),95,182.63,17349.38
+2022-01,Residential Service,Water Heater Replacement,15,1500.94,22514.08
+2022-01,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1906.95,9534.74
+2022-02,Residential Service,Emergency Plumbing Call,81,420.13,34030.58
+2022-02,Residential Service,Routine Plumbing Service,128,261.39,33457.73
+2022-02,Residential Service,Drain Cleaning,85,305.45,25963.47
+2022-02,Residential Service,HVAC Repair,95,392.73,37309.82
+2022-02,Residential Service,HVAC Maintenance Visit (non-contract),99,171.93,17020.62
+2022-02,Residential Service,Water Heater Replacement,14,1388.92,19444.94
+2022-02,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1858.99,9294.95
+2022-03,Residential Service,Emergency Plumbing Call,68,402.82,27391.62
+2022-03,Residential Service,Routine Plumbing Service,110,254.15,27956.81
+2022-03,Residential Service,Drain Cleaning,67,301.63,20209.26
+2022-03,Residential Service,HVAC Repair,109,379.91,41409.72
+2022-03,Residential Service,HVAC Maintenance Visit (non-contract),90,182.69,16441.79
+2022-03,Residential Service,Water Heater Replacement,11,1430.04,15730.49
+2022-03,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1856.73,9283.63
+2022-04,Residential Service,Emergency Plumbing Call,52,417.4,21704.57
+2022-04,Residential Service,Routine Plumbing Service,121,253.6,30685.84
+2022-04,Residential Service,Drain Cleaning,63,301.4,18988.4
+2022-04,Residential Service,HVAC Repair,78,371.1,28946.18
+2022-04,Residential Service,HVAC Maintenance Visit (non-contract),71,171.24,12158.26
+2022-04,Residential Service,Water Heater Replacement,11,1436.69,15803.56
+2022-04,Residential Service,Repiping / Remodel Plumbing (small jobs),3,1842.52,5527.56
+2022-05,Residential Service,Emergency Plumbing Call,63,414.36,26104.95
+2022-05,Residential Service,Routine Plumbing Service,95,269.02,25556.5
+2022-05,Residential Service,Drain Cleaning,67,289.8,19416.88
+2022-05,Residential Service,HVAC Repair,82,378.47,31034.25
+2022-05,Residential Service,HVAC Maintenance Visit (non-contract),68,180.79,12293.61
+2022-05,Residential Service,Water Heater Replacement,10,1476.16,14761.59
+2022-05,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1772.56,7090.26
+2022-06,Residential Service,Emergency Plumbing Call,74,401.17,29686.94
+2022-06,Residential Service,Routine Plumbing Service,130,276.22,35909.11
+2022-06,Residential Service,Drain Cleaning,86,308.12,26498.68
+2022-06,Residential Service,HVAC Repair,118,400.89,47304.95
+2022-06,Residential Service,HVAC Maintenance Visit (non-contract),94,174.64,16415.97
+2022-06,Residential Service,Water Heater Replacement,14,1511.2,21156.83
+2022-06,Residential Service,Repiping / Remodel Plumbing (small jobs),6,1889.85,11339.12
+2022-07,Residential Service,Emergency Plumbing Call,83,418.27,34716.4
+2022-07,Residential Service,Routine Plumbing Service,164,265.66,43567.72
+2022-07,Residential Service,Drain Cleaning,91,281.31,25599.11
+2022-07,Residential Service,HVAC Repair,132,395.97,52267.93
+2022-07,Residential Service,HVAC Maintenance Visit (non-contract),110,181.25,19938.01
+2022-07,Residential Service,Water Heater Replacement,14,1506.16,21086.25
+2022-07,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1843.58,9217.88
+2022-08,Residential Service,Emergency Plumbing Call,79,414.06,32710.91
+2022-08,Residential Service,Routine Plumbing Service,146,272.82,39831.3
+2022-08,Residential Service,Drain Cleaning,83,303.56,25195.32
+2022-08,Residential Service,HVAC Repair,109,382.01,41638.91
+2022-08,Residential Service,HVAC Maintenance Visit (non-contract),113,174.23,19688.47
+2022-08,Residential Service,Water Heater Replacement,15,1421.61,21324.14
+2022-08,Residential Service,Repiping / Remodel Plumbing (small jobs),6,1829.02,10974.13
+2022-09,Residential Service,Emergency Plumbing Call,75,412.55,30940.89
+2022-09,Residential Service,Routine Plumbing Service,113,267.94,30277.15
+2022-09,Residential Service,Drain Cleaning,76,305.2,23194.83
+2022-09,Residential Service,HVAC Repair,88,392.96,34580.3
+2022-09,Residential Service,HVAC Maintenance Visit (non-contract),87,168.65,14672.36
+2022-09,Residential Service,Water Heater Replacement,13,1418.11,18435.43
+2022-09,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1920.11,7680.44
+2022-10,Residential Service,Emergency Plumbing Call,52,414.34,21545.9
+2022-10,Residential Service,Routine Plumbing Service,103,252.68,26025.55
+2022-10,Residential Service,Drain Cleaning,68,307.38,20901.75
+2022-10,Residential Service,HVAC Repair,90,373.99,33659.22
+2022-10,Residential Service,HVAC Maintenance Visit (non-contract),93,173.07,16095.84
+2022-10,Residential Service,Water Heater Replacement,11,1396.03,15356.38
+2022-10,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1813.34,7253.35
+2022-11,Residential Service,Emergency Plumbing Call,66,412.64,27234.3
+2022-11,Residential Service,Routine Plumbing Service,113,261.14,29508.49
+2022-11,Residential Service,Drain Cleaning,70,301.05,21073.47
+2022-11,Residential Service,HVAC Repair,95,378.07,35916.96
+2022-11,Residential Service,HVAC Maintenance Visit (non-contract),78,182.97,14272.04
+2022-11,Residential Service,Water Heater Replacement,10,1385.17,13851.7
+2022-11,Residential Service,Repiping / Remodel Plumbing (small jobs),3,1897.17,5691.51
+2022-12,Residential Service,Emergency Plumbing Call,63,405.95,25574.71
+2022-12,Residential Service,Routine Plumbing Service,116,257.73,29896.37
+2022-12,Residential Service,Drain Cleaning,66,299.61,19774.3
+2022-12,Residential Service,HVAC Repair,89,403.43,35904.83
+2022-12,Residential Service,HVAC Maintenance Visit (non-contract),87,178.37,15518.59
+2022-12,Residential Service,Water Heater Replacement,11,1478.48,16263.23
+2022-12,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1827.79,9138.94
+2023-01,Residential Service,Emergency Plumbing Call,77,411.3,31670.36
+2023-01,Residential Service,Routine Plumbing Service,128,267.44,34232.52
+2023-01,Residential Service,Drain Cleaning,73,300.33,21923.96
+2023-01,Residential Service,HVAC Repair,125,418.87,52359.27
+2023-01,Residential Service,HVAC Maintenance Visit (non-contract),104,179.32,18649.45
+2023-01,Residential Service,Water Heater Replacement,12,1509.66,18115.89
+2023-01,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1964.71,9823.55
+2023-02,Residential Service,Emergency Plumbing Call,68,418.8,28478.62
+2023-02,Residential Service,Routine Plumbing Service,121,285.39,34532.29
+2023-02,Residential Service,Drain Cleaning,75,300.18,22513.71
+2023-02,Residential Service,HVAC Repair,107,396.55,42430.86
+2023-02,Residential Service,HVAC Maintenance Visit (non-contract),85,182.69,15528.63
+2023-02,Residential Service,Water Heater Replacement,13,1516.75,19717.71
+2023-02,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2004.81,8019.24
+2023-03,Residential Service,Emergency Plumbing Call,63,426.27,26854.98
+2023-03,Residential Service,Routine Plumbing Service,107,265.85,28445.8
+2023-03,Residential Service,Drain Cleaning,68,296.01,20128.35
+2023-03,Residential Service,HVAC Repair,96,386.5,37103.76
+2023-03,Residential Service,HVAC Maintenance Visit (non-contract),101,175.83,17758.69
+2023-03,Residential Service,Water Heater Replacement,12,1524.73,18296.74
+2023-03,Residential Service,Repiping / Remodel Plumbing (small jobs),5,2029.58,10147.91
+2023-04,Residential Service,Emergency Plumbing Call,50,441.14,22056.88
+2023-04,Residential Service,Routine Plumbing Service,100,279.17,27917.1
+2023-04,Residential Service,Drain Cleaning,54,304.95,16467.15
+2023-04,Residential Service,HVAC Repair,81,413.9,33525.65
+2023-04,Residential Service,HVAC Maintenance Visit (non-contract),82,178.37,14625.96
+2023-04,Residential Service,Water Heater Replacement,11,1479.47,16274.2
+2023-04,Residential Service,Repiping / Remodel Plumbing (small jobs),3,1978.39,5935.17
+2023-05,Residential Service,Emergency Plumbing Call,63,430.07,27094.26
+2023-05,Residential Service,Routine Plumbing Service,98,275.99,27047.37
+2023-05,Residential Service,Drain Cleaning,70,295.91,20713.44
+2023-05,Residential Service,HVAC Repair,85,415.18,35290.67
+2023-05,Residential Service,HVAC Maintenance Visit (non-contract),72,175.02,12601.69
+2023-05,Residential Service,Water Heater Replacement,9,1448.09,13032.77
+2023-05,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1926.97,7707.89
+2023-06,Residential Service,Emergency Plumbing Call,60,414.76,24885.5
+2023-06,Residential Service,Routine Plumbing Service,107,276.82,29619.61
+2023-06,Residential Service,Drain Cleaning,62,309.41,19183.28
+2023-06,Residential Service,HVAC Repair,96,394.17,37840.63
+2023-06,Residential Service,HVAC Maintenance Visit (non-contract),92,190.13,17492.21
+2023-06,Residential Service,Water Heater Replacement,11,1489.75,16387.3
+2023-06,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1931.52,7726.1
+2023-07,Residential Service,Emergency Plumbing Call,68,418.93,28487.35
+2023-07,Residential Service,Routine Plumbing Service,126,274.75,34618.83
+2023-07,Residential Service,Drain Cleaning,83,321.52,26685.78
+2023-07,Residential Service,HVAC Repair,112,402.49,45078.61
+2023-07,Residential Service,HVAC Maintenance Visit (non-contract),104,184.05,19140.92
+2023-07,Residential Service,Water Heater Replacement,12,1525.42,18305.08
+2023-07,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1893.04,9465.19
+2023-08,Residential Service,Emergency Plumbing Call,87,411.97,35841.42
+2023-08,Residential Service,Routine Plumbing Service,135,279.72,37762.41
+2023-08,Residential Service,Drain Cleaning,76,309.21,23499.76
+2023-08,Residential Service,HVAC Repair,99,411.97,40785.44
+2023-08,Residential Service,HVAC Maintenance Visit (non-contract),107,186.74,19980.81
+2023-08,Residential Service,Water Heater Replacement,14,1563.59,21890.26
+2023-08,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1991.07,7964.29
+2023-09,Residential Service,Emergency Plumbing Call,58,430.95,24994.9
+2023-09,Residential Service,Routine Plumbing Service,116,273.12,31681.56
+2023-09,Residential Service,Drain Cleaning,72,304.67,21936.43
+2023-09,Residential Service,HVAC Repair,97,397.95,38600.98
+2023-09,Residential Service,HVAC Maintenance Visit (non-contract),72,183.15,13186.51
+2023-09,Residential Service,Water Heater Replacement,12,1471.22,17654.65
+2023-09,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1898.7,7594.8
+2023-10,Residential Service,Emergency Plumbing Call,55,449.89,24743.91
+2023-10,Residential Service,Routine Plumbing Service,102,284.72,29041.93
+2023-10,Residential Service,Drain Cleaning,64,300.16,19210.21
+2023-10,Residential Service,HVAC Repair,76,400.63,30447.9
+2023-10,Residential Service,HVAC Maintenance Visit (non-contract),78,182.15,14208.02
+2023-10,Residential Service,Water Heater Replacement,10,1585.95,15859.5
+2023-10,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1885.58,7542.32
+2023-11,Residential Service,Emergency Plumbing Call,63,428.31,26983.35
+2023-11,Residential Service,Routine Plumbing Service,108,266.65,28798.55
+2023-11,Residential Service,Drain Cleaning,56,297.0,16632.0
+2023-11,Residential Service,HVAC Repair,88,384.68,33851.82
+2023-11,Residential Service,HVAC Maintenance Visit (non-contract),76,174.88,13290.96
+2023-11,Residential Service,Water Heater Replacement,9,1585.42,14268.82
+2023-11,Residential Service,Repiping / Remodel Plumbing (small jobs),3,1873.89,5621.68
+2023-12,Residential Service,Emergency Plumbing Call,62,444.69,27570.9
+2023-12,Residential Service,Routine Plumbing Service,133,282.11,37520.39
+2023-12,Residential Service,Drain Cleaning,80,302.82,24225.86
+2023-12,Residential Service,HVAC Repair,115,392.99,45193.8
+2023-12,Residential Service,HVAC Maintenance Visit (non-contract),79,192.83,15233.32
+2023-12,Residential Service,Water Heater Replacement,13,1549.6,20144.84
+2023-12,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2013.56,8054.24
+2024-01,Residential Service,Emergency Plumbing Call,56,462.81,25917.45
+2024-01,Residential Service,Routine Plumbing Service,100,298.58,29857.76
+2024-01,Residential Service,Drain Cleaning,69,336.32,23206.27
+2024-01,Residential Service,HVAC Repair,88,427.76,37643.25
+2024-01,Residential Service,HVAC Maintenance Visit (non-contract),86,192.26,16534.55
+2024-01,Residential Service,Water Heater Replacement,11,1631.51,17946.56
+2024-01,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2079.61,6238.82
+2024-02,Residential Service,Emergency Plumbing Call,58,459.42,26646.39
+2024-02,Residential Service,Routine Plumbing Service,115,285.25,32803.8
+2024-02,Residential Service,Drain Cleaning,56,330.26,18494.3
+2024-02,Residential Service,HVAC Repair,87,434.29,37783.16
+2024-02,Residential Service,HVAC Maintenance Visit (non-contract),81,188.5,15268.33
+2024-02,Residential Service,Water Heater Replacement,9,1656.4,14907.64
+2024-02,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2036.78,8147.11
+2024-03,Residential Service,Emergency Plumbing Call,50,435.81,21790.3
+2024-03,Residential Service,Routine Plumbing Service,79,294.93,23299.69
+2024-03,Residential Service,Drain Cleaning,53,318.78,16895.57
+2024-03,Residential Service,HVAC Repair,81,427.9,34660.16
+2024-03,Residential Service,HVAC Maintenance Visit (non-contract),61,196.77,12003.15
+2024-03,Residential Service,Water Heater Replacement,8,1548.19,12385.52
+2024-03,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2096.23,6288.68
+2024-04,Residential Service,Emergency Plumbing Call,50,435.74,21787.22
+2024-04,Residential Service,Routine Plumbing Service,77,293.49,22598.85
+2024-04,Residential Service,Drain Cleaning,53,327.77,17371.7
+2024-04,Residential Service,HVAC Repair,56,436.25,24430.14
+2024-04,Residential Service,HVAC Maintenance Visit (non-contract),61,195.11,11901.62
+2024-04,Residential Service,Water Heater Replacement,8,1620.42,12963.39
+2024-04,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2004.69,6014.07
+2024-05,Residential Service,Emergency Plumbing Call,43,469.42,20185.17
+2024-05,Residential Service,Routine Plumbing Service,105,289.26,30371.96
+2024-05,Residential Service,Drain Cleaning,44,337.51,14850.34
+2024-05,Residential Service,HVAC Repair,73,405.74,29619.29
+2024-05,Residential Service,HVAC Maintenance Visit (non-contract),67,187.43,12557.85
+2024-05,Residential Service,Water Heater Replacement,8,1549.46,12395.7
+2024-05,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2008.66,6025.97
+2024-06,Residential Service,Emergency Plumbing Call,67,444.54,29783.93
+2024-06,Residential Service,Routine Plumbing Service,100,291.01,29101.19
+2024-06,Residential Service,Drain Cleaning,67,314.99,21104.59
+2024-06,Residential Service,HVAC Repair,94,411.6,38690.02
+2024-06,Residential Service,HVAC Maintenance Visit (non-contract),92,199.56,18359.21
+2024-06,Residential Service,Water Heater Replacement,11,1603.59,17639.5
+2024-06,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1995.17,7980.69
+2024-07,Residential Service,Emergency Plumbing Call,69,457.06,31536.98
+2024-07,Residential Service,Routine Plumbing Service,101,292.37,29529.06
+2024-07,Residential Service,Drain Cleaning,64,331.71,21229.47
+2024-07,Residential Service,HVAC Repair,105,410.7,43123.94
+2024-07,Residential Service,HVAC Maintenance Visit (non-contract),83,199.29,16540.91
+2024-07,Residential Service,Water Heater Replacement,13,1587.38,20636.0
+2024-07,Residential Service,Repiping / Remodel Plumbing (small jobs),5,2017.71,10088.54
+2024-08,Residential Service,Emergency Plumbing Call,66,453.59,29936.87
+2024-08,Residential Service,Routine Plumbing Service,122,286.13,34908.0
+2024-08,Residential Service,Drain Cleaning,75,312.98,23473.44
+2024-08,Residential Service,HVAC Repair,100,444.14,44414.29
+2024-08,Residential Service,HVAC Maintenance Visit (non-contract),79,200.88,15869.56
+2024-08,Residential Service,Water Heater Replacement,14,1620.17,22682.38
+2024-08,Residential Service,Repiping / Remodel Plumbing (small jobs),5,1945.73,9728.66
+2024-09,Residential Service,Emergency Plumbing Call,64,458.82,29364.66
+2024-09,Residential Service,Routine Plumbing Service,97,301.2,29216.1
+2024-09,Residential Service,Drain Cleaning,58,309.04,17924.47
+2024-09,Residential Service,HVAC Repair,83,427.68,35497.31
+2024-09,Residential Service,HVAC Maintenance Visit (non-contract),77,197.89,15237.31
+2024-09,Residential Service,Water Heater Replacement,11,1554.01,17094.12
+2024-09,Residential Service,Repiping / Remodel Plumbing (small jobs),4,1937.25,7749.01
+2024-10,Residential Service,Emergency Plumbing Call,54,438.35,23671.09
+2024-10,Residential Service,Routine Plumbing Service,96,295.73,28390.49
+2024-10,Residential Service,Drain Cleaning,49,320.94,15726.19
+2024-10,Residential Service,HVAC Repair,79,415.08,32791.03
+2024-10,Residential Service,HVAC Maintenance Visit (non-contract),69,192.04,13250.92
+2024-10,Residential Service,Water Heater Replacement,9,1535.25,13817.26
+2024-10,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2113.39,6340.17
+2024-11,Residential Service,Emergency Plumbing Call,55,453.07,24918.86
+2024-11,Residential Service,Routine Plumbing Service,100,300.16,30016.15
+2024-11,Residential Service,Drain Cleaning,56,326.09,18260.94
+2024-11,Residential Service,HVAC Repair,77,422.08,32500.43
+2024-11,Residential Service,HVAC Maintenance Visit (non-contract),81,183.43,14857.6
+2024-11,Residential Service,Water Heater Replacement,10,1550.47,15504.7
+2024-11,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2008.06,8032.24
+2024-12,Residential Service,Emergency Plumbing Call,56,448.09,25092.86
+2024-12,Residential Service,Routine Plumbing Service,113,291.09,32893.58
+2024-12,Residential Service,Drain Cleaning,64,335.76,21488.74
+2024-12,Residential Service,HVAC Repair,101,402.78,40681.26
+2024-12,Residential Service,HVAC Maintenance Visit (non-contract),73,183.42,13389.89
+2024-12,Residential Service,Water Heater Replacement,9,1659.03,14931.3
+2024-12,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2134.77,8539.06
+2025-01,Residential Service,Emergency Plumbing Call,55,495.58,27257.07
+2025-01,Residential Service,Routine Plumbing Service,118,311.3,36733.39
+2025-01,Residential Service,Drain Cleaning,63,348.04,21926.74
+2025-01,Residential Service,HVAC Repair,93,440.1,40929.35
+2025-01,Residential Service,HVAC Maintenance Visit (non-contract),74,197.06,14582.12
+2025-01,Residential Service,Water Heater Replacement,11,1687.48,18562.32
+2025-01,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2186.89,8747.55
+2025-02,Residential Service,Emergency Plumbing Call,47,496.51,23336.12
+2025-02,Residential Service,Routine Plumbing Service,81,320.98,25999.32
+2025-02,Residential Service,Drain Cleaning,46,352.26,16204.19
+2025-02,Residential Service,HVAC Repair,72,453.16,32627.27
+2025-02,Residential Service,HVAC Maintenance Visit (non-contract),72,206.02,14833.76
+2025-02,Residential Service,Water Heater Replacement,8,1646.98,13175.84
+2025-02,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2088.43,6265.28
+2025-03,Residential Service,Emergency Plumbing Call,45,468.56,21085.36
+2025-03,Residential Service,Routine Plumbing Service,78,321.86,25105.37
+2025-03,Residential Service,Drain Cleaning,51,354.96,18103.06
+2025-03,Residential Service,HVAC Repair,63,460.15,28989.64
+2025-03,Residential Service,HVAC Maintenance Visit (non-contract),64,200.11,12806.85
+2025-03,Residential Service,Water Heater Replacement,7,1642.26,11495.82
+2025-03,Residential Service,Repiping / Remodel Plumbing (small jobs),2,2249.96,4499.92
+2025-04,Residential Service,Emergency Plumbing Call,37,476.63,17635.13
+2025-04,Residential Service,Routine Plumbing Service,84,322.79,27114.66
+2025-04,Residential Service,Drain Cleaning,51,344.68,17578.52
+2025-04,Residential Service,HVAC Repair,60,464.28,27856.83
+2025-04,Residential Service,HVAC Maintenance Visit (non-contract),48,213.49,10247.42
+2025-04,Residential Service,Water Heater Replacement,8,1653.76,13230.07
+2025-04,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2112.41,6337.22
+2025-05,Residential Service,Emergency Plumbing Call,41,477.36,19571.94
+2025-05,Residential Service,Routine Plumbing Service,71,323.4,22961.64
+2025-05,Residential Service,Drain Cleaning,52,338.7,17612.22
+2025-05,Residential Service,HVAC Repair,56,464.22,25996.54
+2025-05,Residential Service,HVAC Maintenance Visit (non-contract),59,199.03,11742.76
+2025-05,Residential Service,Water Heater Replacement,7,1697.97,11885.76
+2025-05,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2187.06,6561.18
+2025-06,Residential Service,Emergency Plumbing Call,50,481.22,24060.89
+2025-06,Residential Service,Routine Plumbing Service,100,319.88,31987.85
+2025-06,Residential Service,Drain Cleaning,56,338.55,18958.92
+2025-06,Residential Service,HVAC Repair,73,441.58,32235.08
+2025-06,Residential Service,HVAC Maintenance Visit (non-contract),66,199.66,13177.49
+2025-06,Residential Service,Water Heater Replacement,9,1744.28,15698.56
+2025-06,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2239.4,6718.21
+2025-07,Residential Service,Emergency Plumbing Call,51,464.05,23666.76
+2025-07,Residential Service,Routine Plumbing Service,92,309.08,28435.78
+2025-07,Residential Service,Drain Cleaning,52,350.26,18213.33
+2025-07,Residential Service,HVAC Repair,89,452.87,40304.99
+2025-07,Residential Service,HVAC Maintenance Visit (non-contract),86,198.73,17091.08
+2025-07,Residential Service,Water Heater Replacement,8,1756.57,14052.55
+2025-07,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2253.11,9012.46
+2025-08,Residential Service,Emergency Plumbing Call,57,500.12,28506.68
+2025-08,Residential Service,Routine Plumbing Service,92,297.28,27350.02
+2025-08,Residential Service,Drain Cleaning,64,362.2,23181.08
+2025-08,Residential Service,HVAC Repair,91,452.73,41198.38
+2025-08,Residential Service,HVAC Maintenance Visit (non-contract),70,212.28,14859.36
+2025-08,Residential Service,Water Heater Replacement,11,1709.78,18807.53
+2025-08,Residential Service,Repiping / Remodel Plumbing (small jobs),4,2106.97,8427.87
+2025-09,Residential Service,Emergency Plumbing Call,43,495.2,21293.58
+2025-09,Residential Service,Routine Plumbing Service,83,306.91,25473.56
+2025-09,Residential Service,Drain Cleaning,51,358.58,18287.57
+2025-09,Residential Service,HVAC Repair,70,437.84,30648.57
+2025-09,Residential Service,HVAC Maintenance Visit (non-contract),55,200.6,11033.14
+2025-09,Residential Service,Water Heater Replacement,10,1619.11,16191.05
+2025-09,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2201.01,6603.04
+2025-10,Residential Service,Emergency Plumbing Call,43,470.25,20220.6
+2025-10,Residential Service,Routine Plumbing Service,77,308.5,23754.58
+2025-10,Residential Service,Drain Cleaning,45,332.31,14954.04
+2025-10,Residential Service,HVAC Repair,67,440.58,29518.72
+2025-10,Residential Service,HVAC Maintenance Visit (non-contract),44,212.38,9344.59
+2025-10,Residential Service,Water Heater Replacement,7,1728.82,12101.73
+2025-10,Residential Service,Repiping / Remodel Plumbing (small jobs),2,2165.98,4331.96
+2025-11,Residential Service,Emergency Plumbing Call,45,468.16,21067.17
+2025-11,Residential Service,Routine Plumbing Service,83,316.3,26252.83
+2025-11,Residential Service,Drain Cleaning,41,354.54,14536.04
+2025-11,Residential Service,HVAC Repair,71,458.18,32530.53
+2025-11,Residential Service,HVAC Maintenance Visit (non-contract),55,202.5,11137.32
+2025-11,Residential Service,Water Heater Replacement,9,1719.94,15479.42
+2025-11,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2121.68,6365.04
+2025-12,Residential Service,Emergency Plumbing Call,56,458.53,25677.84
+2025-12,Residential Service,Routine Plumbing Service,94,309.5,29092.67
+2025-12,Residential Service,Drain Cleaning,52,361.17,18781.09
+2025-12,Residential Service,HVAC Repair,73,461.06,33657.12
+2025-12,Residential Service,HVAC Maintenance Visit (non-contract),74,208.29,15413.57
+2025-12,Residential Service,Water Heater Replacement,9,1623.0,14607.03
+2025-12,Residential Service,Repiping / Remodel Plumbing (small jobs),3,2244.1,6732.31
+2022-01,Commercial Service,Commercial Plumbing Repair,67,601.88,40325.9
+2022-01,Commercial Service,Commercial HVAC Repair,64,911.81,58355.52
+2022-01,Commercial Service,Commercial Drain/Sewer Service,55,516.86,28427.53
+2022-01,Commercial Service,Commercial Water Heater Service,13,1277.37,16605.86
+2022-02,Commercial Service,Commercial Plumbing Repair,62,601.66,37302.63
+2022-02,Commercial Service,Commercial HVAC Repair,54,865.96,46762.05
+2022-02,Commercial Service,Commercial Drain/Sewer Service,40,541.71,21668.29
+2022-02,Commercial Service,Commercial Water Heater Service,13,1297.96,16873.45
+2022-03,Commercial Service,Commercial Plumbing Repair,52,613.2,31886.28
+2022-03,Commercial Service,Commercial HVAC Repair,40,898.7,35948.18
+2022-03,Commercial Service,Commercial Drain/Sewer Service,31,555.3,17214.27
+2022-03,Commercial Service,Commercial Water Heater Service,11,1223.82,13462.0
+2022-04,Commercial Service,Commercial Plumbing Repair,59,598.92,35336.25
+2022-04,Commercial Service,Commercial HVAC Repair,42,863.65,36273.45
+2022-04,Commercial Service,Commercial Drain/Sewer Service,27,564.5,15241.44
+2022-04,Commercial Service,Commercial Water Heater Service,11,1188.09,13068.99
+2022-05,Commercial Service,Commercial Plumbing Repair,51,600.41,30621.06
+2022-05,Commercial Service,Commercial HVAC Repair,39,924.12,36040.69
+2022-05,Commercial Service,Commercial Drain/Sewer Service,42,521.1,21886.26
+2022-05,Commercial Service,Commercial Water Heater Service,10,1207.96,12079.64
+2022-06,Commercial Service,Commercial Plumbing Repair,67,609.17,40814.33
+2022-06,Commercial Service,Commercial HVAC Repair,57,895.06,51018.15
+2022-06,Commercial Service,Commercial Drain/Sewer Service,41,518.11,21242.33
+2022-06,Commercial Service,Commercial Water Heater Service,11,1192.83,13121.17
+2022-07,Commercial Service,Commercial Plumbing Repair,76,629.88,47870.52
+2022-07,Commercial Service,Commercial HVAC Repair,52,913.13,47482.75
+2022-07,Commercial Service,Commercial Drain/Sewer Service,49,566.45,27755.86
+2022-07,Commercial Service,Commercial Water Heater Service,15,1267.8,19016.99
+2022-08,Commercial Service,Commercial Plumbing Repair,86,641.15,55138.72
+2022-08,Commercial Service,Commercial HVAC Repair,76,848.54,64489.08
+2022-08,Commercial Service,Commercial Drain/Sewer Service,48,536.35,25744.75
+2022-08,Commercial Service,Commercial Water Heater Service,16,1234.28,19748.53
+2022-09,Commercial Service,Commercial Plumbing Repair,57,638.74,36408.25
+2022-09,Commercial Service,Commercial HVAC Repair,46,912.83,41990.39
+2022-09,Commercial Service,Commercial Drain/Sewer Service,37,513.73,19007.9
+2022-09,Commercial Service,Commercial Water Heater Service,11,1284.37,14128.12
+2022-10,Commercial Service,Commercial Plumbing Repair,53,641.2,33983.38
+2022-10,Commercial Service,Commercial HVAC Repair,53,884.47,46876.98
+2022-10,Commercial Service,Commercial Drain/Sewer Service,31,531.62,16480.35
+2022-10,Commercial Service,Commercial Water Heater Service,10,1203.42,12034.24
+2022-11,Commercial Service,Commercial Plumbing Repair,50,641.27,32063.71
+2022-11,Commercial Service,Commercial HVAC Repair,38,925.53,35170.16
+2022-11,Commercial Service,Commercial Drain/Sewer Service,27,559.53,15107.35
+2022-11,Commercial Service,Commercial Water Heater Service,10,1193.18,11931.84
+2022-12,Commercial Service,Commercial Plumbing Repair,72,652.51,46980.78
+2022-12,Commercial Service,Commercial HVAC Repair,61,877.43,53523.37
+2022-12,Commercial Service,Commercial Drain/Sewer Service,37,551.16,20392.97
+2022-12,Commercial Service,Commercial Water Heater Service,14,1207.29,16902.02
+2023-01,Commercial Service,Commercial Plumbing Repair,78,681.92,53189.81
+2023-01,Commercial Service,Commercial HVAC Repair,50,952.66,47633.2
+2023-01,Commercial Service,Commercial Drain/Sewer Service,49,562.4,27557.57
+2023-01,Commercial Service,Commercial Water Heater Service,14,1353.48,18948.73
+2023-02,Commercial Service,Commercial Plumbing Repair,66,665.78,43941.5
+2023-02,Commercial Service,Commercial HVAC Repair,52,946.04,49194.01
+2023-02,Commercial Service,Commercial Drain/Sewer Service,43,592.06,25458.72
+2023-02,Commercial Service,Commercial Water Heater Service,13,1368.14,17785.81
+2023-03,Commercial Service,Commercial Plumbing Repair,47,681.71,32040.59
+2023-03,Commercial Service,Commercial HVAC Repair,49,968.98,47480.03
+2023-03,Commercial Service,Commercial Drain/Sewer Service,33,561.6,18532.81
+2023-03,Commercial Service,Commercial Water Heater Service,11,1336.92,14706.14
+2023-04,Commercial Service,Commercial Plumbing Repair,50,680.73,34036.61
+2023-04,Commercial Service,Commercial HVAC Repair,39,919.26,35851.3
+2023-04,Commercial Service,Commercial Drain/Sewer Service,34,591.83,20122.21
+2023-04,Commercial Service,Commercial Water Heater Service,11,1371.14,15082.57
+2023-05,Commercial Service,Commercial Plumbing Repair,52,667.48,34708.99
+2023-05,Commercial Service,Commercial HVAC Repair,48,891.71,42802.15
+2023-05,Commercial Service,Commercial Drain/Sewer Service,35,558.27,19539.57
+2023-05,Commercial Service,Commercial Water Heater Service,10,1281.19,12811.86
+2023-06,Commercial Service,Commercial Plumbing Repair,67,658.71,44133.64
+2023-06,Commercial Service,Commercial HVAC Repair,57,938.44,53490.86
+2023-06,Commercial Service,Commercial Drain/Sewer Service,45,541.35,24360.94
+2023-06,Commercial Service,Commercial Water Heater Service,13,1339.26,17410.38
+2023-07,Commercial Service,Commercial Plumbing Repair,67,644.02,43149.23
+2023-07,Commercial Service,Commercial HVAC Repair,54,892.11,48173.79
+2023-07,Commercial Service,Commercial Drain/Sewer Service,39,553.12,21571.84
+2023-07,Commercial Service,Commercial Water Heater Service,11,1356.73,14924.07
+2023-08,Commercial Service,Commercial Plumbing Repair,64,681.88,43640.46
+2023-08,Commercial Service,Commercial HVAC Repair,51,965.65,49247.95
+2023-08,Commercial Service,Commercial Drain/Sewer Service,46,591.67,27216.74
+2023-08,Commercial Service,Commercial Water Heater Service,12,1255.49,15065.89
+2023-09,Commercial Service,Commercial Plumbing Repair,51,632.53,32259.11
+2023-09,Commercial Service,Commercial HVAC Repair,51,895.66,45678.6
+2023-09,Commercial Service,Commercial Drain/Sewer Service,35,591.69,20709.05
+2023-09,Commercial Service,Commercial Water Heater Service,10,1270.96,12709.59
+2023-10,Commercial Service,Commercial Plumbing Repair,51,655.28,33419.1
+2023-10,Commercial Service,Commercial HVAC Repair,40,902.12,36084.78
+2023-10,Commercial Service,Commercial Drain/Sewer Service,35,544.91,19071.95
+2023-10,Commercial Service,Commercial Water Heater Service,8,1339.24,10713.92
+2023-11,Commercial Service,Commercial Plumbing Repair,59,668.11,39418.7
+2023-11,Commercial Service,Commercial HVAC Repair,41,935.06,38337.48
+2023-11,Commercial Service,Commercial Drain/Sewer Service,32,560.36,17931.48
+2023-11,Commercial Service,Commercial Water Heater Service,12,1258.32,15099.81
+2023-12,Commercial Service,Commercial Plumbing Repair,69,640.57,44199.58
+2023-12,Commercial Service,Commercial HVAC Repair,48,966.96,46413.87
+2023-12,Commercial Service,Commercial Drain/Sewer Service,33,585.42,19318.88
+2023-12,Commercial Service,Commercial Water Heater Service,12,1309.18,15710.12
+2024-01,Commercial Service,Commercial Plumbing Repair,62,695.49,43120.41
+2024-01,Commercial Service,Commercial HVAC Repair,52,941.06,48935.02
+2024-01,Commercial Service,Commercial Drain/Sewer Service,44,598.35,26327.58
+2024-01,Commercial Service,Commercial Water Heater Service,12,1316.3,15795.59
+2024-02,Commercial Service,Commercial Plumbing Repair,57,654.58,37311.0
+2024-02,Commercial Service,Commercial HVAC Repair,50,1021.29,51064.46
+2024-02,Commercial Service,Commercial Drain/Sewer Service,38,603.98,22951.42
+2024-02,Commercial Service,Commercial Water Heater Service,9,1443.39,12990.53
+2024-03,Commercial Service,Commercial Plumbing Repair,55,667.7,36723.26
+2024-03,Commercial Service,Commercial HVAC Repair,46,934.37,42981.19
+2024-03,Commercial Service,Commercial Drain/Sewer Service,41,573.01,23493.48
+2024-03,Commercial Service,Commercial Water Heater Service,11,1348.4,14832.44
+2024-04,Commercial Service,Commercial Plumbing Repair,53,712.4,37757.3
+2024-04,Commercial Service,Commercial HVAC Repair,37,959.87,35515.03
+2024-04,Commercial Service,Commercial Drain/Sewer Service,31,619.71,19211.03
+2024-04,Commercial Service,Commercial Water Heater Service,10,1423.8,14237.98
+2024-05,Commercial Service,Commercial Plumbing Repair,50,660.28,33013.79
+2024-05,Commercial Service,Commercial HVAC Repair,45,933.74,42018.34
+2024-05,Commercial Service,Commercial Drain/Sewer Service,29,584.12,16939.46
+2024-05,Commercial Service,Commercial Water Heater Service,8,1396.51,11172.07
+2024-06,Commercial Service,Commercial Plumbing Repair,54,667.09,36022.73
+2024-06,Commercial Service,Commercial HVAC Repair,45,1016.53,45743.7
+2024-06,Commercial Service,Commercial Drain/Sewer Service,34,615.14,20914.87
+2024-06,Commercial Service,Commercial Water Heater Service,10,1319.51,13195.14
+2024-07,Commercial Service,Commercial Plumbing Repair,59,661.66,39038.16
+2024-07,Commercial Service,Commercial HVAC Repair,47,942.77,44310.11
+2024-07,Commercial Service,Commercial Drain/Sewer Service,45,587.58,26441.24
+2024-07,Commercial Service,Commercial Water Heater Service,10,1430.71,14307.1
+2024-08,Commercial Service,Commercial Plumbing Repair,65,676.91,43998.88
+2024-08,Commercial Service,Commercial HVAC Repair,50,955.23,47761.4
+2024-08,Commercial Service,Commercial Drain/Sewer Service,38,622.17,23642.41
+2024-08,Commercial Service,Commercial Water Heater Service,12,1394.31,16731.66
+2024-09,Commercial Service,Commercial Plumbing Repair,49,702.22,34408.67
+2024-09,Commercial Service,Commercial HVAC Repair,42,935.32,39283.3
+2024-09,Commercial Service,Commercial Drain/Sewer Service,36,580.68,20904.35
+2024-09,Commercial Service,Commercial Water Heater Service,10,1317.2,13171.96
+2024-10,Commercial Service,Commercial Plumbing Repair,48,681.62,32717.71
+2024-10,Commercial Service,Commercial HVAC Repair,34,1011.05,34375.77
+2024-10,Commercial Service,Commercial Drain/Sewer Service,31,587.03,18197.86
+2024-10,Commercial Service,Commercial Water Heater Service,9,1407.43,12666.89
+2024-11,Commercial Service,Commercial Plumbing Repair,39,715.07,27887.72
+2024-11,Commercial Service,Commercial HVAC Repair,36,994.11,35787.79
+2024-11,Commercial Service,Commercial Drain/Sewer Service,28,576.45,16140.5
+2024-11,Commercial Service,Commercial Water Heater Service,9,1342.91,12086.2
+2024-12,Commercial Service,Commercial Plumbing Repair,49,721.15,35336.56
+2024-12,Commercial Service,Commercial HVAC Repair,46,981.33,45141.11
+2024-12,Commercial Service,Commercial Drain/Sewer Service,34,596.76,20289.88
+2024-12,Commercial Service,Commercial Water Heater Service,9,1315.69,11841.17
+2025-01,Commercial Service,Commercial Plumbing Repair,49,765.84,37526.22
+2025-01,Commercial Service,Commercial HVAC Repair,46,1067.42,49101.2
+2025-01,Commercial Service,Commercial Drain/Sewer Service,32,658.88,21084.22
+2025-01,Commercial Service,Commercial Water Heater Service,11,1440.61,15846.68
+2025-02,Commercial Service,Commercial Plumbing Repair,53,736.6,39039.72
+2025-02,Commercial Service,Commercial HVAC Repair,43,1021.08,43906.36
+2025-02,Commercial Service,Commercial Drain/Sewer Service,35,633.46,22171.01
+2025-02,Commercial Service,Commercial Water Heater Service,10,1404.19,14041.89
+2025-03,Commercial Service,Commercial Plumbing Repair,50,766.05,38302.28
+2025-03,Commercial Service,Commercial HVAC Repair,46,1003.28,46151.08
+2025-03,Commercial Service,Commercial Drain/Sewer Service,38,653.14,24819.19
+2025-03,Commercial Service,Commercial Water Heater Service,11,1475.09,16225.99
+2025-04,Commercial Service,Commercial Plumbing Repair,53,742.94,39375.57
+2025-04,Commercial Service,Commercial HVAC Repair,43,1069.91,46006.3
+2025-04,Commercial Service,Commercial Drain/Sewer Service,34,615.62,20931.05
+2025-04,Commercial Service,Commercial Water Heater Service,9,1498.57,13487.17
+2025-05,Commercial Service,Commercial Plumbing Repair,60,696.97,41817.94
+2025-05,Commercial Service,Commercial HVAC Repair,46,1018.74,46861.82
+2025-05,Commercial Service,Commercial Drain/Sewer Service,39,601.9,23474.27
+2025-05,Commercial Service,Commercial Water Heater Service,10,1480.65,14806.5
+2025-06,Commercial Service,Commercial Plumbing Repair,53,717.57,38031.38
+2025-06,Commercial Service,Commercial HVAC Repair,56,1060.56,59391.33
+2025-06,Commercial Service,Commercial Drain/Sewer Service,33,627.1,20694.26
+2025-06,Commercial Service,Commercial Water Heater Service,13,1416.75,18417.72
+2025-07,Commercial Service,Commercial Plumbing Repair,54,745.42,40252.8
+2025-07,Commercial Service,Commercial HVAC Repair,58,1026.85,59557.33
+2025-07,Commercial Service,Commercial Drain/Sewer Service,40,636.44,25457.43
+2025-07,Commercial Service,Commercial Water Heater Service,12,1463.9,17566.79
+2025-08,Commercial Service,Commercial Plumbing Repair,76,712.75,54169.38
+2025-08,Commercial Service,Commercial HVAC Repair,55,1050.74,57790.46
+2025-08,Commercial Service,Commercial Drain/Sewer Service,48,630.02,30241.06
+2025-08,Commercial Service,Commercial Water Heater Service,14,1458.85,20423.89
+2025-09,Commercial Service,Commercial Plumbing Repair,55,720.1,39605.68
+2025-09,Commercial Service,Commercial HVAC Repair,54,1006.77,54365.44
+2025-09,Commercial Service,Commercial Drain/Sewer Service,40,613.23,24529.39
+2025-09,Commercial Service,Commercial Water Heater Service,11,1392.86,15321.43
+2025-10,Commercial Service,Commercial Plumbing Repair,51,716.96,36564.85
+2025-10,Commercial Service,Commercial HVAC Repair,34,1030.17,35025.79
+2025-10,Commercial Service,Commercial Drain/Sewer Service,31,626.43,19419.22
+2025-10,Commercial Service,Commercial Water Heater Service,7,1521.66,10651.6
+2025-11,Commercial Service,Commercial Plumbing Repair,44,755.52,33242.73
+2025-11,Commercial Service,Commercial HVAC Repair,43,1034.55,44485.79
+2025-11,Commercial Service,Commercial Drain/Sewer Service,38,618.34,23496.89
+2025-11,Commercial Service,Commercial Water Heater Service,11,1470.23,16172.51
+2025-12,Commercial Service,Commercial Plumbing Repair,53,717.33,38018.26
+2025-12,Commercial Service,Commercial HVAC Repair,46,1053.28,48450.91
+2025-12,Commercial Service,Commercial Drain/Sewer Service,40,643.68,25747.02
+2025-12,Commercial Service,Commercial Water Heater Service,13,1422.06,18486.8

@@ -104,6 +104,9 @@ model Company {
   goals                 String?
   // Where this company's data came from: SEED, IMPORT, or QBO.
   dataSource            String    @default("SEED")
+  /// Last day the books cover. Imported history ends before today, so every
+  /// "as of" calculation uses this when set instead of the clock.
+  dataAsOf              DateTime?
   projects              Project[]
   entities              Entity[]
   customers             Customer[]

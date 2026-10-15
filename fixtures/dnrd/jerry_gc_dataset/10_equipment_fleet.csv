@@ -1,0 +1,6 @@
+asset_id,asset,type,purchase_date,original_cost,useful_life_months,salvage,financed,loan_id,current_market_value_2025,unit_count
+VEH-01,"Crew Trucks (3, F-250 w/ tool boxes)",Vehicle,2021-03-01,141000,84,24000,True,LOAN-TRUCKS21,78000,3
+VEH-02,Owner/PM Trucks (2),Vehicle,2023-05-01,102000,84,20000,True,LOAN-TRUCKS23,82000,2
+EQ-01,Enclosed Job-Site Trailers (2),Equipment,2020-06-01,24000,120,4000,False,,15000,2
+EQ-02,"Scaffolding, Scissor Lift & Site Equipment",Equipment,2022-02-01,58000,96,8000,True,LOAN-EQUIP22,40000,1
+EQ-03,"Power Tools, Nail Guns, Saws (fleet-wide)",Equipment,2021-01-01,42000,60,3000,False,,14000,1

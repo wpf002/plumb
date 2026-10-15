@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd } from "../ui";
 import { DataHealthCard } from "../health-ui";
+import { CsvImport } from "../csv-import";
 
 const statusBadge: Record<string, { cls: string; label: string }> = {
   connected: { cls: "good", label: "Connected" },
@@ -177,6 +178,19 @@ function DataHealth() {
   return <DataHealthCard health={health} />;
 }
 
+function ImportCard() {
+  const [isOwner, setIsOwner] = useState(false);
+  useEffect(() => {
+    apiFetch("/auth/me")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((me) => {
+        const active = me?.companies.find((c: any) => c.id === me.activeCompanyId);
+        setIsOwner(active?.role === "OWNER");
+      });
+  }, []);
+  return <CsvImport isOwner={isOwner} />;
+}
+
 export default function Integrations() {
   return (
     <main className="container" style={{ maxWidth: 860 }}>
@@ -187,6 +201,8 @@ export default function Integrations() {
       </div>
 
       <DataHealth />
+
+      <ImportCard />
 
       <Connections />
 

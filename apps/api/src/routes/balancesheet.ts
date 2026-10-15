@@ -3,7 +3,7 @@ import { prisma } from "@plumb/db";
 import { computeNetWorth } from "@plumb/engine";
 import { addDays } from "@plumb/shared";
 import { n, toEngineAsset, toEngineLiability } from "../map.js";
-import { openingCashCents } from "../snapshot.js";
+import { openingCashCents, companyAsOf } from "../snapshot.js";
 
 export function registerBalanceSheetRoutes(app: FastifyInstance) {
   // What the business owns, what it owes, what it's worth. Cash comes from the
@@ -13,7 +13,7 @@ export function registerBalanceSheetRoutes(app: FastifyInstance) {
     async (req) => {
       const companyId = req.params.companyId;
       await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
-      const asOf = req.query.asOf ? new Date(req.query.asOf) : new Date();
+      const asOf = req.query.asOf ? new Date(req.query.asOf) : await companyAsOf(companyId);
 
       const [assets, liabilities, cashCents] = await Promise.all([
         prisma.asset.findMany({ where: { companyId } }),

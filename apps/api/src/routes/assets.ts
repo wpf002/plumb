@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
 import { valueAssets } from "@plumb/engine";
 import { n, toEngineAsset } from "../map.js";
+import { companyAsOf } from "../snapshot.js";
 
 export const ASSET_CATEGORIES = [
   "VEHICLE",
@@ -85,7 +86,7 @@ export function registerAssetRoutes(app: FastifyInstance) {
   app.get<{ Params: { companyId: string }; Querystring: { asOf?: string } }>(
     "/companies/:companyId/assets",
     async (req) => {
-      const asOf = req.query.asOf ? new Date(req.query.asOf) : new Date();
+      const asOf = req.query.asOf ? new Date(req.query.asOf) : await companyAsOf(req.params.companyId);
       const assets = await prisma.asset.findMany({
         where: { companyId: req.params.companyId },
         orderBy: [{ category: "asc" }, { purchaseDate: "desc" }],

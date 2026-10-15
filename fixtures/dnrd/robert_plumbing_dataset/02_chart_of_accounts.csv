@@ -1,0 +1,53 @@
+account_code,account_type,account_name
+1000,Asset,Cash - Operating
+1100,Asset,Accounts Receivable
+1150,Asset,"Inventory - Parts, Fixtures & HVAC Equipment"
+1200,Asset,Prepaid Expenses
+1300,Asset,Vehicles - Service Vans & Trucks
+1310,Asset,Equipment & Tools
+1400,Asset,Building - Shop/Warehouse/Office
+1410,Asset,Land
+1500,Asset,Accumulated Depreciation - Vehicles
+1510,Asset,Accumulated Depreciation - Equipment
+1530,Asset,Accumulated Depreciation - Building
+2000,Liability,Accounts Payable
+2100,Liability,Vehicle Loans
+2110,Liability,Equipment Loans
+2150,Liability,Building Mortgage
+2200,Liability,Line of Credit
+2300,Liability,Payroll Liabilities
+2400,Liability,Deferred Revenue (Prepaid Maintenance Agreements)
+3000,Equity,Owner Contributed Capital
+3100,Equity,Owner Distributions
+3900,Equity,Retained Earnings
+4000,Revenue,Revenue - Residential Service
+4100,Revenue,Revenue - Residential Install
+4200,Revenue,Revenue - Commercial Service
+4300,Revenue,Revenue - Commercial Install
+4400,Revenue,Revenue - Maintenance Agreements (Residential + Commercial)
+5000,COGS,Direct Labor - Service Technicians
+5010,COGS,Direct Labor - Install Crews
+5100,COGS,"Materials, Parts & Equipment (Install)"
+5110,COGS,Materials & Parts (Service)
+5200,COGS,Subcontractors
+5300,COGS,Vehicle Fuel - Job Related
+5400,COGS,Permits & Disposal
+6000,Opex,Officer Compensation (Robert)
+6005,Opex,Operations Manager / GM Salary
+6010,Opex,Dispatch/CSR Payroll
+6015,Opex,Admin/Office Payroll
+6020,Opex,Sales/Estimating Payroll
+6030,Opex,Payroll Taxes & Benefits - Admin
+6040,Opex,Workers' Compensation Insurance
+6100,Opex,Building Occupancy (Utilities/Maintenance)
+6120,Opex,Property Taxes
+6130,Opex,Liability & Vehicle Insurance
+6200,Opex,Vehicle Expense (Non-Job)
+6300,Opex,Advertising & Marketing
+6310,Opex,CRM/Dispatch Software
+6400,Opex,Professional Services
+6500,Opex,Office Supplies & IT
+6600,Opex,Repairs & Maintenance
+6700,Opex,Depreciation Expense
+6800,Opex,Interest Expense
+6900,Opex,Miscellaneous/Other Opex

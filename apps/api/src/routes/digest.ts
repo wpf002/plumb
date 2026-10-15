@@ -15,7 +15,7 @@ const sendBodySchema = {
 async function digestFor(companyId: string) {
   const snap = await loadSnapshot(companyId);
   return buildDigest({
-    asOf: new Date(),
+    asOf: snap.asOf,
     companyName: snap.company.name,
     health: snap.health,
     cash: snap.cash,

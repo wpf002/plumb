@@ -1,0 +1,3 @@
+project_id,customer_id,description,contract_value,pct_remaining,expected_completion,backlog_remaining_value
+BL-01,RES-018,Outdoor living area (in progress),72000,35,2026-02,25200.0
+BL-02,COM-005,"Campus irrigation overhaul (signed, starts Jan)",54000,100,2026-03,54000.0

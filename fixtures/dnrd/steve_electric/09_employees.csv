@@ -1,0 +1,8 @@
+employee_id,name,position,pay_type,base_annual_2022,crew,hire_date,cogs_allocation_pct,notes,hourly_rate_2022
+EMP-001,Steve Caldwell,Owner / Master Electrician,Salary,140000.0,Management,1987-04-01,0.35,"Splits time: estimating, PM, customer relationships, some field/technical work",
+EMP-002,Danny Ruiz,Foreman / Journeyman Electrician,Hourly,,Field,2009-06-15,1.0,Lead foreman on Musco projects,34.0
+EMP-003,Marcus Webb,Journeyman Electrician,Hourly,,Field,2013-03-10,1.0,,30.5
+EMP-004,Tyler Jennings,Journeyman Electrician,Hourly,,Field,2017-09-01,1.0,,29.0
+EMP-005,Cody Harmon,Apprentice Electrician (3rd yr),Hourly,,Field,2020-05-18,1.0,,21.5
+EMP-006,Jared Combs,Apprentice Electrician (1st yr),Hourly,,Field,2023-02-06,1.0,Hired mid-2023 to cover growing workload,18.0
+EMP-007,Donna Pruitt,Office Manager / Secretary,Salary,42000.0,Admin,2011-01-10,0.0,"Billing, payroll, scheduling, AP/AR",

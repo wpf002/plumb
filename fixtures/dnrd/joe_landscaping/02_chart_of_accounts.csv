@@ -1,0 +1,45 @@
+account_code,account_type,account_name
+1000,Asset,Cash - Operating
+1100,Asset,Accounts Receivable
+1150,Asset,Inventory - Plant Material & Hardscape Supplies
+1200,Asset,Prepaid Expenses (Insurance)
+1300,Asset,Vehicles - Trucks
+1310,Asset,"Heavy Equipment (Mowers, Skid Steer, Mini Excavator)"
+1320,Asset,Tools & Small Equipment
+1500,Asset,Accumulated Depreciation - Vehicles
+1510,Asset,Accumulated Depreciation - Equipment
+2000,Liability,Accounts Payable
+2050,Liability,Credit Card Payable
+2100,Liability,Equipment Loans
+2110,Liability,Vehicle Loans
+2200,Liability,Line of Credit
+2300,Liability,Payroll Liabilities
+2400,Liability,Deferred Revenue (Prepaid Maintenance Contracts)
+3000,Equity,Owner Contributed Capital
+3100,Equity,Owner Distributions
+3900,Equity,Retained Earnings
+4000,Revenue,Revenue - Residential Recurring Maintenance
+4100,Revenue,Revenue - Commercial Recurring Maintenance
+4200,Revenue,Revenue - Residential Projects/Installation
+4300,Revenue,Revenue - Commercial Projects/Installation
+5000,COGS,Direct Labor - Maintenance Crews
+5010,COGS,Direct Labor - Project Crew
+5100,COGS,"Plant Material, Mulch & Hardscape Supplies"
+5200,COGS,"Subcontractors (Irrigation, Tree Removal)"
+5300,COGS,Equipment Fuel & Job-Site Rental
+5400,COGS,Disposal & Dump Fees
+6000,Opex,Officer Compensation (Joe)
+6010,Opex,Admin/Office Payroll
+6020,Opex,Payroll Taxes & Benefits
+6030,Opex,Workers' Compensation Insurance
+6100,Opex,Yard/Shop Rent
+6110,Opex,Utilities
+6130,Opex,Liability & Vehicle Insurance
+6200,Opex,Vehicle Expense (Non-Job)
+6300,Opex,Advertising & Marketing
+6400,Opex,Professional Services
+6500,Opex,Software & Office Supplies
+6600,Opex,Repairs & Maintenance
+6700,Opex,Depreciation Expense
+6800,Opex,Interest Expense
+6900,Opex,Miscellaneous/Other Opex

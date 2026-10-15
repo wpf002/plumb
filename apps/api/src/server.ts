@@ -12,6 +12,7 @@ const OWNER_ONLY: { method: string; re: RegExp }[] = [
   { method: "PUT", re: /^\/companies\/[^/]+\/category-mappings$/ },
   { method: "POST", re: /^\/companies\/[^/]+\/team\// },
   { method: "DELETE", re: /^\/companies\/[^/]+\/team\// },
+  { method: "POST", re: /^\/companies\/[^/]+\/import$/ },
 ];
 import { registerForecastRoutes } from "./routes/forecast.js";
 import { registerProjectRoutes } from "./routes/projects.js";
@@ -35,6 +36,7 @@ import { registerScenarioRoutes } from "./routes/scenarios.js";
 import { registerServiceRoutes } from "./routes/services.js";
 import { registerAnalysisRoutes } from "./routes/analysis.js";
 import { registerTrustRoutes } from "./routes/trust.js";
+import { registerImportRoutes } from "./routes/imports.js";
 import { startScheduler } from "./scheduler.js";
 
 export function buildServer() {
@@ -114,6 +116,7 @@ export function buildServer() {
   registerServiceRoutes(app);
   registerAnalysisRoutes(app);
   registerTrustRoutes(app);
+  registerImportRoutes(app);
 
   return app;
 }

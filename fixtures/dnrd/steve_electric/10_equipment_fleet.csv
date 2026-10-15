@@ -1,0 +1,13 @@
+asset_id,asset,type,purchase_date,original_cost,useful_life_months,salvage,financed,current_market_value_2025,loan_id
+EQ-01,Case CX145D Excavator,Heavy Equipment,2016-05-01,118000,120,15000,False,42000,
+EQ-02,Bobcat S650 Skid Steer,Heavy Equipment,2021-04-01,64000,96,8000,True,44000,LOAN-BOBCAT
+EQ-03,2018 Ford F-150 Work Truck #1,Vehicle,2018-06-01,42000,84,4000,False,15000,
+EQ-04,2020 Ford F-150 Work Truck #2,Vehicle,2020-03-01,45500,84,4500,False,21000,
+EQ-05,2024 Ford F-150 Work Truck #3,Vehicle,2024-02-01,58500,84,6000,True,51000,LOAN-TRUCK24
+EQ-06,Caterpillar GC55K Forklift,Heavy Equipment,2015-08-01,38000,120,4000,False,11000,
+EQ-07,Genie GS-1930 Scissor Lift,Heavy Equipment,2019-07-01,23500,96,2500,False,12500,
+EQ-08,Equipment Trailer (2) + Utility Trailer,Vehicle,2017-05-01,18000,120,2000,False,7500,
+EQ-09,"Trenching Equipment (walk-behind trencher, misc)",Heavy Equipment,2019-03-01,16500,84,1500,False,6000,
+EQ-10,"Electrical Testing Equipment (meggers, thermal camera, etc.)",Tools,2021-01-01,21000,60,1000,False,10500,
+EQ-11,Hand & Power Tools - Field Crews (pooled),Tools,2020-01-01,48000,60,2000,False,22000,
+EQ-12,"Ladders, Bucket Truck Attachment, Misc Contractor Equipment",Tools,2018-01-01,27000,84,1500,False,9500,

@@ -1,0 +1,68 @@
+customer_id,customer_name,segment,neighborhood,property_tier,customer_type,base_monthly_contract,payment_terms,avg_days_to_pay,relationship_start_month_offset,recurring_lifetime_revenue,project_lifetime_revenue,total_lifetime_revenue,pct_of_total_revenue,active_status,current_ar
+RES-037,Bluffview Residence #37,Residential,Bluffview,estate,Residential - Recurring Maintenance,858.33,Due on Invoice (auto-pay),11,-41,47133.88,432800.0,479933.88,6.8,Active,0.0
+RES-031,Lakewood Residence #31,Residential,Lakewood,premium,Residential - Recurring Maintenance,515.23,Due on Invoice (auto-pay),13,-46,28118.1,430800.0,458918.1,6.51,Active,202000.0
+RES-052,Preston Hollow Residence #52,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,300.09,Due on Invoice (auto-pay),3,20,9789.22,292500.0,302289.22,4.29,Active,0.0
+COM-001,Hartland Baptist Church,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,2098.98,Net 30,39,-40,111438.09,173200.0,284638.09,4.04,Active,2172.81
+RES-023,Highland Park Residence #23,Residential,Highland Park,estate,Residential - Recurring Maintenance,1078.95,Due on Invoice (auto-pay),3,-40,58293.96,215600.0,273893.96,3.88,Active,0.0
+RES-039,Bluffview Residence #39,Residential,Bluffview,premium,Residential - Recurring Maintenance,597.92,Due on Invoice (auto-pay),11,7,20284.17,224000.0,244284.17,3.46,Churned/Inactive,0.0
+RES-033,University Park Residence #33,Residential,University Park,premium,Residential - Recurring Maintenance,675.35,Due on Invoice (auto-pay),5,27,17109.77,196600.0,213709.77,3.03,Active,0.0
+RES-028,Highland Park Residence #28,Residential,Highland Park,premium,Residential - Recurring Maintenance,673.38,Due on Invoice (auto-pay),7,12,28208.95,172900.0,201108.95,2.85,Active,0.0
+RES-055,Preston Hollow Residence #55,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,335.83,Due on Invoice (auto-pay),14,-41,18326.44,179400.0,197726.44,2.8,Active,0.0
+RES-048,Devonshire Residence #48,Residential,Devonshire,premium,Residential - Recurring Maintenance,601.7,Due on Invoice (auto-pay),10,-37,32818.72,157300.0,190118.72,2.7,Active,0.0
+RES-032,Bluffview Residence #32,Residential,Bluffview,standard,Residential - Recurring Maintenance,372.99,Due on Invoice (auto-pay),12,14,14936.73,163800.0,178736.73,2.53,Active,0.0
+COM-004,Lakewood Community Church,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1564.31,Net 30,37,-3,83437.07,90400.0,173837.07,2.46,Active,0.0
+RES-038,Preston Hollow Residence #38,Residential,Preston Hollow,estate,Residential - Recurring Maintenance,1171.67,Due on Invoice (auto-pay),10,14,47138.46,125700.0,172838.46,2.45,Active,0.0
+RES-010,Bluffview Residence #10,Residential,Bluffview,estate,Residential - Recurring Maintenance,1203.71,Due on Invoice (auto-pay),8,-33,65449.1,99200.0,164649.1,2.33,Active,0.0
+COM-008,White Rock Bible Church,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,2495.12,Net 30,34,-38,132140.62,31100.0,163240.62,2.31,Active,33694.66
+RES-011,Preston Hollow Residence #11,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,353.89,Due on Invoice (auto-pay),9,-2,19164.19,139300.0,158464.19,2.25,Active,0.0
+COM-009,Oak Cliff Christian Academy,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,2099.67,Net 30,32,-35,111461.92,45300.0,156761.92,2.22,Active,2155.09
+RES-009,Bluffview Residence #9,Residential,Bluffview,estate,Residential - Recurring Maintenance,751.78,Due on Invoice (auto-pay),8,0,40989.15,100300.0,141289.15,2.0,Active,0.0
+RES-041,Highland Park Residence #41,Residential,Highland Park,standard,Residential - Recurring Maintenance,345.0,Due on Invoice (auto-pay),12,-52,19012.13,122000.0,141012.13,2.0,Active,0.0
+COM-010,Northaven Retirement Community,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,2461.6,Net 30,31,-17,131373.61,0.0,131373.61,1.86,Active,0.0
+COM-003,Preston Hollow Presbyterian Church,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1880.83,Net 30,43,-32,99545.1,27600.0,127145.1,1.8,Active,31532.84
+RES-040,University Park Residence #40,Residential,University Park,standard,Residential - Recurring Maintenance,316.07,Due on Invoice (auto-pay),4,-46,17218.33,107000.0,124218.33,1.76,Active,0.0
+RES-006,Devonshire Residence #6,Residential,Devonshire,standard,Residential - Recurring Maintenance,401.15,Due on Invoice (auto-pay),11,-4,21735.4,94200.0,115935.4,1.64,Active,0.0
+RES-021,Preston Hollow Residence #21,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,367.17,Due on Invoice (auto-pay),13,23,10811.49,104400.0,115211.49,1.63,Active,0.0
+RES-026,Lakewood Residence #26,Residential,Lakewood,standard,Residential - Recurring Maintenance,338.97,Due on Invoice (auto-pay),11,-2,18436.94,92300.0,110736.94,1.57,Active,0.0
+COM-007,Dallas Jewish Community Center,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1186.85,Net 30,37,-9,27368.87,81800.0,109168.87,1.55,Churned/Inactive,0.0
+RES-051,Bluffview Residence #51,Residential,Bluffview,standard,Residential - Recurring Maintenance,335.81,Due on Invoice (auto-pay),12,1,18040.96,90400.0,108440.96,1.54,Active,315.42
+COM-005,Grace Fellowship Dallas,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1902.71,Net 30,30,20,60982.8,44700.0,105682.8,1.5,Active,1860.61
+RES-013,Preston Hollow Residence #13,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,332.12,Due on Invoice (auto-pay),12,-51,18067.88,84100.0,102167.88,1.45,Active,307.93
+COM-002,St. Augustine Episcopal Church,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,993.1,Net 30,29,-39,52505.19,42600.0,95105.19,1.35,Active,1036.8
+COM-011,Church of the Incarnation,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1920.14,Net 30,31,8,86149.99,0.0,86149.99,1.22,Active,1892.61
+COM-006,First United Methodist - North Campus,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,953.22,Net 30,43,-19,51002.62,33100.0,84102.62,1.19,Active,1985.08
+COM-012,Cedar Springs Fellowship,Commercial,Dallas Metro,institutional,Commercial - Institutional Recurring Maintenance,1259.85,Net 30,30,15,47495.9,32600.0,80095.9,1.14,Active,1256.61
+RES-024,Lakewood Residence #24,Residential,Lakewood,estate,Residential - Recurring Maintenance,1105.4,Due on Invoice (auto-pay),9,-28,60124.76,19200.0,79324.76,1.12,Active,0.0
+RES-025,Lakewood Residence #25,Residential,Lakewood,standard,Residential - Recurring Maintenance,328.71,Due on Invoice (auto-pay),3,21,10271.18,66900.0,77171.18,1.09,Active,0.0
+RES-046,Preston Hollow Residence #46,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,371.28,Due on Invoice (auto-pay),9,-18,20231.68,48700.0,68931.68,0.98,Active,0.0
+RES-018,Preston Hollow Residence #18,Residential,Preston Hollow,estate,Residential - Recurring Maintenance,869.1,Due on Invoice (auto-pay),10,3,45065.34,21700.0,66765.34,0.95,Active,0.0
+RES-030,University Park Residence #30,Residential,University Park,premium,Residential - Recurring Maintenance,557.47,Due on Invoice (auto-pay),7,21,17815.72,45300.0,63115.72,0.89,Active,0.0
+RES-050,Bluffview Residence #50,Residential,Bluffview,estate,Residential - Recurring Maintenance,1130.33,Due on Invoice (auto-pay),12,-2,61020.26,0.0,61020.26,0.87,Active,0.0
+RES-001,University Park Residence #1,Residential,University Park,standard,Residential - Recurring Maintenance,430.39,Due on Invoice (auto-pay),11,24,12186.63,48600.0,60786.63,0.86,Active,0.0
+RES-008,Preston Hollow Residence #8,Residential,Preston Hollow,premium,Residential - Recurring Maintenance,587.84,Due on Invoice (auto-pay),8,29,13326.84,42600.0,55926.84,0.79,Active,0.0
+RES-054,Devonshire Residence #54,Residential,Devonshire,standard,Residential - Recurring Maintenance,367.59,Due on Invoice (auto-pay),13,30,7866.91,46700.0,54566.91,0.77,Active,0.0
+RES-043,Devonshire Residence #43,Residential,Devonshire,premium,Residential - Recurring Maintenance,718.16,Due on Invoice (auto-pay),9,33,12771.86,31600.0,44371.86,0.63,Active,0.0
+RES-047,Highland Park Residence #47,Residential,Highland Park,standard,Residential - Recurring Maintenance,404.95,Due on Invoice (auto-pay),14,-20,22224.11,21300.0,43524.11,0.62,Active,0.0
+RES-007,Highland Park Residence #7,Residential,Highland Park,standard,Residential - Recurring Maintenance,322.35,Due on Invoice (auto-pay),14,5,15842.71,26300.0,42142.71,0.6,Active,0.0
+RES-005,Preston Hollow Residence #5,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,322.43,Due on Invoice (auto-pay),14,-17,17462.99,23500.0,40962.99,0.58,Active,0.0
+RES-015,Preston Hollow Residence #15,Residential,Preston Hollow,estate,Residential - Recurring Maintenance,731.99,Due on Invoice (auto-pay),10,-1,40186.9,0.0,40186.9,0.57,Active,0.0
+RES-020,Lakewood Residence #20,Residential,Lakewood,premium,Residential - Recurring Maintenance,556.56,Due on Invoice (auto-pay),4,18,19826.89,20200.0,40026.89,0.57,Active,0.0
+RES-002,Lakewood Residence #2,Residential,Lakewood,premium,Residential - Recurring Maintenance,692.62,Due on Invoice (auto-pay),11,-22,37613.54,0.0,37613.54,0.53,Active,0.0
+RES-035,Preston Hollow Residence #35,Residential,Preston Hollow,premium,Residential - Recurring Maintenance,663.39,Due on Invoice (auto-pay),6,-20,36343.28,0.0,36343.28,0.52,Active,0.0
+RES-022,Lakewood Residence #22,Residential,Lakewood,premium,Residential - Recurring Maintenance,653.12,Due on Invoice (auto-pay),8,-40,35603.3,0.0,35603.3,0.5,Active,0.0
+RES-053,Highland Park Residence #53,Residential,Highland Park,premium,Residential - Recurring Maintenance,608.09,Due on Invoice (auto-pay),9,-33,33301.33,0.0,33301.33,0.47,Active,0.0
+RES-027,Highland Park Residence #27,Residential,Highland Park,estate,Residential - Recurring Maintenance,895.23,Due on Invoice (auto-pay),9,-32,31978.31,0.0,31978.31,0.45,Churned/Inactive,0.0
+RES-045,Preston Hollow Residence #45,Residential,Preston Hollow,standard,Residential - Recurring Maintenance,392.77,Due on Invoice (auto-pay),13,21,12491.38,15900.0,28391.38,0.4,Active,0.0
+RES-012,Bluffview Residence #12,Residential,Bluffview,premium,Residential - Recurring Maintenance,467.74,Due on Invoice (auto-pay),10,-17,25627.73,0.0,25627.73,0.36,Active,0.0
+RES-004,Lakewood Residence #4,Residential,Lakewood,standard,Residential - Recurring Maintenance,450.51,Due on Invoice (auto-pay),11,-49,24609.28,0.0,24609.28,0.35,Active,0.0
+RES-003,Preston Hollow Residence #3,Residential,Preston Hollow,premium,Residential - Recurring Maintenance,482.05,Due on Invoice (auto-pay),5,4,24299.53,0.0,24299.53,0.34,Active,0.0
+RES-036,Highland Park Residence #36,Residential,Highland Park,standard,Residential - Recurring Maintenance,401.38,Due on Invoice (auto-pay),8,-52,21817.95,0.0,21817.95,0.31,Active,0.0
+RES-044,University Park Residence #44,Residential,University Park,standard,Residential - Recurring Maintenance,365.67,Due on Invoice (auto-pay),5,-1,20016.83,0.0,20016.83,0.28,Active,0.0
+RES-019,Highland Park Residence #19,Residential,Highland Park,standard,Residential - Recurring Maintenance,359.53,Due on Invoice (auto-pay),6,-40,19381.69,0.0,19381.69,0.27,Active,0.0
+RES-017,Lakewood Residence #17,Residential,Lakewood,standard,Residential - Recurring Maintenance,343.91,Due on Invoice (auto-pay),10,-41,18862.67,0.0,18862.67,0.27,Active,0.0
+RES-029,Lakewood Residence #29,Residential,Lakewood,standard,Residential - Recurring Maintenance,320.43,Due on Invoice (auto-pay),11,-23,17526.46,0.0,17526.46,0.25,Active,0.0
+RES-042,Devonshire Residence #42,Residential,Devonshire,standard,Residential - Recurring Maintenance,388.1,Due on Invoice (auto-pay),5,20,12535.29,0.0,12535.29,0.18,Active,0.0
+RES-034,Devonshire Residence #34,Residential,Devonshire,premium,Residential - Recurring Maintenance,625.45,Due on Invoice (auto-pay),14,33,11007.53,0.0,11007.53,0.16,Active,0.0
+RES-049,University Park Residence #49,Residential,University Park,standard,Residential - Recurring Maintenance,450.36,Due on Invoice (auto-pay),13,32,8609.63,0.0,8609.63,0.12,Active,397.17
+RES-014,Lakewood Residence #14,Residential,Lakewood,standard,Residential - Recurring Maintenance,411.15,Due on Invoice (auto-pay),13,-9,7452.01,0.0,7452.01,0.11,Churned/Inactive,0.0
+RES-016,Lakewood Residence #16,Residential,Lakewood,standard,Residential - Recurring Maintenance,350.28,Due on Invoice (auto-pay),12,31,7027.87,0.0,7027.87,0.1,Active,0.0

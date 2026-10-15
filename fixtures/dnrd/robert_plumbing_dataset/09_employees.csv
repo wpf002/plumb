@@ -1,0 +1,52 @@
+employee_id,name,position,crew,pay_type,hourly_rate_2022,base_annual_2022,hire_date,cogs_allocation_pct
+EMP-001,Owner #1,Owner,Management,Salary,,165000.0,2010-04-01,0.1
+EMP-002,General Manager #1,General Manager / Operations Manager,Management,Salary,,98000.0,2016-01-01,0.0
+EMP-003,Dispatch #1,Dispatch / CSR,Admin,Hourly,19.5,,2014-08-01,0.0
+EMP-004,Dispatch #2,Dispatch / CSR,Admin,Hourly,19.5,,2018-04-01,0.0
+EMP-005,Dispatch #3,Dispatch / CSR,Admin,Hourly,19.5,,2021-01-01,0.0
+EMP-006,Office #1,Office / Billing / Accounting,Admin,Hourly,21.0,,2012-08-01,0.0
+EMP-007,Office #2,Office / Billing / Accounting,Admin,Hourly,21.0,,2017-03-01,0.0
+EMP-008,Office #3,Office / Billing / Accounting,Admin,Hourly,21.0,,2022-04-01,0.0
+EMP-009,Sales #1,Sales / Estimator - Install,Sales,Salary,,62000.0,2017-04-01,0.2
+EMP-010,Sales #2,Sales / Estimator - Install,Sales,Salary,,62000.0,2023-03-01,0.2
+EMP-011,Residential Service Plumber #1,Residential Service Plumber,Residential Service,Hourly,26.5,,2008-08-01,1.0
+EMP-012,Residential Service Plumber #2,Residential Service Plumber,Residential Service,Hourly,26.5,,2011-05-01,1.0
+EMP-013,Residential Service Plumber #3,Residential Service Plumber,Residential Service,Hourly,26.5,,2013-05-01,1.0
+EMP-014,Residential Service Plumber #4,Residential Service Plumber,Residential Service,Hourly,26.5,,2015-02-01,1.0
+EMP-015,Residential Service Plumber #5,Residential Service Plumber,Residential Service,Hourly,26.5,,2017-05-01,1.0
+EMP-016,Residential Service Plumber #6,Residential Service Plumber,Residential Service,Hourly,26.5,,2019-05-01,1.0
+EMP-017,Residential Service Plumber #7,Residential Service Plumber,Residential Service,Hourly,26.5,,2021-01-01,1.0
+EMP-018,Residential Service Plumber #8,Residential Service Plumber,Residential Service,Hourly,26.5,,2024-07-01,1.0
+EMP-019,Residential Service HVAC Tech #1,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2010-02-01,1.0
+EMP-020,Residential Service HVAC Tech #2,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2013-04-01,1.0
+EMP-021,Residential Service HVAC Tech #3,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2016-02-01,1.0
+EMP-022,Residential Service HVAC Tech #4,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2019-05-01,1.0
+EMP-023,Residential Service HVAC Tech #5,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2022-02-01,1.0
+EMP-024,Residential Service HVAC Tech #6,Residential Service HVAC Tech,Residential Service,Hourly,25.5,,2024-01-01,1.0
+EMP-025,Residential Install Tech (Plumbing #1,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2015-06-01,1.0
+EMP-026,Residential Install Tech (Plumbing #2,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2017-07-01,1.0
+EMP-027,Residential Install Tech (Plumbing #3,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2018-02-01,1.0
+EMP-028,Residential Install Tech (Plumbing #4,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2020-04-01,1.0
+EMP-029,Residential Install Tech (Plumbing #5,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2021-02-01,1.0
+EMP-030,Residential Install Tech (Plumbing #6,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2023-02-01,1.0
+EMP-031,Residential Install Tech (Plumbing #7,Residential Install Tech (Plumbing/HVAC),Residential Install,Hourly,27.5,,2024-07-01,1.0
+EMP-032,Commercial Service Tech (Plumbing #1,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2011-08-01,1.0
+EMP-033,Commercial Service Tech (Plumbing #2,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2014-05-01,1.0
+EMP-034,Commercial Service Tech (Plumbing #3,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2016-02-01,1.0
+EMP-035,Commercial Service Tech (Plumbing #4,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2018-04-01,1.0
+EMP-036,Commercial Service Tech (Plumbing #5,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2020-01-01,1.0
+EMP-037,Commercial Service Tech (Plumbing #6,Commercial Service Tech (Plumbing/HVAC),Commercial Service,Hourly,29.0,,2022-08-01,1.0
+EMP-038,Commercial Install Tech (Plumbing #1,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2009-02-01,1.0
+EMP-039,Commercial Install Tech (Plumbing #2,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2012-08-01,1.0
+EMP-040,Commercial Install Tech (Plumbing #3,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2014-05-01,1.0
+EMP-041,Commercial Install Tech (Plumbing #4,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2016-02-01,1.0
+EMP-042,Commercial Install Tech (Plumbing #5,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2018-06-01,1.0
+EMP-043,Commercial Install Tech (Plumbing #6,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2020-06-01,1.0
+EMP-044,Commercial Install Tech (Plumbing #7,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2022-05-01,1.0
+EMP-045,Commercial Install Tech (Plumbing #8,Commercial Install Tech (Plumbing/HVAC),Commercial Install,Hourly,31.0,,2024-06-01,1.0
+EMP-046,Install Crew Foreman #1,Install Crew Foreman/Supervisor,Supervision,Hourly,34.0,,2010-05-01,1.0
+EMP-047,Install Crew Foreman #2,Install Crew Foreman/Supervisor,Supervision,Hourly,34.0,,2014-02-01,1.0
+EMP-048,Install Crew Foreman #3,Install Crew Foreman/Supervisor,Supervision,Hourly,34.0,,2018-04-01,1.0
+EMP-049,Install Crew Foreman #4,Install Crew Foreman/Supervisor,Supervision,Hourly,34.0,,2021-06-01,1.0
+EMP-050,Warehouse #1,Warehouse / Inventory,Admin,Hourly,19.0,,2013-03-01,0.0
+EMP-051,Warehouse #2,Warehouse / Inventory,Admin,Hourly,19.0,,2019-04-01,0.0

@@ -3,6 +3,7 @@ import { prisma } from "@plumb/db";
 import { expandServices, summarizeServices } from "@plumb/engine";
 import { addDays } from "@plumb/shared";
 import { n, toEngineService } from "../map.js";
+import { companyAsOf } from "../snapshot.js";
 
 const FREQUENCIES = ["WEEKLY", "BIWEEKLY", "MONTHLY", "QUARTERLY", "ANNUAL"] as const;
 const STATUSES = ["ACTIVE", "PAUSED", "ENDED"] as const;
@@ -76,7 +77,7 @@ export function registerServiceRoutes(app: FastifyInstance) {
   app.get<{ Params: { companyId: string } }>(
     "/companies/:companyId/service-contracts",
     async (req) => {
-      const asOf = new Date();
+      const asOf = await companyAsOf(req.params.companyId);
       const rows = await prisma.serviceContract.findMany({
         where: { companyId: req.params.companyId },
         orderBy: [{ status: "asc" }, { amount: "desc" }],

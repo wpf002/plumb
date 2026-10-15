@@ -1,0 +1,6 @@
+customer_id,customer_name,Current,1-30 Days Late,31-60 Days Late,61-90 Days Late,90+ Days Late,total_outstanding
+CUST-001,"Musco Lighting, Inc.",269196.82,0.0,0.0,0.0,0.0,269196.82
+CUST-005,Barren County Schools,0.0,0.0,0.0,0.0,28773.66,28773.66
+CUST-008,Greenview Medical Plaza LLC,0.0,30226.84,0.0,0.0,0.0,30226.84
+CUST-010,Oakland Retail Partners,39000.0,0.0,0.0,0.0,0.0,39000.0
+CUST-014,City of Scottsville,139900.0,0.0,0.0,0.0,0.0,139900.0

@@ -1,0 +1,2 @@
+property_id,address,building_sqft,office_sqft,shop_storage_sqft,purchase_date,land_cost,building_cost,building_useful_life_months,current_land_value_2025,current_building_value_2025,current_combined_real_estate_value_2025,note
+RE-01,"4821 Industrial Park Dr, Bowling Green, KY",2500,900,1600,2001-09-01,65000,210000,468,135000,345000,480000,"Owned outright, no mortgage. Real estate value tracked separately from operating business value per valuation best practice."

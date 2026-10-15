@@ -1,0 +1,6 @@
+loan_id,lender,debt_type,original_principal,interest_rate,term_months,origination_date,collateral
+LOAN-VANFLEET21,BOK Financial Equipment Finance,Vehicle Loan,404600.0,0.069,72.0,2021-06-01,14 Service Vans
+LOAN-VANFLEET23,BOK Financial Equipment Finance,Vehicle Loan,198900.0,0.078,72.0,2023-02-01,6 Commercial Service Vans
+LOAN-TRUCKFLEET22,BOK Financial Equipment Finance,Vehicle Loan,333200.0,0.074,72.0,2022-04-01,8 Install Crew Trucks
+MORTGAGE-01,Arvest Bank,Commercial Mortgage,705000.0,0.0625,240.0,2011-07-01,4400 S Sheridan Rd building & land
+LOC-01,Arvest Bank,Line of Credit,350000.0,0.0895,,2015-01-01,Blanket business assets

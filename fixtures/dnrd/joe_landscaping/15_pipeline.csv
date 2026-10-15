@@ -1,0 +1,7 @@
+opportunity_id,customer_id,description,estimated_value,probability_pct,expected_start,weighted_value
+OPP-01,RES-012,Estate pool cabana & outdoor kitchen,145000,55,2026-04,79750.0
+OPP-02,RES-031,Full backyard renovation,62000,70,2026-02,43400.0
+OPP-03,COM-003,Church courtyard reconstruction,78000,45,2026-05,35100.0
+OPP-04,,New prospect - Preston Hollow estate full landscape,195000,25,2026-06,48750.0
+OPP-05,RES-045,Drainage + hardscape patio,38000,65,2026-03,24700.0
+OPP-06,COM-009,Parking lot island landscape refresh,24000,60,2026-04,14400.0

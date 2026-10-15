@@ -40,6 +40,8 @@ const ACTIVE = ["ACTIVE", "AWARDED"] as const;
 
 export interface CompanySnapshot {
   company: { id: string; name: string; cashSafetyThresholdCents: number };
+  /** The date every number in this snapshot is measured from. */
+  asOf: Date;
   openingCashCents: number;
   cash: CashFlowResult;
   /** Scheduled obligations feeding the forecast, and the monthly fixed nut. */
@@ -65,6 +67,16 @@ export interface CompanySnapshot {
   wip: WipReport & { rows: (WipReport["rows"][number] & { name?: string })[] };
   health: HealthResult;
   projectNames: Record<string, string>;
+}
+
+/**
+ * "Now" for a company. Imported books end on a fixed date (dataAsOf); measuring
+ * them against today's clock would push every invoice into the past and every
+ * forecast into an empty future. Live companies use the clock.
+ */
+export async function companyAsOf(companyId: string): Promise<Date> {
+  const c = await prisma.company.findUnique({ where: { id: companyId }, select: { dataAsOf: true } });
+  return c?.dataAsOf ?? new Date();
 }
 
 /**
@@ -105,11 +117,10 @@ export async function loadWorld(
   companyId: string,
   opts: { asOf?: Date; openingCents?: number; horizonDays?: number; stressDelayDays?: number } = {}
 ): Promise<LoadedWorld> {
-  const asOf = opts.asOf ?? new Date();
+  const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
+  const asOf = opts.asOf ?? company.dataAsOf ?? new Date();
   const horizonDays = opts.horizonDays ?? 90;
   const stressDelayDays = opts.stressDelayDays ?? 30;
-
-  const company = await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
   const openingCash = await openingCashCents(companyId, opts.openingCents);
 
   const ledger = await prisma.cashEvent.findMany({ where: { companyId } });
@@ -240,8 +251,8 @@ export async function loadSnapshot(
   companyId: string,
   opts: { asOf?: Date; openingCents?: number; horizonDays?: number; stressDelayDays?: number } = {}
 ): Promise<CompanySnapshot> {
-  const asOf = opts.asOf ?? new Date();
   const loaded = await loadWorld(companyId, opts);
+  const asOf = loaded.world.asOf;
   const { world, obligations, services, billing, payerBehavior, projected, company, targets } =
     loaded;
 
@@ -323,6 +334,7 @@ export async function loadSnapshot(
 
   return {
     company,
+    asOf,
     openingCashCents: world.openingCashCents,
     cash,
     obligations,

@@ -1,0 +1,8 @@
+asset_id,asset,type,purchase_date,original_cost,useful_life_months,salvage,financed,loan_id,current_market_value_2025,unit_count
+FLEET-01,"Residential Service Vans (14, Ford Transit, fleet-purchased)",Vehicle,2021-06-01,476000,84,56000,True,LOAN-VANFLEET21,280000,14
+FLEET-02,Commercial Service Vans (6),Vehicle,2023-02-01,234000,84,30000,True,LOAN-VANFLEET23,190000,6
+FLEET-03,"Install Crew Trucks (8, F-250/350 with lift gates)",Vehicle,2022-04-01,392000,84,48000,True,LOAN-TRUCKFLEET22,260000,8
+FLEET-04,Supervisor/Foreman Trucks (4),Vehicle,2020-05-01,148000,84,18000,False,,62000,4
+EQ-01,"Pipe Threading, Jetting & Diagnostic Equipment (fleet-wide)",Equipment,2021-01-01,185000,72,15000,False,,95000,1
+EQ-02,HVAC Install Tools & Refrigerant Recovery Equipment,Equipment,2022-01-01,112000,60,8000,False,,62000,1
+EQ-03,"Warehouse Shelving, Forklift & Material Handling",Equipment,2018-03-01,65000,120,6000,False,,28000,1

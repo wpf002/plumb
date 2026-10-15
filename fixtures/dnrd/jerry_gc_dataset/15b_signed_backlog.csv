@@ -1,0 +1,4 @@
+project_id,customer_name,project_type,contract_value,pct_remaining,backlog_remaining_value
+REM-055,Homeowner Client 031,Remodel - Large,178397.71,14.8,26437.78
+REM-060,Homeowner Client 078,Remodel - Large,164885.62,52.3,86158.96
+CUST-068,Homeowner Client 023,Custom Home - Full Custom,1326334.64,12.9,171654.97

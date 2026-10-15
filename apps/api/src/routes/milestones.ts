@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
 import { generateMilestones, slipDays, summarizeMilestones } from "@plumb/engine";
 import { n, toEngineMilestone } from "../map.js";
-import { loadSnapshot } from "../snapshot.js";
+import { loadSnapshot, companyAsOf } from "../snapshot.js";
 
 const TRIGGERS = ["DATE", "PERCENT_COMPLETE", "PHASE_COMPLETE"] as const;
 const STATUSES = ["PLANNED", "READY", "BILLED", "PAID"] as const;
@@ -83,7 +83,7 @@ export function registerMilestoneRoutes(app: FastifyInstance) {
           p.id,
           n(p.contractValue),
           p.milestones.map(toEngineMilestone),
-          new Date()
+          await companyAsOf(req.params.companyId)
         ),
       };
     }

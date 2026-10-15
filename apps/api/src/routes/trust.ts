@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { prisma } from "@plumb/db";
 import { assessConfidence, summarizeMilestones } from "@plumb/engine";
 import { n, toEngineMilestone } from "../map.js";
-import { openingCashCents } from "../snapshot.js";
+import { openingCashCents, companyAsOf } from "../snapshot.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const ageDays = (d: Date | null | undefined, now: Date) =>
@@ -21,7 +21,7 @@ export function registerTrustRoutes(app: FastifyInstance) {
     "/companies/:companyId/data-health",
     async (req) => {
       const companyId = req.params.companyId;
-      const now = new Date();
+      const now = await companyAsOf(companyId);
       await prisma.company.findUniqueOrThrow({ where: { id: companyId } });
 
       const [snapshot, lastOk, lastAny, connection, projects, expenses, liabilities, payers, costs, codedCosts] =

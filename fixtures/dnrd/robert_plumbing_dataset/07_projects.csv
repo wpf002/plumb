@@ -1,0 +1,373 @@
+project_id,customer_id,segment,project_type,start_month,end_month,duration_months,original_contract_value,change_orders_approved,change_orders_pending,revised_contract_value,estimated_total_cost,actual_total_cost,status
+RESINST-001,RES-053,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-08,2022-08,1,16978.17,0.0,0.0,16978.17,10668.23,10668.23,Complete
+RESINST-002,RES-068,Residential Install,Full Repipe - Whole House,2022-02,2022-02,1,22596.84,1052.94,0.0,23649.78,14847.15,14847.15,Complete
+RESINST-003,RES-190,Residential Install,Sewer Line Replacement,2022-05,2022-05,1,11602.31,0.0,0.0,11602.31,8223.61,8223.61,Complete
+RESINST-004,RES-011,Residential Install,New Construction Plumbing/HVAC Package,2022-02,2022-04,3,44859.63,0.0,0.0,44859.63,29491.0,31745.93,Complete
+RESINST-005,RES-165,Residential Install,Full Repipe - Whole House,2022-06,2022-06,1,20769.79,0.0,237.32,20769.79,13026.6,15707.99,Complete
+RESINST-006,RES-217,Residential Install,Sewer Line Replacement,2022-10,2022-10,1,22232.4,0.0,0.0,22232.4,14929.48,14929.48,Complete
+RESINST-007,RES-213,Residential Install,Sewer Line Replacement,2022-03,2022-03,1,15979.1,0.0,110.27,15979.1,9716.0,9716.0,Complete
+RESINST-008,RES-007,Residential Install,Full Repipe - Whole House,2022-02,2022-02,1,19547.73,0.0,0.0,19547.73,12123.54,14073.64,Complete
+RESINST-009,RES-128,Residential Install,Full Repipe - Whole House,2022-08,2022-08,1,13552.62,0.0,0.0,13552.62,8482.11,8482.11,Complete
+RESINST-010,RES-172,Residential Install,Full Repipe - Whole House,2022-04,2022-04,1,17545.2,0.0,0.0,17545.2,10395.91,10395.91,Complete
+RESINST-011,RES-210,Residential Install,HVAC System Replacement (Residential),2022-01,2022-01,1,14474.84,0.0,0.0,14474.84,10135.43,11028.4,Complete
+RESINST-012,RES-059,Residential Install,New Construction Plumbing/HVAC Package,2022-11,2023-02,4,32720.35,0.0,0.0,32720.35,19053.45,19053.45,Complete
+RESINST-013,RES-025,Residential Install,Water Heater Install (Tankless Upgrade),2022-09,2022-09,1,11372.08,54.72,0.0,11426.8,7329.8,7329.8,Complete
+RESINST-014,RES-060,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-06,2022-06,1,17628.81,0.0,0.0,17628.81,10646.84,10646.84,Complete
+RESINST-015,RES-203,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-11,2022-11,1,14781.23,0.0,0.0,14781.23,10569.18,10569.18,Complete
+RESINST-016,RES-065,Residential Install,HVAC System Replacement (Residential),2022-09,2022-09,1,12423.23,0.0,0.0,12423.23,7630.97,7630.97,Complete
+RESINST-017,RES-114,Residential Install,Water Heater Install (Tankless Upgrade),2022-07,2022-07,1,10265.63,0.0,0.0,10265.63,7235.81,7235.81,Complete
+RESINST-018,RES-160,Residential Install,New Construction Plumbing/HVAC Package,2022-11,2023-01,3,58126.96,0.0,0.0,58126.96,38631.35,46835.26,Complete
+RESINST-019,RES-014,Residential Install,Full Repipe - Whole House,2022-09,2022-09,1,18819.31,0.0,0.0,18819.31,13260.7,13260.7,Complete
+RESINST-020,RES-169,Residential Install,Sewer Line Replacement,2022-02,2022-02,1,13102.51,0.0,0.0,13102.51,8498.87,8498.87,Complete
+RESINST-021,RES-191,Residential Install,Sewer Line Replacement,2022-09,2022-09,1,16096.96,0.0,0.0,16096.96,9491.65,9491.65,Complete
+RESINST-022,RES-044,Residential Install,New Construction Plumbing/HVAC Package,2022-05,2022-07,3,35762.65,0.0,0.0,35762.65,22572.44,22572.44,Complete
+RESINST-023,RES-123,Residential Install,New Construction Plumbing/HVAC Package,2022-09,2022-11,3,62207.79,1765.66,0.0,63973.45,38912.76,38912.76,Complete
+RESINST-024,RES-129,Residential Install,Sewer Line Replacement,2022-10,2022-10,1,20154.31,0.0,0.0,20154.31,12257.79,12257.79,Complete
+RESINST-025,RES-095,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-01,2022-01,1,14645.53,0.0,0.0,14645.53,10431.68,10431.68,Complete
+RESINST-026,RES-109,Residential Install,Full Repipe - Whole House,2022-04,2022-04,1,15291.89,1005.6,0.0,16297.49,11684.93,11684.93,Complete
+RESINST-027,RES-129,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-08,2022-08,1,14481.89,143.27,0.0,14625.16,10299.53,10299.53,Complete
+RESINST-028,RES-155,Residential Install,Water Heater Install (Tankless Upgrade),2022-09,2022-09,1,7998.41,0.0,0.0,7998.41,5601.24,5601.24,Complete
+RESINST-029,RES-126,Residential Install,Full Repipe - Whole House,2022-04,2022-04,1,12782.99,0.0,0.0,12782.99,8309.93,9124.88,Complete
+RESINST-030,RES-073,Residential Install,Full Repipe - Whole House,2022-03,2022-03,1,16299.4,0.0,791.72,16299.4,11528.97,11528.97,Complete
+RESINST-031,RES-030,Residential Install,HVAC System Replacement (Residential),2022-09,2022-09,1,18556.87,0.0,0.0,18556.87,13257.22,13257.22,Complete
+RESINST-032,RES-095,Residential Install,HVAC System Replacement (Residential),2022-08,2022-08,1,10411.15,0.0,0.0,10411.15,6229.49,6229.49,Complete
+RESINST-033,RES-004,Residential Install,Sewer Line Replacement,2022-10,2022-10,1,13080.01,883.03,0.0,13963.03,9937.22,9937.22,Complete
+RESINST-034,RES-090,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-04,2022-04,1,15476.96,412.62,0.0,15889.57,9936.44,9936.44,Complete
+RESINST-035,RES-024,Residential Install,Water Heater Install (Tankless Upgrade),2022-03,2022-03,1,9553.07,0.0,315.88,9553.07,6571.91,6571.91,Complete
+RESINST-036,RES-187,Residential Install,HVAC System Replacement (Residential),2022-04,2022-04,1,20498.09,646.45,0.0,21144.54,13805.46,13805.46,Complete
+RESINST-037,RES-025,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2022-01,2022-01,1,11669.87,647.51,0.0,12317.39,8818.59,8818.59,Complete
+RESINST-038,RES-009,Residential Install,Full Repipe - Whole House,2022-10,2022-10,1,18396.56,0.0,0.0,18396.56,11536.25,11536.25,Complete
+RESINST-039,RES-134,Residential Install,Water Heater Install (Tankless Upgrade),2022-08,2022-08,1,5508.05,0.0,0.0,5508.05,3721.61,3721.61,Complete
+RESINST-040,RES-126,Residential Install,Sewer Line Replacement,2022-05,2022-05,1,14796.92,0.0,0.0,14796.92,9357.28,9357.28,Complete
+RESINST-041,RES-211,Residential Install,Sewer Line Replacement,2022-08,2022-08,1,11206.21,0.0,0.0,11206.21,7072.38,7072.38,Complete
+RESINST-042,RES-002,Residential Install,Sewer Line Replacement,2022-06,2022-06,1,13120.35,0.0,0.0,13120.35,8822.41,9757.04,Complete
+RESINST-043,RES-081,Residential Install,New Construction Plumbing/HVAC Package,2022-09,2022-11,3,57489.88,609.76,0.0,58099.64,40226.0,40226.0,Complete
+RESINST-044,RES-007,Residential Install,New Construction Plumbing/HVAC Package,2022-01,2022-04,4,28912.37,0.0,0.0,28912.37,20796.06,22282.76,Complete
+RESINST-045,RES-024,Residential Install,Water Heater Install (Tankless Upgrade),2022-07,2022-07,1,8256.18,0.0,0.0,8256.18,4977.22,4977.22,Complete
+RESINST-046,RES-128,Residential Install,New Construction Plumbing/HVAC Package,2022-02,2022-03,2,61285.6,1657.69,0.0,62943.29,38192.66,42197.91,Complete
+RESINST-047,RES-187,Residential Install,Water Heater Install (Tankless Upgrade),2022-10,2022-10,1,10128.18,0.0,0.0,10128.18,6399.96,6399.96,Complete
+RESINST-048,RES-130,Residential Install,Sewer Line Replacement,2022-09,2022-09,1,15194.95,0.0,0.0,15194.95,10381.17,10381.17,Complete
+RESINST-049,RES-010,Residential Install,Water Heater Install (Tankless Upgrade),2022-01,2022-01,1,7056.85,0.0,0.0,7056.85,4760.52,4760.52,Complete
+RESINST-050,RES-091,Residential Install,HVAC System Replacement (Residential),2022-01,2022-01,1,11682.12,682.4,0.0,12364.52,8774.74,8774.74,Complete
+RESINST-051,RES-147,Residential Install,Sewer Line Replacement,2022-10,2022-10,1,13604.09,0.0,0.0,13604.09,8460.95,8460.95,Complete
+RESINST-052,RES-216,Residential Install,Full Repipe - Whole House,2022-05,2022-05,1,13918.81,60.7,0.0,13979.52,9766.33,9766.33,Complete
+RESINST-053,RES-032,Residential Install,Sewer Line Replacement,2022-05,2022-05,1,25161.93,0.0,52.53,25161.93,16056.02,16056.02,Complete
+RESINST-054,RES-019,Residential Install,HVAC System Replacement (Residential),2022-03,2022-03,1,14457.14,0.0,0.0,14457.14,9173.09,9173.09,Complete
+RESINST-055,RES-192,Residential Install,New Construction Plumbing/HVAC Package,2022-04,2022-05,2,62503.05,0.0,0.0,62503.05,36484.51,36484.51,Complete
+RESINST-056,RES-124,Residential Install,Full Repipe - Whole House,2023-06,2023-06,1,16101.93,0.0,0.0,16101.93,11311.25,11311.25,Complete
+RESINST-057,RES-028,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-06,2023-06,1,8273.73,0.0,0.0,8273.73,4864.15,4864.15,Complete
+RESINST-058,RES-113,Residential Install,Full Repipe - Whole House,2023-05,2023-05,1,15981.1,0.0,0.0,15981.1,9602.34,9602.34,Complete
+RESINST-059,RES-118,Residential Install,HVAC System Replacement (Residential),2023-11,2023-11,1,18684.61,166.93,0.0,18851.54,12916.99,12916.99,Complete
+RESINST-060,RES-053,Residential Install,Sewer Line Replacement,2023-10,2023-10,1,23978.64,0.0,0.0,23978.64,14673.54,14673.54,Complete
+RESINST-061,RES-146,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-11,2023-11,1,9211.4,291.05,0.0,9502.45,6119.16,6434.23,Complete
+RESINST-062,RES-144,Residential Install,Water Heater Install (Tankless Upgrade),2023-01,2023-01,1,7632.11,0.0,0.0,7632.11,4697.1,4697.1,Complete
+RESINST-063,RES-073,Residential Install,Water Heater Install (Tankless Upgrade),2023-04,2023-04,1,11507.57,309.17,0.0,11816.74,7530.8,7530.8,Complete
+RESINST-064,RES-127,Residential Install,Sewer Line Replacement,2023-02,2023-02,1,21867.01,856.87,0.0,22723.88,13555.92,13555.92,Complete
+RESINST-065,RES-123,Residential Install,HVAC System Replacement (Residential),2023-04,2023-04,1,17300.99,0.0,0.0,17300.99,11783.26,11783.26,Complete
+RESINST-066,RES-074,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-07,2023-07,1,9948.9,214.1,0.0,10163.0,7251.18,7251.18,Complete
+RESINST-067,RES-030,Residential Install,Sewer Line Replacement,2023-01,2023-01,1,11701.88,181.73,575.52,11883.61,6940.83,6940.83,Complete
+RESINST-068,RES-089,Residential Install,Water Heater Install (Tankless Upgrade),2023-10,2023-10,1,6648.14,0.0,0.0,6648.14,4638.85,4638.85,Complete
+RESINST-069,RES-018,Residential Install,Full Repipe - Whole House,2023-06,2023-06,1,20293.23,0.0,0.0,20293.23,14035.91,14035.91,Complete
+RESINST-070,RES-142,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-06,2023-06,1,17333.75,0.0,0.0,17333.75,12175.25,13856.5,Complete
+RESINST-071,RES-093,Residential Install,Full Repipe - Whole House,2023-04,2023-04,1,12016.78,0.0,0.0,12016.78,7015.93,7015.93,Complete
+RESINST-072,RES-051,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-10,2023-10,1,13187.79,260.85,303.26,13448.64,8966.26,9905.26,Complete
+RESINST-073,RES-158,Residential Install,Full Repipe - Whole House,2023-12,2023-12,1,20671.36,1242.99,0.0,21914.35,13468.35,13468.35,Complete
+RESINST-074,RES-128,Residential Install,Sewer Line Replacement,2023-04,2023-04,1,21092.65,906.47,0.0,21999.12,15431.06,18051.8,Complete
+RESINST-075,RES-175,Residential Install,New Construction Plumbing/HVAC Package,2023-03,2023-05,3,31756.22,0.0,0.0,31756.22,18850.04,18850.04,Complete
+RESINST-076,RES-045,Residential Install,Water Heater Install (Tankless Upgrade),2023-01,2023-01,1,10602.8,0.0,0.0,10602.8,7422.89,7422.89,Complete
+RESINST-077,RES-016,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-09,2023-09,1,15505.33,0.0,0.0,15505.33,10721.35,10721.35,Complete
+RESINST-078,RES-140,Residential Install,Water Heater Install (Tankless Upgrade),2023-06,2023-06,1,9019.3,0.0,170.71,9019.3,6339.07,7343.53,Complete
+RESINST-079,RES-209,Residential Install,Water Heater Install (Tankless Upgrade),2023-01,2023-01,1,11022.62,791.7,0.0,11814.32,7086.16,7086.16,Complete
+RESINST-080,RES-083,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-09,2023-09,1,9083.77,18.58,0.0,9102.35,6386.09,6386.09,Complete
+RESINST-081,RES-220,Residential Install,Sewer Line Replacement,2023-07,2023-07,1,23461.19,0.0,0.0,23461.19,16277.68,16277.68,Complete
+RESINST-082,RES-072,Residential Install,Full Repipe - Whole House,2023-07,2023-07,1,12926.21,0.0,0.0,12926.21,7973.31,8889.63,Complete
+RESINST-083,RES-023,Residential Install,HVAC System Replacement (Residential),2023-08,2023-08,1,15951.53,715.19,0.0,16666.72,11885.28,11885.28,Complete
+RESINST-084,RES-080,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-05,2023-05,1,16875.08,1214.63,0.0,18089.71,10801.24,10801.24,Complete
+RESINST-085,RES-202,Residential Install,HVAC System Replacement (Residential),2023-07,2023-07,1,15152.44,0.0,0.0,15152.44,9374.08,9374.08,Complete
+RESINST-086,RES-005,Residential Install,Water Heater Install (Tankless Upgrade),2023-08,2023-08,1,7680.73,434.58,0.0,8115.3,4934.41,4934.41,Complete
+RESINST-087,RES-071,Residential Install,HVAC System Replacement (Residential),2023-03,2023-03,1,10259.8,180.29,0.0,10440.09,6187.69,6187.69,Complete
+RESINST-088,RES-166,Residential Install,Water Heater Install (Tankless Upgrade),2023-02,2023-02,1,11635.6,647.79,0.0,12283.38,8722.76,8722.76,Complete
+RESINST-089,RES-062,Residential Install,Water Heater Install (Tankless Upgrade),2023-12,2023-12,1,8779.04,0.0,0.0,8779.04,5856.18,5856.18,Complete
+RESINST-090,RES-220,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-05,2023-05,1,14867.78,0.0,0.0,14867.78,10661.19,10661.19,Complete
+RESINST-091,RES-122,Residential Install,Sewer Line Replacement,2023-10,2023-10,1,21801.89,0.0,0.0,21801.89,14843.45,14843.45,Complete
+RESINST-092,RES-100,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-11,2023-11,1,8105.38,244.66,0.0,8350.04,5349.95,5349.95,Complete
+RESINST-093,RES-143,Residential Install,HVAC System Replacement (Residential),2023-08,2023-08,1,19466.86,0.0,0.0,19466.86,11319.19,11319.19,Complete
+RESINST-094,RES-093,Residential Install,New Construction Plumbing/HVAC Package,2023-06,2023-08,3,63465.44,2885.54,0.0,66350.98,42200.53,42200.53,Complete
+RESINST-095,RES-059,Residential Install,HVAC System Replacement (Residential),2023-11,2023-11,1,12299.13,125.87,0.0,12425.0,7783.65,7783.65,Complete
+RESINST-096,RES-019,Residential Install,HVAC System Replacement (Residential),2023-01,2023-01,1,11870.52,0.0,0.0,11870.52,7030.91,7030.91,Complete
+RESINST-097,RES-016,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-07,2023-07,1,8413.18,259.49,0.0,8672.67,6119.77,6119.77,Complete
+RESINST-098,RES-042,Residential Install,New Construction Plumbing/HVAC Package,2023-06,2023-09,4,56560.15,0.0,0.0,56560.15,35570.19,35570.19,Complete
+RESINST-099,RES-069,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-09,2023-09,1,16031.63,0.0,0.0,16031.63,9699.43,9699.43,Complete
+RESINST-100,RES-114,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-08,2023-08,1,12869.08,0.0,0.0,12869.08,8480.93,8480.93,Complete
+RESINST-101,RES-014,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-04,2023-04,1,10557.77,483.87,0.0,11041.64,7858.7,7858.7,Complete
+RESINST-102,RES-144,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-07,2023-07,1,11094.24,0.0,0.0,11094.24,6529.41,6529.41,Complete
+RESINST-103,RES-092,Residential Install,HVAC System Replacement (Residential),2023-09,2023-09,1,10571.56,0.0,0.0,10571.56,6421.37,7706.87,Complete
+RESINST-104,RES-212,Residential Install,Sewer Line Replacement,2023-08,2023-08,1,12334.23,0.0,207.99,12334.23,8047.75,8047.75,Complete
+RESINST-105,RES-055,Residential Install,New Construction Plumbing/HVAC Package,2023-02,2023-03,2,56783.94,0.0,0.0,56783.94,39825.03,39825.03,Complete
+RESINST-106,RES-220,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-09,2023-09,1,17893.06,0.0,0.0,17893.06,12132.92,12132.92,Complete
+RESINST-107,RES-197,Residential Install,Sewer Line Replacement,2023-03,2023-03,1,23776.87,781.84,0.0,24558.72,17490.7,17490.7,Complete
+RESINST-108,RES-103,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-04,2023-04,1,10094.1,0.0,0.0,10094.1,6074.07,7004.08,Complete
+RESINST-109,RES-155,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-01,2023-01,1,14472.33,744.99,0.0,15217.32,9182.76,10363.79,Complete
+RESINST-110,RES-099,Residential Install,HVAC System Replacement (Residential),2023-11,2023-11,1,20252.33,0.0,0.0,20252.33,14237.04,14237.04,Complete
+RESINST-111,RES-220,Residential Install,Full Repipe - Whole House,2023-09,2023-09,1,17248.05,0.0,731.95,17248.05,10145.11,10145.11,Complete
+RESINST-112,RES-210,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-03,2023-03,1,15453.32,0.0,291.14,15453.32,10847.67,10847.67,Complete
+RESINST-113,RES-109,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-03,2023-03,1,11308.45,1.16,0.0,11309.6,7617.86,7617.86,Complete
+RESINST-114,RES-057,Residential Install,Full Repipe - Whole House,2023-12,2023-12,1,14788.42,0.0,0.0,14788.42,9521.28,9521.28,Complete
+RESINST-115,RES-120,Residential Install,Sewer Line Replacement,2023-08,2023-08,1,10893.58,741.58,0.0,11635.16,6873.5,6873.5,Complete
+RESINST-116,RES-130,Residential Install,HVAC System Replacement (Residential),2023-08,2023-08,1,13811.31,1022.8,0.0,14834.11,10094.04,10094.04,Complete
+RESINST-117,RES-024,Residential Install,Full Repipe - Whole House,2023-06,2023-06,1,17195.55,0.0,0.0,17195.55,10682.74,10682.74,Complete
+RESINST-118,RES-087,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-03,2023-03,1,14209.44,0.0,0.0,14209.44,8578.89,8578.89,Complete
+RESINST-119,RES-214,Residential Install,HVAC System Replacement (Residential),2023-05,2023-05,1,12204.08,0.0,0.0,12204.08,8496.09,8496.09,Complete
+RESINST-120,RES-005,Residential Install,HVAC System Replacement (Residential),2023-03,2023-03,1,11562.08,0.0,0.0,11562.08,8262.01,8262.01,Complete
+RESINST-121,RES-207,Residential Install,New Construction Plumbing/HVAC Package,2023-12,2024-03,4,39490.33,0.0,0.0,39490.33,26755.06,26755.06,Complete
+RESINST-122,RES-101,Residential Install,Full Repipe - Whole House,2023-11,2023-11,1,22772.0,1693.45,145.06,24465.44,17261.33,17261.33,Complete
+RESINST-123,RES-126,Residential Install,Water Heater Install (Tankless Upgrade),2023-11,2023-11,1,11771.65,30.91,0.0,11802.55,8062.74,9393.14,Complete
+RESINST-124,RES-011,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2023-01,2023-01,1,14873.51,0.0,0.0,14873.51,10492.77,10492.77,Complete
+RESINST-125,RES-038,Residential Install,Full Repipe - Whole House,2023-06,2023-06,1,20774.68,0.0,0.0,20774.68,13058.35,13058.35,Complete
+RESINST-126,RES-167,Residential Install,Full Repipe - Whole House,2023-11,2023-11,1,12457.71,0.0,0.0,12457.71,8793.66,8793.66,Complete
+RESINST-127,RES-207,Residential Install,Water Heater Install (Tankless Upgrade),2023-10,2023-10,1,7305.12,179.47,0.0,7484.59,4808.93,4808.93,Complete
+RESINST-128,RES-187,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-12,2024-12,1,17080.68,0.0,0.0,17080.68,10930.76,11902.79,Complete
+RESINST-129,RES-111,Residential Install,Sewer Line Replacement,2024-10,2024-10,1,11586.18,251.45,0.0,11837.63,8354.96,10069.62,Complete
+RESINST-130,RES-039,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-03,2024-03,1,8165.53,0.0,0.0,8165.53,5492.06,5492.06,Complete
+RESINST-131,RES-136,Residential Install,New Construction Plumbing/HVAC Package,2024-10,2024-11,2,36708.32,0.0,0.0,36708.32,24305.3,24305.3,Complete
+RESINST-132,RES-170,Residential Install,HVAC System Replacement (Residential),2024-10,2024-10,1,12914.56,0.0,0.0,12914.56,8791.43,8791.43,Complete
+RESINST-133,RES-110,Residential Install,Water Heater Install (Tankless Upgrade),2024-09,2024-09,1,5698.13,0.0,0.0,5698.13,3432.3,3432.3,Complete
+RESINST-134,RES-094,Residential Install,New Construction Plumbing/HVAC Package,2024-10,2024-11,2,32096.96,0.0,0.0,32096.96,18975.57,18975.57,Complete
+RESINST-135,RES-163,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,20630.8,0.0,0.0,20630.8,12888.32,15343.23,Complete
+RESINST-136,RES-042,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-10,2024-10,1,11564.27,677.27,0.0,12241.54,8097.5,8097.5,Complete
+RESINST-137,RES-137,Residential Install,Full Repipe - Whole House,2024-08,2024-08,1,22151.98,0.0,0.0,22151.98,15309.98,15309.98,Complete
+RESINST-138,RES-181,Residential Install,Full Repipe - Whole House,2024-09,2024-09,1,16884.06,0.0,347.04,16884.06,10539.02,11467.74,Complete
+RESINST-139,RES-191,Residential Install,Water Heater Install (Tankless Upgrade),2024-09,2024-09,1,11779.11,75.93,0.0,11855.04,7258.24,7258.24,Complete
+RESINST-140,RES-204,Residential Install,Full Repipe - Whole House,2024-08,2024-08,1,21871.46,0.0,0.0,21871.46,14715.18,14715.18,Complete
+RESINST-141,RES-013,Residential Install,New Construction Plumbing/HVAC Package,2024-10,2025-01,4,44463.78,3380.38,0.0,47844.16,30412.92,30412.92,Complete
+RESINST-142,RES-098,Residential Install,HVAC System Replacement (Residential),2024-09,2024-09,1,11510.03,0.0,0.0,11510.03,7006.06,7006.06,Complete
+RESINST-143,RES-213,Residential Install,Full Repipe - Whole House,2024-08,2024-08,1,12318.95,0.0,0.0,12318.95,7940.6,7940.6,Complete
+RESINST-144,RES-197,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-03,2024-03,1,14339.38,0.0,0.0,14339.38,9482.52,9482.52,Complete
+RESINST-145,RES-073,Residential Install,Sewer Line Replacement,2024-09,2024-09,1,14429.04,1038.81,0.0,15467.85,9933.56,12061.83,Complete
+RESINST-146,RES-195,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-11,2024-11,1,16321.51,0.0,0.0,16321.51,9813.73,9813.73,Complete
+RESINST-147,RES-050,Residential Install,New Construction Plumbing/HVAC Package,2024-12,2025-01,2,50405.23,295.05,0.0,50700.28,35679.02,35679.02,Complete
+RESINST-148,RES-122,Residential Install,HVAC System Replacement (Residential),2024-08,2024-08,1,16234.2,0.0,0.0,16234.2,11382.34,11382.34,Complete
+RESINST-149,RES-137,Residential Install,Full Repipe - Whole House,2024-08,2024-08,1,12168.13,0.0,66.01,12168.13,8193.9,8193.9,Complete
+RESINST-150,RES-155,Residential Install,Full Repipe - Whole House,2024-09,2024-09,1,17022.46,0.0,0.0,17022.46,10039.74,10039.74,Complete
+RESINST-151,RES-107,Residential Install,Full Repipe - Whole House,2024-11,2024-11,1,22111.97,0.0,0.0,22111.97,15502.01,18884.67,Complete
+RESINST-152,RES-149,Residential Install,Full Repipe - Whole House,2024-08,2024-08,1,22481.6,0.0,0.0,22481.6,14567.75,14567.75,Complete
+RESINST-153,RES-108,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-05,2024-05,1,10351.17,468.38,0.0,10819.55,6377.58,6377.58,Complete
+RESINST-154,RES-055,Residential Install,New Construction Plumbing/HVAC Package,2024-03,2024-05,3,42045.46,0.0,2097.68,42045.46,29051.43,34445.26,Complete
+RESINST-155,RES-109,Residential Install,New Construction Plumbing/HVAC Package,2024-01,2024-03,3,30999.85,948.99,0.0,31948.84,22294.05,22294.05,Complete
+RESINST-156,RES-177,Residential Install,HVAC System Replacement (Residential),2024-05,2024-05,1,15408.04,142.34,0.0,15550.37,9207.9,9207.9,Complete
+RESINST-157,RES-067,Residential Install,HVAC System Replacement (Residential),2024-05,2024-05,1,15559.42,0.0,0.0,15559.42,10428.72,10428.72,Complete
+RESINST-158,RES-031,Residential Install,Sewer Line Replacement,2024-06,2024-06,1,18645.76,0.0,0.0,18645.76,12011.12,12011.12,Complete
+RESINST-159,RES-008,Residential Install,Full Repipe - Whole House,2024-02,2024-02,1,19826.38,0.0,401.52,19826.38,11946.13,11946.13,Complete
+RESINST-160,RES-138,Residential Install,HVAC System Replacement (Residential),2024-09,2024-09,1,19462.34,0.0,0.0,19462.34,13778.12,13778.12,Complete
+RESINST-161,RES-082,Residential Install,New Construction Plumbing/HVAC Package,2024-07,2024-09,3,39810.17,0.0,0.0,39810.17,27790.82,27790.82,Complete
+RESINST-162,RES-007,Residential Install,Full Repipe - Whole House,2024-05,2024-05,1,22686.85,1721.97,0.0,24408.82,15211.7,15211.7,Complete
+RESINST-163,RES-122,Residential Install,Water Heater Install (Tankless Upgrade),2024-09,2024-09,1,8659.86,0.0,327.61,8659.86,5288.36,5288.36,Complete
+RESINST-164,RES-027,Residential Install,Sewer Line Replacement,2024-07,2024-07,1,20689.93,0.0,0.0,20689.93,13559.71,13559.71,Complete
+RESINST-165,RES-141,Residential Install,New Construction Plumbing/HVAC Package,2024-01,2024-03,3,50795.9,0.0,0.0,50795.9,30880.16,30880.16,Complete
+RESINST-166,RES-095,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-06,2024-06,1,11251.36,0.0,0.0,11251.36,7498.64,7498.64,Complete
+RESINST-167,RES-085,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,15002.22,404.19,0.0,15406.41,10986.59,10986.59,Complete
+RESINST-168,RES-069,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-12,2024-12,1,17813.08,0.0,0.0,17813.08,12453.76,12453.76,Complete
+RESINST-169,RES-004,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-01,2024-01,1,13229.31,946.95,0.0,14176.26,8586.46,8586.46,Complete
+RESINST-170,RES-050,Residential Install,New Construction Plumbing/HVAC Package,2024-10,2025-01,4,36210.54,1255.22,0.0,37465.76,22537.16,22537.16,Complete
+RESINST-171,RES-025,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-10,2024-10,1,12821.32,656.46,0.0,13477.78,8979.15,8979.15,Complete
+RESINST-172,RES-209,Residential Install,New Construction Plumbing/HVAC Package,2024-11,2025-01,3,56026.82,2736.43,0.0,58763.25,34263.54,34263.54,Complete
+RESINST-173,RES-027,Residential Install,HVAC System Replacement (Residential),2024-03,2024-03,1,19516.06,0.0,0.0,19516.06,12838.38,12838.38,Complete
+RESINST-174,RES-161,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,19833.12,276.0,0.0,20109.12,12155.38,12155.38,Complete
+RESINST-175,RES-011,Residential Install,Sewer Line Replacement,2024-07,2024-07,1,24790.41,0.0,0.0,24790.41,16190.39,16190.39,Complete
+RESINST-176,RES-073,Residential Install,HVAC System Replacement (Residential),2024-01,2024-01,1,18401.75,0.0,0.0,18401.75,11071.84,11071.84,Complete
+RESINST-177,RES-058,Residential Install,Full Repipe - Whole House,2024-04,2024-04,1,17134.93,0.0,0.0,17134.93,11000.19,11000.19,Complete
+RESINST-178,RES-128,Residential Install,New Construction Plumbing/HVAC Package,2024-06,2024-09,4,41631.52,0.0,1857.86,41631.52,24383.58,24383.58,Complete
+RESINST-179,RES-198,Residential Install,Water Heater Install (Tankless Upgrade),2024-08,2024-08,1,5619.71,0.0,168.0,5619.71,3830.22,3830.22,Complete
+RESINST-180,RES-109,Residential Install,Sewer Line Replacement,2024-03,2024-03,1,17316.2,0.0,0.0,17316.2,10142.93,10142.93,Complete
+RESINST-181,RES-099,Residential Install,Full Repipe - Whole House,2024-10,2024-10,1,19648.49,0.0,0.0,19648.49,13969.17,13969.17,Complete
+RESINST-182,RES-120,Residential Install,HVAC System Replacement (Residential),2024-03,2024-03,1,17457.61,0.0,0.0,17457.61,11805.64,11805.64,Complete
+RESINST-183,RES-005,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-08,2024-08,1,15661.98,1114.1,0.0,16776.08,11520.86,11520.86,Complete
+RESINST-184,RES-127,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,17252.07,0.0,2.1,17252.07,10969.8,10969.8,Complete
+RESINST-185,RES-214,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-01,2024-01,1,10181.98,542.47,46.45,10724.44,6857.0,6857.0,Complete
+RESINST-186,RES-131,Residential Install,Full Repipe - Whole House,2024-09,2024-09,1,14525.99,0.0,0.0,14525.99,10192.5,10192.5,Complete
+RESINST-187,RES-168,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,22393.33,0.0,0.0,22393.33,13734.96,13734.96,Complete
+RESINST-188,RES-066,Residential Install,Full Repipe - Whole House,2024-03,2024-03,1,18615.51,910.28,589.02,19525.78,13911.34,16456.94,Complete
+RESINST-189,RES-005,Residential Install,Sewer Line Replacement,2024-03,2024-03,1,23129.85,0.0,0.0,23129.85,14761.9,14761.9,Complete
+RESINST-190,RES-047,Residential Install,Full Repipe - Whole House,2024-12,2024-12,1,17443.34,0.0,0.0,17443.34,11608.85,11608.85,Complete
+RESINST-191,RES-120,Residential Install,New Construction Plumbing/HVAC Package,2024-02,2024-04,3,50024.42,0.0,0.0,50024.42,30017.31,30017.31,Complete
+RESINST-192,RES-197,Residential Install,New Construction Plumbing/HVAC Package,2024-02,2024-03,2,33051.88,0.0,0.0,33051.88,23753.63,23753.63,Complete
+RESINST-193,RES-038,Residential Install,Water Heater Install (Tankless Upgrade),2024-09,2024-09,1,7515.26,415.99,245.94,7931.25,5151.13,5151.13,Complete
+RESINST-194,RES-159,Residential Install,Sewer Line Replacement,2024-03,2024-03,1,17236.11,0.0,0.0,17236.11,10747.24,10747.24,Complete
+RESINST-195,RES-166,Residential Install,Sewer Line Replacement,2024-03,2024-03,1,11393.62,398.75,0.0,11792.38,6955.76,6955.76,Complete
+RESINST-196,RES-208,Residential Install,New Construction Plumbing/HVAC Package,2024-12,2025-01,2,35048.91,0.0,0.0,35048.91,22513.69,22513.69,Complete
+RESINST-197,RES-033,Residential Install,Sewer Line Replacement,2024-12,2024-12,1,11272.58,0.0,0.0,11272.58,7314.57,7314.57,Complete
+RESINST-198,RES-082,Residential Install,Full Repipe - Whole House,2024-06,2024-06,1,16308.67,0.0,0.0,16308.67,10944.63,10944.63,Complete
+RESINST-199,RES-087,Residential Install,New Construction Plumbing/HVAC Package,2024-11,2024-12,2,43185.05,0.0,0.0,43185.05,30778.48,30778.48,Complete
+RESINST-200,RES-037,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-12,2024-12,1,9344.28,0.0,0.0,9344.28,6052.86,6052.86,Complete
+RESINST-201,RES-163,Residential Install,Water Heater Install (Tankless Upgrade),2024-09,2024-09,1,8648.12,0.0,0.0,8648.12,5244.49,5614.52,Complete
+RESINST-202,RES-076,Residential Install,Full Repipe - Whole House,2024-04,2024-04,1,18983.91,0.0,0.0,18983.91,12259.29,12259.29,Complete
+RESINST-203,RES-203,Residential Install,Sewer Line Replacement,2024-05,2024-05,1,24417.12,0.0,0.0,24417.12,16266.76,16266.76,Complete
+RESINST-204,RES-004,Residential Install,New Construction Plumbing/HVAC Package,2024-02,2024-04,3,28549.98,0.0,0.0,28549.98,18539.45,18539.45,Complete
+RESINST-205,RES-032,Residential Install,New Construction Plumbing/HVAC Package,2024-05,2024-08,4,33284.13,2324.51,0.0,35608.64,24756.35,24756.35,Complete
+RESINST-206,RES-108,Residential Install,HVAC System Replacement (Residential),2024-10,2024-10,1,14932.28,0.0,0.0,14932.28,9525.34,9525.34,Complete
+RESINST-207,RES-018,Residential Install,Full Repipe - Whole House,2024-07,2024-07,1,17958.62,550.97,0.0,18509.58,11949.15,11949.15,Complete
+RESINST-208,RES-109,Residential Install,Full Repipe - Whole House,2024-09,2024-09,1,14886.02,0.0,0.0,14886.02,10093.03,10093.03,Complete
+RESINST-209,RES-103,Residential Install,HVAC System Replacement (Residential),2024-02,2024-02,1,16136.88,626.63,0.0,16763.51,11895.25,11895.25,Complete
+RESINST-210,RES-123,Residential Install,New Construction Plumbing/HVAC Package,2024-02,2024-04,3,28776.18,1693.23,0.0,30469.41,18787.94,18787.94,Complete
+RESINST-211,RES-141,Residential Install,Sewer Line Replacement,2024-09,2024-09,1,24219.94,997.8,0.0,25217.74,15070.21,15070.21,Complete
+RESINST-212,RES-008,Residential Install,Water Heater Install (Tankless Upgrade),2024-03,2024-03,1,9410.67,595.45,0.0,10006.12,7129.75,8656.42,Complete
+RESINST-213,RES-045,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-09,2024-09,1,8158.24,0.0,0.0,8158.24,5836.93,5836.93,Complete
+RESINST-214,RES-136,Residential Install,Water Heater Install (Tankless Upgrade),2024-02,2024-02,1,11543.91,766.31,0.0,12310.21,7985.59,7985.59,Complete
+RESINST-215,RES-151,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2024-02,2024-02,1,11537.32,884.72,0.0,12422.04,8051.79,8051.79,Complete
+RESINST-216,RES-098,Residential Install,Sewer Line Replacement,2024-08,2024-08,1,15518.34,0.0,0.0,15518.34,10917.16,12941.03,Complete
+RESINST-217,RES-040,Residential Install,Sewer Line Replacement,2024-02,2024-02,1,14231.78,305.53,262.63,14537.31,8654.79,8654.79,Complete
+RESINST-218,RES-198,Residential Install,Sewer Line Replacement,2024-07,2024-07,1,19301.36,1104.5,0.0,20405.86,12327.54,14612.34,Complete
+RESINST-219,RES-173,Residential Install,HVAC System Replacement (Residential),2024-09,2024-09,1,11226.54,849.57,0.0,12076.11,8251.72,8251.72,Complete
+RESINST-220,RES-020,Residential Install,HVAC System Replacement (Residential),2025-09,2025-09,1,11983.94,0.0,0.0,11983.94,8393.38,10016.39,Complete
+RESINST-221,RES-035,Residential Install,HVAC System Replacement (Residential),2025-04,2025-04,1,9832.45,0.0,0.0,9832.45,6584.47,6584.47,Complete
+RESINST-222,RES-070,Residential Install,Water Heater Install (Tankless Upgrade),2025-01,2025-01,1,8206.27,628.31,0.0,8834.57,5524.49,5524.49,Complete
+RESINST-223,RES-044,Residential Install,HVAC System Replacement (Residential),2025-12,2025-12,1,15380.12,1194.69,0.0,16574.81,11027.12,11027.12,Complete
+RESINST-224,RES-125,Residential Install,New Construction Plumbing/HVAC Package,2025-08,2025-10,3,44798.35,0.0,0.0,44798.35,28336.47,31053.75,Complete
+RESINST-225,RES-032,Residential Install,Sewer Line Replacement,2025-12,2025-12,1,23137.47,1677.05,0.0,24814.52,17436.27,18466.96,Complete
+RESINST-226,RES-020,Residential Install,Sewer Line Replacement,2025-08,2025-08,1,10965.13,0.0,0.0,10965.13,7344.44,7344.44,Complete
+RESINST-227,RES-174,Residential Install,HVAC System Replacement (Residential),2025-04,2025-04,1,15957.87,0.0,0.0,15957.87,10273.23,10273.23,Complete
+RESINST-228,RES-167,Residential Install,New Construction Plumbing/HVAC Package,2025-01,2025-04,4,56562.38,0.0,0.0,56562.38,39672.39,39672.39,Complete
+RESINST-229,RES-131,Residential Install,New Construction Plumbing/HVAC Package,2025-07,2025-09,3,50252.76,2412.88,2434.36,52665.65,31195.11,35947.81,Complete
+RESINST-230,RES-206,Residential Install,HVAC System Replacement (Residential),2025-09,2025-09,1,18024.39,735.53,0.0,18759.92,12922.63,14627.13,Complete
+RESINST-231,RES-095,Residential Install,Water Heater Install (Tankless Upgrade),2025-05,2025-05,1,11716.42,0.0,0.0,11716.42,7948.95,8574.25,Complete
+RESINST-232,RES-180,Residential Install,HVAC System Replacement (Residential),2025-08,2025-08,1,11422.27,281.66,0.0,11703.93,7448.26,7448.26,Complete
+RESINST-233,RES-078,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-11,2025-11,1,15772.8,0.0,0.0,15772.8,10756.52,10756.52,Complete
+RESINST-234,RES-142,Residential Install,Sewer Line Replacement,2025-10,2025-10,1,24426.12,0.0,0.0,24426.12,14246.21,14246.21,Complete
+RESINST-235,RES-031,Residential Install,Full Repipe - Whole House,2025-05,2025-05,1,13046.28,455.88,0.0,13502.16,8783.65,8783.65,Complete
+RESINST-236,RES-017,Residential Install,Full Repipe - Whole House,2025-10,2025-10,1,15084.75,0.0,0.0,15084.75,10443.89,10443.89,Complete
+RESINST-237,RES-137,Residential Install,New Construction Plumbing/HVAC Package,2025-04,2025-06,3,29314.75,0.0,0.0,29314.75,17614.1,17614.1,Complete
+RESINST-238,RES-204,Residential Install,Full Repipe - Whole House,2025-06,2025-06,1,15718.18,231.07,0.0,15949.25,10509.49,12702.56,Complete
+RESINST-239,RES-184,Residential Install,Water Heater Install (Tankless Upgrade),2025-03,2025-03,1,7664.29,0.0,0.0,7664.29,5328.6,5328.6,Complete
+RESINST-240,RES-026,Residential Install,Sewer Line Replacement,2025-02,2025-02,1,21418.03,93.74,0.0,21511.77,13927.63,13927.63,Complete
+RESINST-241,RES-083,Residential Install,Sewer Line Replacement,2025-03,2025-03,1,20064.2,0.0,0.0,20064.2,12828.78,12828.78,Complete
+RESINST-242,RES-217,Residential Install,HVAC System Replacement (Residential),2025-07,2025-07,1,18598.63,0.0,0.0,18598.63,11258.65,11258.65,Complete
+RESINST-243,RES-207,Residential Install,New Construction Plumbing/HVAC Package,2025-04,2025-07,4,59001.98,0.0,0.0,59001.98,42321.15,42321.15,Complete
+RESINST-244,RES-142,Residential Install,Water Heater Install (Tankless Upgrade),2025-02,2025-02,1,7194.46,82.09,0.0,7276.55,5227.31,5227.31,Complete
+RESINST-245,RES-072,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-12,2025-12,1,17488.54,453.84,393.87,17942.38,12196.45,12196.45,Complete
+RESINST-246,RES-211,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-11,2025-11,1,14840.59,0.0,0.0,14840.59,9520.65,11609.55,Complete
+RESINST-247,RES-191,Residential Install,Water Heater Install (Tankless Upgrade),2025-08,2025-08,1,7324.06,201.54,0.0,7525.6,5192.22,5192.22,Complete
+RESINST-248,RES-093,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-11,2025-11,1,16726.4,0.0,0.0,16726.4,10601.28,10601.28,Complete
+RESINST-249,RES-089,Residential Install,New Construction Plumbing/HVAC Package,2025-08,2025-10,3,42977.94,140.44,0.0,43118.38,25613.68,25613.68,Complete
+RESINST-250,RES-058,Residential Install,New Construction Plumbing/HVAC Package,2025-11,2025-12,2,28507.56,311.24,0.0,28818.79,18817.75,18817.75,Complete
+RESINST-251,RES-113,Residential Install,HVAC System Replacement (Residential),2025-06,2025-06,1,18807.82,0.0,0.0,18807.82,13260.81,16066.78,Complete
+RESINST-252,RES-082,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-09,2025-09,1,10053.09,0.0,37.42,10053.09,7059.7,7059.7,Complete
+RESINST-253,RES-190,Residential Install,HVAC System Replacement (Residential),2025-11,2025-11,1,19900.43,0.0,0.0,19900.43,14204.12,14204.12,Complete
+RESINST-254,RES-189,Residential Install,Sewer Line Replacement,2025-04,2025-04,1,15044.32,636.29,599.18,15680.61,10883.7,10883.7,Complete
+RESINST-255,RES-209,Residential Install,HVAC System Replacement (Residential),2025-02,2025-02,1,10548.22,15.52,97.39,10563.74,7095.67,7547.89,Complete
+RESINST-256,RES-107,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-06,2025-06,1,16475.65,0.0,0.0,16475.65,11196.65,13452.38,Complete
+RESINST-257,RES-042,Residential Install,New Construction Plumbing/HVAC Package,2025-11,2025-12,3,35180.52,930.16,0.0,36110.67,22033.44,23568.23,Complete
+RESINST-258,RES-051,Residential Install,Water Heater Install (Tankless Upgrade),2025-01,2025-01,1,9815.15,0.0,0.0,9815.15,6380.28,6380.28,Complete
+RESINST-259,RES-015,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-10,2025-10,1,10302.82,0.0,0.0,10302.82,6291.84,6291.84,Complete
+RESINST-260,RES-039,Residential Install,Sewer Line Replacement,2025-04,2025-04,1,13376.6,0.0,0.0,13376.6,9039.65,9039.65,Complete
+RESINST-261,RES-029,Residential Install,Sewer Line Replacement,2025-10,2025-10,1,25928.31,0.0,0.0,25928.31,16353.62,16353.62,Complete
+RESINST-262,RES-055,Residential Install,New Construction Plumbing/HVAC Package,2025-07,2025-08,2,55470.18,3959.87,136.82,59430.05,39617.04,39617.04,Complete
+RESINST-263,RES-047,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,24781.21,0.0,0.0,24781.21,15890.64,15890.64,Complete
+RESINST-264,RES-169,Residential Install,Water Heater Install (Tankless Upgrade),2025-01,2025-01,1,5471.83,0.0,0.0,5471.83,3753.89,4551.57,Complete
+RESINST-265,RES-073,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,15362.3,60.36,0.0,15422.66,9487.61,9487.61,Complete
+RESINST-266,RES-217,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,25356.98,0.0,434.05,25356.98,16377.79,16377.79,Complete
+RESINST-267,RES-025,Residential Install,New Construction Plumbing/HVAC Package,2025-10,2025-12,4,40185.07,0.0,0.0,40185.07,25547.75,25547.75,Complete
+RESINST-268,RES-010,Residential Install,Sewer Line Replacement,2025-03,2025-03,1,23519.75,1116.73,0.0,24636.47,15470.18,15470.18,Complete
+RESINST-269,RES-178,Residential Install,Water Heater Install (Tankless Upgrade),2025-12,2025-12,1,10638.96,19.63,0.0,10658.59,7336.25,7336.25,Complete
+RESINST-270,RES-053,Residential Install,Water Heater Install (Tankless Upgrade),2025-12,2025-12,1,8076.38,120.36,0.0,8196.74,5379.6,5379.6,Complete
+RESINST-271,RES-056,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-05,2025-05,1,17568.15,512.3,0.0,18080.45,12837.51,12837.51,Complete
+RESINST-272,RES-128,Residential Install,HVAC System Replacement (Residential),2025-02,2025-02,1,17765.9,348.64,664.31,18114.54,12883.62,15526.67,Complete
+RESINST-273,RES-093,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-06,2025-06,1,17580.23,1161.12,0.0,18741.35,12520.39,12520.39,Complete
+RESINST-274,RES-153,Residential Install,Sewer Line Replacement,2025-03,2025-03,1,17515.87,146.68,0.0,17662.55,11940.67,11940.67,Complete
+RESINST-275,RES-040,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,12476.27,0.0,391.75,12476.27,7751.51,7751.51,Complete
+RESINST-276,RES-018,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-09,2025-09,1,16480.06,739.43,0.0,17219.49,10973.94,10973.94,Complete
+RESINST-277,RES-210,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,25731.5,0.0,0.0,25731.5,16319.81,16319.81,Complete
+RESINST-278,RES-134,Residential Install,Sewer Line Replacement,2025-05,2025-05,1,10735.02,168.9,328.13,10903.92,6979.29,6979.29,Complete
+RESINST-279,RES-071,Residential Install,HVAC System Replacement (Residential),2025-12,2025-12,1,15025.91,0.0,0.0,15025.91,10360.26,11422.87,Complete
+RESINST-280,RES-085,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,15804.41,610.56,0.0,16414.97,9864.07,9864.07,Complete
+RESINST-281,RES-004,Residential Install,Sewer Line Replacement,2025-10,2025-10,1,21677.99,0.0,714.68,21677.99,14075.56,14075.56,Complete
+RESINST-282,RES-114,Residential Install,Water Heater Install (Tankless Upgrade),2025-10,2025-10,1,6944.15,0.0,0.0,6944.15,4895.85,4895.85,Complete
+RESINST-283,RES-197,Residential Install,Full Repipe - Whole House,2025-10,2025-10,1,13901.71,0.0,0.0,13901.71,8509.61,9649.74,Complete
+RESINST-284,RES-124,Residential Install,Full Repipe - Whole House,2025-02,2025-02,1,21203.37,477.81,0.0,21681.19,12749.23,15281.76,Complete
+RESINST-285,RES-127,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-12,2025-12,1,16999.75,1291.17,774.68,18290.92,10915.62,10915.62,Complete
+RESINST-286,RES-074,Residential Install,Sewer Line Replacement,2025-07,2025-07,1,14621.28,0.0,272.84,14621.28,9188.2,9188.2,Complete
+RESINST-287,RES-208,Residential Install,Full Repipe - Whole House,2025-06,2025-06,1,17427.81,809.44,0.0,18237.25,11108.81,11108.81,Complete
+RESINST-288,RES-138,Residential Install,Water Heater Install (Tankless Upgrade),2025-10,2025-10,1,10328.32,0.0,467.76,10328.32,6860.66,6860.66,Complete
+RESINST-289,RES-006,Residential Install,Full Repipe - Whole House,2025-03,2025-03,1,21006.84,0.0,0.0,21006.84,14483.82,14483.82,Complete
+RESINST-290,RES-129,Residential Install,HVAC System Replacement (Residential),2025-12,2025-12,1,10002.18,0.0,0.0,10002.18,6651.95,6651.95,Complete
+RESINST-291,RES-081,Residential Install,Water Heater Install (Tankless Upgrade),2025-03,2025-03,1,9234.6,0.0,0.0,9234.6,6042.65,6042.65,Complete
+RESINST-292,RES-159,Residential Install,Water Heater Install (Tankless Upgrade),2025-08,2025-08,1,11184.28,454.95,0.0,11639.23,8159.88,8159.88,Complete
+RESINST-293,RES-108,Residential Install,HVAC System Replacement (Residential),2025-07,2025-07,1,11726.87,0.0,0.0,11726.87,8065.03,8065.03,Complete
+RESINST-294,RES-119,Residential Install,Water Heater Install (Tankless Upgrade),2025-01,2025-01,1,11295.11,138.9,552.38,11434.01,7402.86,7402.86,Complete
+RESINST-295,RES-215,Residential Install,New Construction Plumbing/HVAC Package,2025-09,2025-10,2,43308.65,0.0,0.0,43308.65,30008.16,30008.16,Complete
+RESINST-296,RES-180,Residential Install,HVAC System Replacement (Residential),2025-01,2025-01,1,13470.05,0.0,0.0,13470.05,9603.5,9603.5,Complete
+RESINST-297,RES-042,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-11,2025-11,1,17187.98,0.0,0.0,17187.98,11236.35,11236.35,Complete
+RESINST-298,RES-083,Residential Install,New Construction Plumbing/HVAC Package,2025-04,2025-06,3,35173.76,0.0,0.0,35173.76,23825.39,23825.39,Complete
+RESINST-299,RES-134,Residential Install,Water Heater Install (Tankless Upgrade),2025-03,2025-03,1,8122.01,0.0,0.0,8122.01,5707.48,5707.48,Complete
+RESINST-300,RES-186,Residential Install,Sewer Line Replacement,2025-07,2025-07,1,23393.26,150.65,946.67,23543.91,13736.46,13736.46,Complete
+RESINST-301,RES-022,Residential Install,Sewer Line Replacement,2025-08,2025-08,1,17936.16,0.0,0.0,17936.16,12744.82,13493.03,Complete
+RESINST-302,RES-039,Residential Install,Water Heater Install (Tankless Upgrade),2025-10,2025-10,1,6999.69,0.0,0.0,6999.69,4568.95,4568.95,Complete
+RESINST-303,RES-006,Residential Install,HVAC System Replacement (Residential),2025-04,2025-04,1,15012.67,0.0,50.9,15012.67,10141.49,10141.49,Complete
+RESINST-304,RES-108,Residential Install,Sewer Line Replacement,2025-09,2025-09,1,14029.04,0.0,0.0,14029.04,8381.97,8381.97,Complete
+RESINST-305,RES-178,Residential Install,HVAC System Replacement (Residential),2025-03,2025-03,1,13823.06,0.0,0.0,13823.06,9209.84,9209.84,Complete
+RESINST-306,RES-141,Residential Install,New Construction Plumbing/HVAC Package,2025-03,2025-05,3,41408.65,0.0,773.82,41408.65,28984.19,32041.59,Complete
+RESINST-307,RES-214,Residential Install,HVAC System Replacement (Residential),2025-09,2025-09,1,15738.29,0.0,0.0,15738.29,9413.73,9413.73,Complete
+RESINST-308,RES-194,Residential Install,HVAC System Replacement (Residential),2025-10,2025-10,1,10500.89,0.0,0.0,10500.89,7309.0,7309.0,Complete
+RESINST-309,RES-219,Residential Install,HVAC System Replacement (Residential),2025-04,2025-04,1,19770.6,0.0,0.0,19770.6,13717.73,13717.73,Complete
+RESINST-310,RES-033,Residential Install,Full Repipe - Whole House,2025-10,2025-10,1,22544.64,0.0,45.91,22544.64,13436.08,13436.08,Complete
+RESINST-311,RES-143,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,23114.45,0.0,0.0,23114.45,15287.42,15287.42,Complete
+RESINST-312,RES-189,Residential Install,Full Repipe - Whole House,2025-08,2025-08,1,21190.25,0.0,0.0,21190.25,12666.76,12666.76,Complete
+RESINST-313,RES-148,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-01,2025-01,1,8376.56,0.0,0.0,8376.56,4943.36,4943.36,Complete
+RESINST-314,RES-097,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-06,2025-06,1,16512.69,1095.06,0.0,17607.75,12627.16,12627.16,Complete
+RESINST-315,RES-032,Residential Install,Water Heater Install (Tankless Upgrade),2025-02,2025-02,1,6414.98,267.94,0.0,6682.91,4735.57,4735.57,Complete
+RESINST-316,RES-141,Residential Install,Sewer Line Replacement,2025-06,2025-06,1,16664.55,0.0,0.0,16664.55,11421.06,11421.06,Complete
+RESINST-317,RES-042,Residential Install,Sewer Line Replacement,2025-10,2025-10,1,17425.61,0.0,0.0,17425.61,12043.35,13895.42,Complete
+RESINST-318,RES-065,Residential Install,Full Repipe - Whole House,2025-02,2025-02,1,17107.13,442.28,804.55,17549.41,10357.61,10357.61,Complete
+RESINST-319,RES-128,Residential Install,New Construction Plumbing/HVAC Package,2025-05,2025-06,2,55944.04,122.56,0.0,56066.6,39222.19,39222.19,Complete
+RESINST-320,RES-039,Residential Install,Full Repipe - Whole House,2025-08,2025-08,1,22118.65,0.0,0.0,22118.65,14913.31,14913.31,Complete
+RESINST-321,RES-020,Residential Install,Sewer Line Replacement,2025-10,2025-10,1,23395.15,0.0,0.0,23395.15,15932.92,17968.93,Complete
+RESINST-322,RES-220,Residential Install,New Construction Plumbing/HVAC Package,2025-03,2025-05,3,54475.21,2679.65,522.14,57154.86,37564.58,37564.58,Complete
+RESINST-323,RES-021,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-07,2025-07,1,14844.89,0.0,0.0,14844.89,9334.86,9334.86,Complete
+RESINST-324,RES-097,Residential Install,Sewer Line Replacement,2025-04,2025-04,1,24699.64,0.0,0.0,24699.64,16862.32,16862.32,Complete
+RESINST-325,RES-088,Residential Install,HVAC System Replacement (Residential),2025-08,2025-08,1,18231.85,284.12,0.0,18515.97,11139.34,11139.34,Complete
+RESINST-326,RES-077,Residential Install,New Construction Plumbing/HVAC Package,2025-03,2025-05,3,35727.64,1891.33,0.0,37618.97,25638.53,28657.12,Complete
+RESINST-327,RES-108,Residential Install,Water Heater Install (Tankless Upgrade),2025-09,2025-09,1,11260.08,816.95,203.82,12077.02,7619.61,7619.61,Complete
+RESINST-328,RES-198,Residential Install,HVAC System Replacement (Residential),2025-10,2025-10,1,13533.9,0.0,0.0,13533.9,8229.8,8229.8,Complete
+RESINST-329,RES-030,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-09,2025-09,1,11417.17,163.94,305.01,11581.11,7692.84,7692.84,Complete
+RESINST-330,RES-207,Residential Install,Full Repipe - Whole House,2025-01,2025-01,1,21644.06,0.0,798.38,21644.06,15459.57,18607.64,Complete
+RESINST-331,RES-182,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-04,2025-04,1,8237.79,0.0,0.0,8237.79,5127.52,5127.52,Complete
+RESINST-332,RES-214,Residential Install,Bathroom Remodel Plumbing/HVAC Rough-in,2025-11,2025-11,1,8293.08,0.0,153.62,8293.08,5408.29,5408.29,Complete
+RESINST-333,RES-124,Residential Install,New Construction Plumbing/HVAC Package,2025-10,2025-12,3,48826.25,324.11,0.0,49150.36,30418.38,33113.18,Complete
+RESINST-334,RES-012,Residential Install,HVAC System Replacement (Residential),2025-10,2025-10,1,18288.03,0.0,0.0,18288.03,11682.21,11682.21,Complete
+COMINST-001,COM-006,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2022-12,2023-01,2,62131.04,0.0,0.0,62131.04,44221.9,44221.9,Complete
+COMINST-002,COM-020,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2022-07,2022-10,4,95213.28,0.0,0.0,95213.28,61899.52,61899.52,Complete
+COMINST-003,COM-014,Commercial Install,New Commercial Building Plumbing/HVAC Package,2022-06,2022-10,5,513089.68,0.0,0.0,513089.68,318173.18,318173.18,Complete
+COMINST-004,COM-007,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2022-05,2022-08,4,108095.31,4222.81,0.0,112318.12,68351.09,68351.09,Complete
+COMINST-005,COM-012,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2022-07,2022-10,4,112988.83,0.0,0.0,112988.83,77697.96,77697.96,Complete
+COMINST-006,COM-020,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2022-04,2022-06,3,130887.86,0.0,0.0,130887.86,87760.87,94790.42,Complete
+COMINST-007,COM-019,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2022-11,2023-03,5,57917.65,0.0,2362.68,57917.65,41151.77,49869.72,Complete
+COMINST-008,COM-012,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2022-02,2022-05,4,106850.86,0.0,3155.18,106850.86,65549.26,65549.26,Complete
+COMINST-009,COM-013,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2022-02,2022-07,6,82203.07,1186.98,1633.08,83390.06,53596.72,53596.72,Complete
+COMINST-010,COM-004,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2022-07,2022-10,4,159582.68,8536.65,6361.28,168119.33,99190.03,99190.03,Complete
+COMINST-011,COM-020,Commercial Install,New Commercial Building Plumbing/HVAC Package,2023-12,2024-07,8,297406.21,7760.82,0.0,305167.03,180467.05,180467.05,Complete
+COMINST-012,COM-016,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2023-01,2023-02,2,93141.7,1035.82,0.0,94177.53,55149.88,55149.88,Complete
+COMINST-013,COM-001,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2023-08,2023-10,3,105062.97,0.0,0.0,105062.97,61156.72,61156.72,Complete
+COMINST-014,COM-017,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2023-08,2023-09,2,91254.53,0.0,0.0,91254.53,56254.37,56254.37,Complete
+COMINST-015,COM-025,Commercial Install,New Commercial Building Plumbing/HVAC Package,2023-05,2023-12,8,405730.55,9675.95,8446.2,415406.5,264308.51,264308.51,Complete
+COMINST-016,COM-024,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2023-10,2023-11,2,113401.88,0.0,4058.64,113401.88,67969.6,67969.6,Complete
+COMINST-017,COM-015,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2023-03,2023-06,4,135372.5,0.0,0.0,135372.5,84032.14,92613.52,Complete
+COMINST-018,COM-015,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2023-09,2023-11,3,133473.54,0.0,0.0,133473.54,78037.13,78037.13,Complete
+COMINST-019,COM-023,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2023-07,2023-08,2,90994.87,0.0,0.0,90994.87,60614.69,60614.69,Complete
+COMINST-020,COM-009,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2023-04,2023-08,5,53363.07,0.0,0.0,53363.07,38006.81,38006.81,Complete
+COMINST-021,COM-019,Commercial Install,New Commercial Building Plumbing/HVAC Package,2024-11,2025-05,7,291331.81,0.0,0.0,291331.81,187219.41,187219.41,Complete
+COMINST-022,COM-002,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2024-08,2024-10,3,97811.91,0.0,4729.58,97811.91,64072.72,75377.77,Complete
+COMINST-023,COM-008,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2024-12,2025-05,6,161519.89,0.0,5327.93,161519.89,102427.96,110876.97,Complete
+COMINST-024,COM-018,Commercial Install,New Commercial Building Plumbing/HVAC Package,2024-06,2025-01,8,419471.9,0.0,0.0,419471.9,295443.08,295443.08,Complete
+COMINST-025,COM-001,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2024-03,2024-06,4,107376.19,0.0,0.0,107376.19,63481.44,63481.44,Complete
+COMINST-026,COM-020,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2024-02,2024-05,4,144701.67,0.0,0.0,144701.67,103357.92,112132.59,Complete
+COMINST-027,COM-014,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2024-01,2024-04,4,65712.44,0.0,0.0,65712.44,38263.42,38263.42,Complete
+COMINST-028,COM-024,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2024-11,2025-01,3,116831.37,2903.01,0.0,119734.38,85569.81,85569.81,Complete
+COMINST-029,COM-025,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2024-09,2024-12,4,72593.87,3568.76,0.0,76162.63,49666.36,49666.36,Complete
+COMINST-030,COM-022,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2025-06,2025-08,3,130911.78,0.0,0.0,130911.78,90623.53,101557.5,Complete
+COMINST-031,COM-015,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2025-09,2025-12,4,69706.38,0.0,0.0,69706.38,47604.05,47604.05,Complete
+COMINST-032,COM-001,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2025-04,2025-07,4,192786.29,0.0,0.0,192786.29,132869.47,132869.47,Complete
+COMINST-033,COM-015,Commercial Install,Commercial HVAC Replacement (Rooftop Units),2025-12,2025-12,4,74509.7,2060.97,0.0,76570.67,47291.68,47291.68,Complete
+COMINST-034,COM-019,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2025-05,2025-07,3,124781.47,8052.99,0.0,132834.46,95387.42,95387.42,Complete
+COMINST-035,COM-009,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2025-06,2025-08,3,104200.51,0.0,0.0,104200.51,73906.6,73906.6,Complete
+COMINST-036,COM-024,Commercial Install,Commercial Plumbing Remodel/Tenant Finish-out,2025-09,2025-12,5,105749.6,0.0,0.0,105749.6,62210.53,62210.53,Complete
+COMINST-037,COM-005,Commercial Install,Multi-Family Plumbing Retrofit (per phase),2025-04,2025-09,6,116323.07,0.0,0.0,116323.07,81062.6,87419.9,Complete
+COMINST-038,COM-025,Commercial Install,Commercial Water Heater/Boiler Plant Upgrade,2025-04,2025-06,3,81151.17,0.0,2041.06,81151.17,55041.41,60155.21,Complete

@@ -23,7 +23,7 @@ export function registerAnalysisRoutes(app: FastifyInstance) {
         horizonDays: req.query.horizon ?? 90,
       });
       const digest = buildDigest({
-        asOf: new Date(),
+        asOf: snap.asOf,
         companyName: snap.company.name,
         health: snap.health,
         cash: snap.cash,

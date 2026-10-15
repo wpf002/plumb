@@ -1,0 +1,4 @@
+project_id,customer_id,description,contract_value,pct_remaining,expected_completion,backlog_remaining_value
+BL-01,COM-009,"New Commercial Building Plumbing/HVAC Package (signed, in design/permitting)",395000,85,2026-09,335750.0
+BL-02,RES-188,New Construction Plumbing/HVAC Package (in progress),48000,40,2026-02,19200.0
+BL-03,COM-021,"Multi-Family Plumbing Retrofit Phase 1 (signed, starts Feb)",142000,100,2026-06,142000.0

@@ -1,0 +1,7 @@
+opportunity_id,description,project_type,estimated_value,probability_pct,expected_start,weighted_value
+OPP-01,Whole-home renovation - Westhaven neighborhood,Remodel - Large,165000,55,2026-03,90750.0
+OPP-02,Kitchen + primary bath remodel,Remodel - Small,48000,70,2026-01,33600.0
+OPP-03,"Full custom home - 4,200 sqft, Berry Farms",Custom Home - Full Custom,1150000,35,2026-05,402500.0
+OPP-04,"Semi-custom home - 2,800 sqft, infill lot",Custom Home - Semi-Custom,580000,45,2026-04,261000.0
+OPP-05,Addition + garage conversion,Remodel - Large,112000,60,2026-02,67200.0
+OPP-06,Basement finish-out,Remodel - Small,38000,65,2026-01,24700.0

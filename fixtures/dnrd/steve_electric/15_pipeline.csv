@@ -1,0 +1,9 @@
+opportunity_id,customer_id,description,estimated_value,probability_pct,expected_start,weighted_value
+OPP-01,CUST-001,Musco - 2026 Baseball/Softball Complex Lighting (2 fields),165000,85,2026-02,140250.0
+OPP-02,CUST-001,Musco - 2026 Football Stadium Lighting Upgrade,295000,70,2026-03,206500.0
+OPP-03,CUST-001,Musco - 2026 Tennis Court Lighting (3 courts),62000,90,2026-04,55800.0
+OPP-04,CUST-002,Warren County Schools - New Gymnasium Electrical,98000,55,2026-05,53900.0
+OPP-05,CUST-013,Logan County Schools - Panel Upgrade (3 buildings),74000,60,2026-03,44400.0
+OPP-06,CUST-009,Southcentral Bank - New Branch Electrical Build-Out,58000,40,2026-06,23200.0
+OPP-07,,New Prospect - Regional Logistics Co. Warehouse Electrical,110000,25,2026-07,27500.0
+OPP-08,CUST-014,City of Scottsville - Park Lighting Replacement,51000,50,2026-04,25500.0

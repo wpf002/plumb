@@ -1,0 +1,7 @@
+opportunity_id,customer_id,description,estimated_value,probability_pct,expected_start,weighted_value
+OPP-01,COM-017,Promenade Medical Office Bldg - full HVAC replacement (3 rooftop units),168000,55,2026-03,92400.0
+OPP-02,COM-011,Tulsa Marriott Southern Hills - kitchen/laundry plumbing retrofit,94000,45,2026-05,42300.0
+OPP-03,,"New prospect - multi-family retrofit, 180-unit Phase 2",385000,30,2026-07,115500.0
+OPP-04,COM-024,Garnett Corporate Center - commercial water heater/boiler upgrade,112000,60,2026-02,67200.0
+OPP-05,,Residential new-construction package - 6-home subdivision deal (builder relationship),310000,40,2026-04,124000.0
+OPP-06,COM-003,Midtown Medical Plaza - tenant finish-out plumbing,58000,65,2026-01,37700.0

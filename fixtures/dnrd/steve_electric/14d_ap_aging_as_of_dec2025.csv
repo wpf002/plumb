@@ -1,0 +1,5 @@
+vendor_id,vendor_name,outstanding_amount,num_open_bills,avg_days_outstanding
+VEND-02,Graybar Electric Supply,219511.08,3,15.0
+VEND-03,Musco Sports Lighting Fixtures Division,27806.69,3,25.0
+VEND-04,B&K Trenching Services,15462.97,6,30.17
+VEND-05,ProLift Equipment Rental,17696.29,4,22.5

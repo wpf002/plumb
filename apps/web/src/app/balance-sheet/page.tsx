@@ -545,9 +545,11 @@ export default function BalanceSheet() {
                       {FREQUENCY_LABELS[l.paymentFrequency]}
                     </div>
                   </td>
-                  <td className="num">{l.interestRatePct}%</td>
+                  <td className="num">{Number(l.interestRatePct.toFixed(3))}%</td>
                   <td>
-                    {l.summary?.amortizes === false ? (
+                    {l.kind === "LINE_OF_CREDIT" ? (
+                      <span style={{ color: "var(--text-faint)" }}>Revolving</span>
+                    ) : l.summary?.amortizes === false ? (
                       <span className="badge bad">Never at this payment</span>
                     ) : l.summary?.projectedPayoffDate ? (
                       shortDate(l.summary.projectedPayoffDate)

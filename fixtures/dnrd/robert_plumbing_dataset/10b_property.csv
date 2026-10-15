@@ -1,0 +1,2 @@
+property_id,address,building_sqft,office_sqft,warehouse_sqft,purchase_date,land_cost,building_cost,building_useful_life_months,mortgage,loan_id,current_land_value_2025,current_building_value_2025,current_combined_real_estate_value_2025
+RE-01,"4400 S Sheridan Rd, Tulsa, OK (shop/warehouse/office)",14500,3200,11300,2011-07-01,285000,940000,468,True,MORTGAGE-01,410000,1350000,1760000

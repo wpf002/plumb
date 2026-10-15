@@ -1,0 +1,4 @@
+project_id,customer_id,description,contract_value,pct_remaining,expected_completion,backlog_remaining_value
+BL-01,CUST-001,"Musco - Multi-Field Complex (signed, mobilizing Jan 2026)",248000,100,2026-03,248000.0
+BL-02,CUST-006,City of Franklin - Municipal Building Renovation (in progress),87000,40,2026-02,34800.0
+BL-03,CUST-010,Oakland Retail Partners - Center Renovation (in progress),56000,25,2026-01,14000.0
