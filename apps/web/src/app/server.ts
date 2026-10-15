@@ -30,3 +30,10 @@ export async function apiGet(path: string) {
   if (!res.ok) throw new Error(`${path} -> ${res.status}`);
   return res.json();
 }
+
+/** Like apiGet, but a plan-gated or failing section returns null instead of breaking the page. */
+export async function apiGetOptional(path: string) {
+  const res = await fetch(`${SERVER_API_BASE}${path}`, { cache: "no-store", headers: { cookie: cookieHeader() } });
+  if (res.status === 401) redirect("/login");
+  return res.ok ? res.json() : null;
+}

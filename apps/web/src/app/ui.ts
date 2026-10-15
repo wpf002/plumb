@@ -19,7 +19,25 @@ export function getCompanyId(): string {
 
 /** fetch to the API that always sends the session cookie. */
 export function apiFetch(path: string, init?: RequestInit) {
-  return fetch(`${API}${path}`, { ...init, credentials: "include" });
+  return fetch(`${API}${path}`, { ...init, credentials: "include" }).then(async (res) => {
+    // Pages show a locked card for gated reads; actions and usage limits surface as the plan notice.
+    if (res.status === 403 && typeof window !== "undefined") {
+      const body = await res.clone().json().catch(() => null);
+      const action = (init?.method ?? "GET").toUpperCase() !== "GET";
+      if (body?.code === "PLAN_LIMIT" || (action && body?.code === "PLAN_REQUIRED")) window.dispatchEvent(new CustomEvent("plan-required", { detail: body }));
+    }
+    return res;
+  });
+}
+
+/** Read a response, marking a plan gate so the page can show a locked state. */
+export async function readGated(res: Response): Promise<any> {
+  if (res.ok) return res.json();
+  if (res.status === 403) {
+    const body = await res.json().catch(() => null);
+    if (body?.code === "PLAN_REQUIRED") return { __locked: body };
+  }
+  return null;
 }
 
 /** Palette values needed in JS (SVG ring, chart strokes). Mirrors the tokens in globals.css. */

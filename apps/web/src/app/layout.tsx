@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
 import { Topbar } from "./nav";
+import { PlanNotice } from "./plan-ui";
 
 // Fraunces for headings and figures that need weight; Plex Sans for everything
 // read at length; Plex Mono for tabular numbers.
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
       <body>
         <Topbar />
+        <PlanNotice />
         {children}
       </body>
     </html>

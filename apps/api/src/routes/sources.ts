@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { connectSource, disconnectSource, listSources, previewSource, recurringTransactions, syncSource } from "../integrations/sources/index.js";
+import { connectSource, disconnectSource, listSources, previewSource, recurringTransactions, sourceFor, syncSource } from "../integrations/sources/index.js";
+import { requireFeature } from "../plan.js";
 
 type P = { Params: { companyId: string } };
 type PK = { Params: { companyId: string; key: string } };
@@ -21,6 +22,11 @@ export function registerSourceRoutes(app: FastifyInstance) {
   // Owner only (OWNER_ONLY in server.ts): sync writes to the books; connect stores credentials.
   app.post<PK>("/companies/:companyId/sources/:key/sync", async (req, reply) => {
     try {
+      // Accounting, banking, payments, and payroll are in every plan; vertical systems are Pro.
+      if (sourceFor(req.params.key).phase > 1) {
+        const blocked = await requireFeature(req.params.companyId, "premiumIntegrations");
+        if (blocked) return reply.code(403).send(blocked);
+      }
       return await syncSource(req.params.companyId, req.params.key);
     } catch (e) {
       return fail(reply, e);

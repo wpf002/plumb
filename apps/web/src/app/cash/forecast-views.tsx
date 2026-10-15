@@ -1,7 +1,8 @@
 "use client";
 
+import { Locked } from "../plan-ui";
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd, shortDate, C } from "../ui";
+import { apiFetch, getCompanyId, usd, shortDate, C , readGated } from "../ui";
 
 const IN_LABEL: Record<string, string> = {
   collections: "Collections",
@@ -33,7 +34,7 @@ function useApi(path: string) {
     if (!id) return;
     setData(null);
     apiFetch(`/companies/${id}${path}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+      .then(readGated)
       .then(setData);
   }, [path]);
   return data;
@@ -107,6 +108,7 @@ export function ThirteenWeek() {
   const [fcase, setCase] = useState("base");
   const data = useApi(`/forecast/13-week?case=${fcase}`);
   if (!data) return <div className="card">Loading…</div>;
+  if (data.__locked) return <Locked info={data.__locked} />;
   const f = data.forecast;
   return (
     <>
@@ -170,6 +172,7 @@ export function ThirteenWeek() {
 export function TwelveMonth() {
   const data = useApi("/forecast/12-month");
   if (!data) return <div className="card">Loading…</div>;
+  if (data.__locked) return <Locked info={data.__locked} />;
   const { base, upside, downside } = data.cases;
   const w = 900;
   const h = 200;
@@ -234,6 +237,7 @@ export function TwelveMonth() {
 export function RevenueForecast() {
   const data = useApi("/forecast/revenue");
   if (!data) return <div className="card">Loading…</div>;
+  if (data.__locked) return <Locked info={data.__locked} />;
   const t = data.totals;
   return (
     <section className="card">
@@ -317,6 +321,7 @@ export function RevenueForecast() {
 export function Accuracy() {
   const data = useApi("/forecast/accuracy");
   if (!data) return <div className="card">Loading…</div>;
+  if (data.__locked) return <Locked info={data.__locked} />;
   if (!data.backtest) return <section className="card"><p className="empty">Needs 18 months of books.</p></section>;
   const bt = data.backtest;
   return (

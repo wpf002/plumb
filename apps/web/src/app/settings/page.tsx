@@ -1,6 +1,7 @@
 "use client";
 
 import { DataExport } from "./data-export";
+import { PlanCard } from "./plan-card";
 import { useEffect, useState } from "react";
 import { apiFetch, getCompanyId, usd, TRADES, TRADE_LABELS, REVENUE_MODELS, REVENUE_MODEL_COPY } from "../ui";
 
@@ -431,6 +432,8 @@ export default function Settings() {
           <p style={{ color: "var(--text-faint)", fontSize: 14, margin: 0 }}>Only owners can invite or remove teammates.</p>
         )}
       </section>
+      <PlanCard />
+
       <DataExport />
     </main>
   );

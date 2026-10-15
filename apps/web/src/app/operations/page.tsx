@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId } from "../ui";
+import { apiFetch, getCompanyId, readGated } from "../ui";
+import { Locked } from "../plan-ui";
 import { BenchmarksView, CapacityView, CustomersView, LaborView, RecurringView, ServiceCallsView, ServiceLinesView } from "./ops-views";
 
 const TABS = [
@@ -25,7 +26,7 @@ export default function Operations() {
     const id = getCompanyId();
     if (!id || tab in data) return;
     apiFetch(`/companies/${id}/operations/${current.path}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+      .then(readGated)
       .then((d) => setData((prev) => ({ ...prev, [tab]: d })));
   }, [tab, current.path, data]);
 
@@ -46,7 +47,7 @@ export default function Operations() {
           ))}
         </div>
       </div>
-      {!(tab in data) ? <div className="card">Loading…</div> : <View data={data[tab]} />}
+      {!(tab in data) ? <div className="card">Loading…</div> : data[tab]?.__locked ? <Locked info={data[tab].__locked} /> : <View data={data[tab]} />}
     </main>
   );
 }

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId } from "../ui";
+import { apiFetch, getCompanyId, readGated } from "../ui";
+import { Locked } from "../plan-ui";
 import { BacklogView, ChangeOrdersView, EstimatesView, PipelineView, ProfitabilityView, RetainageView, WipView } from "./job-views";
 import { PayersTab } from "./payers-tab";
 
@@ -28,7 +29,7 @@ export default function Jobs() {
     const id = getCompanyId();
     if (!id || !current.path || data[tab]) return;
     apiFetch(`/companies/${id}/${current.path}`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+      .then(readGated)
       .then((d) => setData((prev) => ({ ...prev, [tab]: d })));
   }, [tab, current.path, data]);
 
@@ -52,7 +53,7 @@ export default function Jobs() {
           ))}
         </div>
       </div>
-      {tab === "payers" ? <PayersTab /> : !data[tab] ? <div className="card">Loading…</div> : <View data={data[tab]} />}
+      {tab === "payers" ? <PayersTab /> : !data[tab] ? <div className="card">Loading…</div> : data[tab].__locked ? <Locked info={data[tab].__locked} /> : <View data={data[tab]} />}
     </main>
   );
 }

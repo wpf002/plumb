@@ -111,6 +111,9 @@ model Company {
   /// Last day the books cover. Imported history ends before today, so every
   /// "as of" calculation uses this when set instead of the clock.
   dataAsOf              DateTime?
+  /// ESSENTIALS, PRO, or BUSINESS. Feature flags only; there is no billing.
+  plan                  String    @default("BUSINESS")
+  usage                 UsageCounter[]
   projects              Project[]
   entities              Entity[]
   customers             Customer[]
@@ -1270,4 +1273,16 @@ model DashboardLayout {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, companyId])
+}
+
+/// Metered use per company per month, for plan limits (Ask Denny questions).
+model UsageCounter {
+  id        String  @id @default(cuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  metric    String
+  period    String // YYYY-MM
+  count     Int     @default(0)
+
+  @@unique([companyId, metric, period])
 }

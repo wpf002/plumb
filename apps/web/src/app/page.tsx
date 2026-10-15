@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { usd, shortDate, C } from "./ui";
-import { apiGet, activeCompanyId } from "./server";
+import { apiGet, apiGetOptional, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
 import { AskDenny } from "./ask-denny";
 import { DashboardCustomize } from "./dashboard-customize";
@@ -26,7 +26,7 @@ export default async function Dashboard() {
   const [forecast, digest, brief, dataHealth, dash, analysis, layout] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/digest`),
-    apiGet(`/companies/${companyId}/brief`),
+    apiGetOptional(`/companies/${companyId}/brief`),
     apiGet(`/companies/${companyId}/data-health`),
     apiGet(`/companies/${companyId}/health-dashboard`),
     apiGet(`/companies/${companyId}/collisions`),
@@ -37,7 +37,7 @@ export default async function Dashboard() {
 
 
   const sections: Record<string, React.ReactNode> = {
-    brief: (
+    brief: brief && (
       <>
       <section className={`card readout ${RATING_TONE[brief.rating]}`}>
         <div className="row-between">

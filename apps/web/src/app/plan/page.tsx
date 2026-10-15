@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd } from "../ui";
+import { apiFetch, getCompanyId, readGated, usd } from "../ui";
+import { Locked } from "../plan-ui";
 import { ValueTab } from "./value";
 import { WhatIf } from "./what-if";
 
@@ -376,7 +377,7 @@ export default function Plan() {
   useEffect(() => {
     const id = getCompanyId();
     if (!id) return;
-    const get = (p: string) => apiFetch(`/companies/${id}${p}`, { cache: "no-store" }).then((r) => (r.ok ? r.json() : null));
+    const get = (p: string) => apiFetch(`/companies/${id}${p}`, { cache: "no-store" }).then(readGated);
     Promise.all([get("/capital/fleet"), get("/capital/defaults"), get("/assets")]).then(([f, d, a]) => {
       setFleet(f);
       setDefaults(d);
@@ -418,6 +419,8 @@ export default function Plan() {
             downtimeDaysAnnual: a.downtimeDaysAnnual,
           }))}
         />
+      ) : defaults.__locked ? (
+        <Locked info={defaults.__locked} />
       ) : tab === "buy" ? (
         <BuyTab defaults={defaults} />
       ) : tab === "hire" ? (

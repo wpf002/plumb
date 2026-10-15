@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd } from "../ui";
+import { apiFetch, getCompanyId, readGated, usd } from "../ui";
+import { Locked } from "../plan-ui";
 
 const toCents = (s: string) => Math.round((Number(s.replace(/[$,]/g, "")) || 0) * 100);
 
@@ -91,10 +92,10 @@ export function WhatIf() {
 
   useEffect(() => {
     apiFetch(`/companies/${getCompanyId()}/what-if/options`, { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+      .then(readGated)
       .then((o) => {
         setOpts(o);
-        if (o) {
+        if (o && !o.__locked) {
           setPick({ customer: o.customers[0]?.name ?? "", line: o.lines[0] ?? "" });
           setV((p) => ({ ...p, contributionMarginPct: o.grossMarginPct?.toFixed(1) ?? "30" }));
         }
@@ -128,6 +129,7 @@ export function WhatIf() {
   }, [key, opts]);
 
   if (!opts) return <div className="card">Loading…</div>;
+  if (opts.__locked) return <Locked info={opts.__locked} />;
   if (!opts.year) return <p className="card empty">Needs a full year of books.</p>;
 
   return (

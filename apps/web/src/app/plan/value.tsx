@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiFetch, getCompanyId, usd } from "../ui";
+import { apiFetch, getCompanyId, readGated, usd } from "../ui";
+import { Locked } from "../plan-ui";
 
 const range = (r: [number, number]) => `${usd(r[0])} – ${usd(r[1])}`;
 const mult = (m: [number, number]) => `${m[0].toFixed(1)}–${m[1].toFixed(1)}x`;
@@ -37,16 +38,14 @@ export function ValueTab() {
 
   useEffect(() => {
     apiFetch(`/companies/${getCompanyId()}/valuation`, { cache: "no-store" })
-      .then(async (r) => {
-        const j = await r.json();
-        if (r.ok) setData(j);
-        else setError(j.message);
-      })
+      .then(readGated)
+      .then((j) => (j ? setData(j) : setError("Needs a full year of books.")))
       .catch(() => setError("Could not load."));
   }, []);
 
   if (error) return <p className="card empty">{error}</p>;
   if (!data) return <div className="card">Loading…</div>;
+  if (data.__locked) return <Locked info={data.__locked} />;
   const v = data.valuation;
   const r = data.readiness;
   const oc = v.ownerComp;

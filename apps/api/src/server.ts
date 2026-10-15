@@ -24,6 +24,7 @@ const OWNER_ONLY: { method: string; re: RegExp }[] = [
   { method: "POST", re: /^\/companies\/[^/]+\/api-keys$/ },
   { method: "DELETE", re: /^\/companies\/[^/]+\/api-keys\// },
   { method: "POST", re: /^\/companies\/[^/]+\/sources\/[^/]+\/sync$/ },
+  { method: "PUT", re: /^\/companies\/[^/]+\/plan$/ },
   { method: "PUT", re: /^\/companies\/[^/]+\/sources\/[^/]+\/connection$/ },
   { method: "DELETE", re: /^\/companies\/[^/]+\/sources\/[^/]+\/connection$/ },
 ];
@@ -60,6 +61,8 @@ import { apiKeyFor, registerToolRoutes, type AuthedRequest } from "./routes/tool
 import { registerSourceRoutes } from "./routes/sources.js";
 import { registerMcpRoutes } from "./routes/mcp.js";
 import { registerBusinessRoutes } from "./routes/business.js";
+import { featureForRoute, requireFeature } from "./plan.js";
+import { registerPlanRoutes } from "./routes/plan.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -82,6 +85,8 @@ export function buildServer() {
       const isMcp = path === "/mcp";
       const key = tm || isMcp ? await apiKeyFor(bearer) : null;
       if (!key || (tm && key.companyId !== tm[1]) || (!tm && !isMcp)) return reply.code(401).send({ error: "Unauthorized", message: "Invalid API key for this route." });
+      const blocked = await requireFeature(key.companyId, "api");
+      if (blocked) return reply.code(403).send(blocked);
       (req as AuthedRequest).apiKey = { id: key.id, scopes: key.scopes };
       (req as AuthedRequest & { apiKeyCompanyId?: string }).apiKeyCompanyId = key.companyId;
       return;
@@ -102,6 +107,11 @@ export function buildServer() {
       // Viewers read. The only requests they can send are ones that compute without saving.
       if (role === "VIEWER" && req.method !== "GET" && !VIEWER_COMPUTE.some((re) => re.test(path))) {
         return reply.code(403).send({ error: "Forbidden", message: "View-only access." });
+      }
+      const feature = featureForRoute(req.method, path);
+      if (feature) {
+        const blocked = await requireFeature(m[1], feature);
+        if (blocked) return reply.code(403).send(blocked);
       }
       const ownerOnly = OWNER_ONLY.some((r) => r.method === req.method && r.re.test(path));
       if (ownerOnly && role !== "OWNER") {
@@ -173,6 +183,7 @@ export function buildServer() {
   registerSourceRoutes(app);
   registerMcpRoutes(app);
   registerBusinessRoutes(app);
+  registerPlanRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

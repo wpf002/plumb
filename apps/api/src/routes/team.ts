@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { requireFeature, seatCheck } from "../plan.js";
 import { randomBytes } from "node:crypto";
 import { prisma } from "@plumb/db";
 import { getNotifier } from "../notify.js";
@@ -43,8 +44,14 @@ export function registerTeamRoutes(app: FastifyInstance) {
   app.post<{ Params: { companyId: string }; Body: { email: string; role?: "OWNER" | "MEMBER" | "ACCOUNTANT" | "VIEWER" } }>(
     "/companies/:companyId/team/invite",
     { schema: { body: inviteSchema } },
-    async (req) => {
+    async (req, reply) => {
       const company = await prisma.company.findUniqueOrThrow({ where: { id: req.params.companyId } });
+      if (req.body.role === "ACCOUNTANT" || req.body.role === "VIEWER") {
+        const blocked = await requireFeature(company.id, "advancedRoles");
+        if (blocked) return reply.code(403).send(blocked);
+      }
+      const seats = await seatCheck(company.id);
+      if (seats.full) return reply.code(403).send({ error: "Plan", code: "PLAN_LIMIT", feature: "seats", message: `Your plan includes ${seats.limit} people.` });
       const email = req.body.email.toLowerCase();
       const token = randomBytes(24).toString("hex");
       const invite = await prisma.invitation.create({

@@ -6,6 +6,7 @@ import { completeYears } from "../analytics/operations.js";
 import { totalDebtCents, workingCapital } from "../analytics/workingcapital.js";
 import { companyAsOf } from "../snapshot.js";
 import type { AuthedRequest } from "./tools.js";
+import { requireFeature } from "../plan.js";
 
 /**
  * Business-tier features: company groups with consolidated reporting,
@@ -89,6 +90,10 @@ export function registerBusinessRoutes(app: FastifyInstance) {
       const userId = (req as AuthedRequest).userId!;
       const allowed = await reportableCompanyIds(userId);
       if (req.body.companyIds.some((id) => !allowed.has(id))) return reply.code(403).send({ error: "Forbidden", message: "You can group only companies you own or keep the books for." });
+      for (const id of req.body.companyIds) {
+        const blocked = await requireFeature(id, "groups");
+        if (blocked) return reply.code(403).send(blocked);
+      }
       const g = await prisma.companyGroup.create({ data: { name: req.body.name, ownerId: userId, members: { create: req.body.companyIds.map((companyId) => ({ companyId })) } } });
       return reply.code(201).send({ id: g.id });
     }
