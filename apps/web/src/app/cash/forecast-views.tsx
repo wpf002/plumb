@@ -104,6 +104,9 @@ export function CashTable({ forecast }: { forecast: any }) {
   );
 }
 
+/** Plain names for the three forecast cases. */
+const CASE_LABEL: Record<string, string> = { base: "Expected", upside: "Best Case", downside: "Worst Case" };
+
 export function ThirteenWeek() {
   const [fcase, setCase] = useState("base");
   const data = useApi(`/forecast/13-week?case=${fcase}`);
@@ -120,7 +123,7 @@ export function ThirteenWeek() {
           <div className="tabs">
             {["base", "upside", "downside"].map((k) => (
               <button key={k} className={`tab${k === fcase ? " active" : ""}`} onClick={() => setCase(k)}>
-                {k[0].toUpperCase() + k.slice(1)}
+                {CASE_LABEL[k]}
               </button>
             ))}
           </div>
@@ -184,12 +187,12 @@ export function TwelveMonth() {
         <div className="card-title">12-Month Forecast</div>
         <div className="stats" style={{ marginBottom: 16 }}>
           {[
-            ["Base", base],
-            ["Upside", upside],
-            ["Downside", downside],
+            [CASE_LABEL.base, base],
+            [CASE_LABEL.upside, upside],
+            [CASE_LABEL.downside, downside],
           ].map(([label, c]: any) => (
             <div className="stat" key={label}>
-              <div className="stat-label">{label} Ending Cash</div>
+              <div className="stat-label">{label}</div>
               <div className="stat-value num">{usd(c.endingCents)}</div>
             </div>
           ))}
@@ -209,13 +212,13 @@ export function TwelveMonth() {
         </svg>
         <div className="chips" style={{ marginTop: 8 }}>
           <span className="chip">
-            <b style={{ color: C.ink }}>—</b> Base
+            <b style={{ color: C.ink }}>—</b> Expected
           </span>
-          <span className="chip">
-            <b style={{ color: C.good }}>—</b> Upside: revenue +10%
+          <span className="chip" title="Revenue 10% higher">
+            <b style={{ color: C.good }}>—</b> Best Case
           </span>
-          <span className="chip">
-            <b style={{ color: C.warn }}>- -</b> Downside: revenue −15%, collections 15 days slower
+          <span className="chip" title="Revenue 15% lower, customers pay 15 days later">
+            <b style={{ color: C.warn }}>- -</b> Worst Case
           </span>
         </div>
       </section>
