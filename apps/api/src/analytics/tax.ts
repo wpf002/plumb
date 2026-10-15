@@ -24,7 +24,7 @@ export function taxLine(a: { type: string; subtype: string | null; key: string; 
   if (a.subtype === "INTEREST") return "Interest";
   if (/payroll tax|payroll_tax|benefit/.test(k)) return "Taxes, benefits: payroll";
   if (/payroll|salar|wage|admin_payroll|gm_salary|sales_payroll/.test(k)) return "Salaries and wages";
-  if (/\brent|lease/.test(k)) return "Rents";
+  if (/(^|[^a-z])rent|lease/.test(k)) return "Rents";
   if (/occupancy/.test(k)) return "Utilities";
   if (/property tax|license|permit/.test(k)) return "Taxes and licenses";
   if (/insurance/.test(k)) return "Insurance";
