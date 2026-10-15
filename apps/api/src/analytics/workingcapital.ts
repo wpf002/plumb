@@ -17,6 +17,9 @@ import { companyAsOf, openingCashCents } from "../snapshot.js";
 import type { ArAging, LocHistory } from "./types.js";
 import type { Ledger } from "./ledger.js";
 
+/** Label for invoices with no customer on file. */
+export const UNKNOWN_CUSTOMER = "Unknown customer";
+
 const n = (b: bigint | null | undefined) => Number(b ?? 0n);
 
 /** Receivables open at `asOf`: issued on or before it and not yet paid by it. */
@@ -28,7 +31,7 @@ export async function openReceivables(companyId: string, asOf: Date): Promise<Op
   if (invoices.length > 0) {
     return invoices.map((i) => ({
       id: i.externalId ?? i.id,
-      party: i.customer?.name ?? "Unknown customer",
+      party: i.customer?.name ?? UNKNOWN_CUSTOMER,
       partyId: i.customer?.externalId ?? null,
       amountCents: n(i.amount),
       issueDate: i.issueDate,

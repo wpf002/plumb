@@ -1186,3 +1186,66 @@ button.chip.active {
   gap: 8px;
   font-size: 16px;
 }
+
+/* ---- Brief ---- */
+.readout.warning {
+  border-left-color: var(--warn);
+}
+.readout.critical {
+  border-left-color: var(--danger);
+}
+.brief-lines {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  font-size: 16px;
+}
+.brief-line {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.brief-line::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transform: translateY(-1px);
+}
+.brief-line.good::before {
+  background: var(--good);
+}
+.brief-line.warn::before {
+  background: var(--warn);
+}
+.brief-line.bad::before {
+  background: var(--danger);
+}
+
+/* ---- Ask Denny ---- */
+.ask-row {
+  display: flex;
+  gap: 8px;
+}
+.ask-row .input {
+  flex: 1;
+}
+.denny-answer {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.denny-answer p {
+  margin: 4px 0 0;
+}
+.denny-q {
+  font-weight: 700;
+  color: var(--ink);
+}

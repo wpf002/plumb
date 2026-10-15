@@ -15,7 +15,8 @@ import type { CompanySnapshot } from "./snapshot.js";
  * narration containing a figure that isn't in the facts is rejected.
  */
 
-const MODEL = process.env.PLUMB_AI_MODEL ?? "claude-opus-5";
+export const AI_MODEL = process.env.PLUMB_AI_MODEL ?? "claude-opus-5-5";
+const MODEL = AI_MODEL;
 
 export type AnalysisSeverity = "critical" | "warning" | "good";
 
@@ -193,7 +194,7 @@ export function verifyNarration(text: string, facts: Fact[]): string | null {
   const haystack = facts.map((f) => f.value).join(" | ");
 
   const patterns = [
-    /\$[\d,]+(?:\.\d{2})?/g, // money
+    /\$\d{1,3}(?:,\d{3})*(?:\.\d{2})?/g, // money (a trailing comma is punctuation, not part of the figure)
     /\b\d+(?:\.\d+)?%/g, // percentages
     /\b\d{4}-\d{2}-\d{2}\b/g, // ISO dates
     /\b\d+ days?\b/g, // day counts

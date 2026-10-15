@@ -1,4 +1,15 @@
 import type { Analytics } from "../analytics/types.js";
+import { verifyNarration } from "../ai.js";
+import { buildBrief } from "../brief.js";
+import { askDenny, EXAMPLE_QUESTIONS } from "../denny.js";
+
+/** What each account's brief must mention: its top findings from 19_ai_insights.md. */
+const BRIEF_MUST_CITE: Record<"steve" | "joe" | "robert" | "jerry", string[]> = {
+  steve: ["Musco", "54.1%"],
+  joe: ["project crew is the bottleneck", "$453,395", "$693,274"],
+  robert: ["14.7% in 2022", "13.7% in 2025", "$35,650"],
+  jerry: ["lost money in 2024", "3.0% in 2025"],
+};
 
 /**
  * The acceptance answer key: every finding in each test account's
@@ -655,6 +666,38 @@ export const FINDINGS: Finding[] = [
       between("headroom %", r.headroomPct, 53, 55);
     },
   },
+
+  // ---- D13: the brief and Ask Denny -------------------------------------
+  ...(["steve", "joe", "robert", "jerry"] as const).map(
+    (account): Finding => ({
+      account,
+      ref: "brief",
+      phase: "D13",
+      title: "Weekly brief cites the account's own top findings",
+      async run(a) {
+        const b = await buildBrief(a.companyId);
+        truthy(`brief verified (${b.verifyError ?? ""})`, b.verified);
+        const text = [...b.lines, ...b.findings].map((l) => l.text).join(" ");
+        for (const must of BRIEF_MUST_CITE[account]) truthy(`brief cites "${must}"`, text.includes(must));
+      },
+    })
+  ),
+  ...(["steve", "joe", "robert", "jerry"] as const).map(
+    (account): Finding => ({
+      account,
+      ref: "denny",
+      phase: "D13",
+      title: "All nine Ask Denny questions answer from verified facts",
+      async run(a) {
+        for (const q of EXAMPLE_QUESTIONS) {
+          const r = await askDenny(a.companyId, q, ["read", "analyze"]);
+          const text = r.answer.join(" ");
+          equal(`"${q}" verification`, verifyNarration(text, r.facts), null);
+          truthy(`"${q}" answered`, r.answer.length > 0 && !/undefined|not enough data/.test(text));
+        }
+      },
+    })
+  ),
 ];
 
 export const ACCOUNTS: Record<AccountKey, string> = {

@@ -42,6 +42,7 @@ import { registerWorkingCapitalRoutes } from "./routes/workingcapital.js";
 import { registerJobRoutes } from "./routes/jobs.js";
 import { registerOperationsRoutes } from "./routes/operations.js";
 import { registerCapitalRoutes, registerScenarioV2Routes } from "./routes/capital.js";
+import { registerDennyRoutes } from "./routes/denny.js";
 import { registerForecastV2Routes } from "./routes/forecasts.js";
 import { startScheduler } from "./scheduler.js";
 
@@ -66,6 +67,7 @@ export function buildServer() {
       if (!role) {
         return reply.code(403).send({ error: "Forbidden", message: "Not a member of this company." });
       }
+      (req as { memberRole?: string }).memberRole = role;
       const ownerOnly = OWNER_ONLY.some((r) => r.method === req.method && r.re.test(path));
       if (ownerOnly && role !== "OWNER") {
         return reply.code(403).send({ error: "Forbidden", message: "Owner permission required." });
@@ -129,6 +131,7 @@ export function buildServer() {
   registerOperationsRoutes(app);
   registerCapitalRoutes(app);
   registerScenarioV2Routes(app);
+  registerDennyRoutes(app);
   registerForecastV2Routes(app);
 
   return app;

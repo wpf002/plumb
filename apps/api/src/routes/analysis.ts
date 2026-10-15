@@ -4,6 +4,12 @@ import { loadSnapshot } from "../snapshot.js";
 import { getAnalyst } from "../ai.js";
 
 export function registerAnalysisRoutes(app: FastifyInstance) {
+  // Weeks where obligations land on money from late payers, without a model call.
+  app.get<{ Params: { companyId: string } }>("/companies/:companyId/collisions", async (req) => {
+    const snap = await loadSnapshot(req.params.companyId, { horizonDays: 90 });
+    return { collisions: snap.collisions };
+  });
+
   // The plain-English read on the business. The engine computed every number;
   // this decides which of them matter and says so in a sentence. Without an
   // ANTHROPIC_API_KEY it returns the deterministic narration instead of

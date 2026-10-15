@@ -196,8 +196,8 @@ export async function exitReadiness(companyId: string, ledger: Ledger) {
   const tot = (y: number) => incomeTotals(ledger.accounts, ledger.periods.filter((p) => p.startsWith(String(y))));
   const tFirst = tot(first);
   const tLast = tot(last);
-  const marginFirst = round1(pct(tFirst.ebitda, tFirst.revenue));
-  const marginLast = round1(pct(tLast.ebitda, tLast.revenue));
+  const marginFirst = tFirst.revenue ? round1((tFirst.ebitda / tFirst.revenue) * 100) : 0;
+  const marginLast = tLast.revenue ? round1((tLast.ebitda / tLast.revenue) * 100) : 0;
   const cagr = years.length > 1 && tFirst.revenue > 0 ? (Math.pow(tLast.revenue / tFirst.revenue, 1 / (years.length - 1)) - 1) * 100 : 0;
   const [conc, rec, recFirst, bl, over, owner] = await Promise.all([
     concentration(companyId, ledger).catch(() => null),

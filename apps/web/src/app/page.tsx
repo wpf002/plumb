@@ -3,9 +3,12 @@ import { redirect } from "next/navigation";
 import { usd, shortDate, C } from "./ui";
 import { apiGet, activeCompanyId } from "./server";
 import { ConfidenceStrip } from "./health-ui";
+import { AskDenny } from "./ask-denny";
 
 
 const TONE: Record<string, string> = { good: "good", warn: "warn", bad: "bad", neutral: "neutral" };
+const RATING_BADGE: Record<string, string> = { Strong: "good", Stable: "info", Watch: "warn", "At Risk": "bad" };
+const RATING_TONE: Record<string, string> = { Strong: "", Stable: "", Watch: "warning", "At Risk": "critical" };
 
 function formatMetric(m: { value: number; unit: string }) {
   if (m.unit === "money") return usd(m.value);
@@ -18,12 +21,13 @@ export default async function Dashboard() {
   const companyId = activeCompanyId();
   if (!companyId) redirect("/login");
 
-  const [forecast, digest, analysis, dataHealth, dash] = await Promise.all([
+  const [forecast, digest, brief, dataHealth, dash, analysis] = await Promise.all([
     apiGet(`/companies/${companyId}/forecast?horizon=90`),
     apiGet(`/companies/${companyId}/digest`),
-    apiGet(`/companies/${companyId}/analysis?horizon=90`),
+    apiGet(`/companies/${companyId}/brief`),
     apiGet(`/companies/${companyId}/data-health`),
     apiGet(`/companies/${companyId}/health-dashboard`),
+    apiGet(`/companies/${companyId}/collisions`),
   ]);
 
   const attention = digest.digest.items.filter((i: any) => i.severity !== "good");
@@ -36,29 +40,46 @@ export default async function Dashboard() {
         </div>
       </div>
 
-      {/* The read, in plain English, before any number. */}
-      <section className="card readout">
-        <div className="readout-head">
-          <span className={`readout-dot ${dash.concerns[0]?.severity ?? analysis.concerns[0]?.severity ?? "good"}`} />
-          <h2 className="readout-headline">{analysis.headline}</h2>
+      {/* The brief: rating, the standing lines, what stands out, what to do. */}
+      <section className={`card readout ${RATING_TONE[brief.rating]}`}>
+        <div className="row-between">
+          <div className="card-title" style={{ marginBottom: 0 }}>
+            Weekly Brief
+          </div>
+          <span className={`badge ${RATING_BADGE[brief.rating]}`}>{brief.rating}</span>
         </div>
-        <p className="readout-summary">{analysis.summary}</p>
-        {analysis.source === "claude" && analysis.concerns.length > 0 && (
+        <ul className="brief-lines">
+          {brief.lines.map((l: any) => (
+            <li key={l.key} className={`brief-line ${l.tone}`}>
+              {l.text}
+            </li>
+          ))}
+        </ul>
+        {brief.findings.length > 0 && (
           <ul className="readout-list">
-            {analysis.concerns.map((c: any, i: number) => (
-              <li key={i} className={`readout-item ${c.severity}`}>
-                <b>{c.title}</b>
-                {c.body && <span>{c.body}</span>}
+            {brief.findings.map((f: any) => (
+              <li key={f.key} className={`readout-item ${f.tone === "bad" ? "critical" : f.tone === "warn" ? "warning" : "good"}`}>
+                <b>{f.text}</b>
               </li>
             ))}
           </ul>
         )}
-        <div className="readout-foot">
-          {analysis.source === "claude" ? "Written by Denny" : "Rule-based"}
-          {analysis.fallbackReason && ` (${analysis.fallbackReason})`}
-        </div>
+        {brief.actions.length > 0 && (
+          <>
+            <div className="card-title" style={{ marginTop: 16 }}>
+              Recommended Actions
+            </div>
+            <ol className="action-list">
+              {brief.actions.map((a: any) => (
+                <li key={a.key}>{a.text}</li>
+              ))}
+            </ol>
+          </>
+        )}
         <ConfidenceStrip health={dataHealth} />
       </section>
+
+      <AskDenny />
 
       {/* Every health metric, each with the reading an owner acts on. */}
       <section className="card">
